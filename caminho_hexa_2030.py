@@ -107,6 +107,7 @@ st.markdown("""
         width: 135px;
         text-align: center;
         z-index: 10;
+        transition: all 0.5s ease-in-out; /* Suavidade na transição de posições */
     }
     .player-card-pitch {
         background: rgba(9, 13, 22, 0.95);
@@ -303,20 +304,62 @@ def obter_dados_reais_clube(clube):
     return None
 
 # ==========================================
-# 5. REGRAS DE ESCALAÇÃO POR POSIÇÃO
+# 5. MATRIZ TÁTICA DE CARLO ANCELOTTI
 # ==========================================
-MAPA_POSICOES = {
-    "Goleiro (GOL)": ["Goleiro"],
-    "Lateral Esquerdo (LE)": ["Lateral Esquerdo"],
-    "Zagueiro Esquerdo (ZE)": ["Zagueiro Esquerdo"],
-    "Zagueiro Direito (ZD)": ["Zagueiro Direito"],
-    "Lateral Direito (LD)": ["Lateral Direito"],
-    "Primeiro Volante (VOL)": ["Meio-Campo (Defensivo)", "Zagueiro Direito"],
-    "Meio-Campo Apoio (MCE)": ["Meio-Campo (Apoio)"],
-    "Meio-Campo Criativo (10)": ["Meio-Campo (Criativo)", "Ponta Esquerda"],
-    "Ponta Esquerda (PE)": ["Ponta Esquerda"],
-    "Centroavante (CA)": ["Centroavante"],
-    "Ponta Direita (PD)": ["Ponta Direita"]
+# Estrutura: { Posição no Menu: (Posições JSON válidas, Atleta padrão, Left%, Bottom%, Tag Visual) }
+TATICAS = {
+    "4-3-3 Clássico": {
+        "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
+        "Lateral Esquerdo (LE)": (["Lateral Esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro Esquerdo"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro Direito"], "Lucas Beraldo", "63%", "23%", "ZAG"),
+        "Lateral Direito (LD)": (["Lateral Direito"], "Wesley", "85%", "26%", "LD"),
+        "Volante (VOL)": (["Meio-Campo (Defensivo)"], "Andrey Santos", "38%", "46%", "VOL"),
+        "Volante Apoio (VOL)": (["Meio-Campo (Apoio)", "Meio-Campo (Defensivo)"], "Bruno Guimarães", "62%", "46%", "VOL"),
+        "Meia-Armador (MEI)": (["Meio-Campo (Criativo)"], "Rodrygo", "50%", "58%", "MEI"),
+        "Ponta Esquerda (PE)": (["Ponta Esquerda"], "Vini Jr.", "20%", "80%", "PE"),
+        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "84%", "CA"),
+        "Ponta Direita (PD)": (["Ponta Direita"], "Estevão", "80%", "80%", "PD")
+    },
+    "4-3-3 Diamante": {
+        "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
+        "Lateral Esquerdo (LE)": (["Lateral Esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro Esquerdo"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro Direito"], "Lucas Beraldo", "63%", "23%", "ZAG"),
+        "Lateral Direito (LD)": (["Lateral Direito"], "Wesley", "85%", "26%", "LD"),
+        "Volante (VOL)": (["Meio-Campo (Defensivo)"], "Andrey Santos", "50%", "43%", "VOL"),
+        "Mezzala Esquerdo (MCE)": (["Meio-Campo (Apoio)"], "Bruno Guimarães", "32%", "53%", "MCE"),
+        "Mezzala Direito (MCD)": (["Meio-Campo (Apoio)", "Meio-Campo (Criativo)"], "Breno Bidon", "68%", "53%", "MCD"),
+        "Ponta Esquerda (PE)": (["Ponta Esquerda"], "Vini Jr.", "20%", "80%", "PE"),
+        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "84%", "CA"),
+        "Ponta Direita (PD)": (["Ponta Direita"], "Estevão", "80%", "80%", "PD")
+    },
+    "4-4-2 Clássico": {
+        "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
+        "Lateral Esquerdo (LE)": (["Lateral Esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro Esquerdo"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro Direito"], "Lucas Beraldo", "63%", "23%", "ZAG"),
+        "Lateral Direito (LD)": (["Lateral Direito"], "Wesley", "85%", "26%", "LD"),
+        "Meia-Esquerda (ME)": (["Ponta Esquerda", "Meio-Campo (Apoio)"], "Vini Jr.", "15%", "55%", "ME"),
+        "Volante (VOL)": (["Meio-Campo (Defensivo)"], "Andrey Santos", "38%", "45%", "VOL"),
+        "Volante Apoio (VOL)": (["Meio-Campo (Apoio)", "Meio-Campo (Defensivo)"], "Bruno Guimarães", "62%", "45%", "VOL"),
+        "Meia-Direita (MD)": (["Ponta Direita", "Meio-Campo (Apoio)"], "Estevão", "85%", "55%", "MD"),
+        "Atacante (ATA)": (["Meio-Campo (Criativo)", "Ponta Esquerda", "Ponta Direita", "Centroavante"], "Rodrygo", "35%", "82%", "ATA"),
+        "Atacante Recuado (ATA)": (["Centroavante"], "Endrick", "65%", "82%", "ATA")
+    },
+    "4-4-2 Diamante": {
+        "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
+        "Lateral Esquerdo (LE)": (["Lateral Esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro Esquerdo"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro Direito"], "Lucas Beraldo", "63%", "23%", "ZAG"),
+        "Lateral Direito (LD)": (["Lateral Direito"], "Wesley", "85%", "26%", "LD"),
+        "Volante (VOL)": (["Meio-Campo (Defensivo)"], "Andrey Santos", "50%", "42%", "VOL"),
+        "Mezzala Esquerdo (MCE)": (["Meio-Campo (Apoio)"], "Bruno Guimarães", "32%", "53%", "MCE"),
+        "Mezzala Direito (MCD)": (["Meio-Campo (Apoio)", "Meio-Campo (Criativo)"], "Breno Bidon", "68%", "53%", "MCD"),
+        "Meia-Armador (MEI)": (["Meio-Campo (Criativo)"], "Rodrygo", "50%", "65%", "MEI"),
+        "Atacante (ATA)": (["Ponta Esquerda", "Ponta Direita", "Centroavante"], "Vini Jr.", "35%", "83%", "ATA"),
+        "Atacante Recuado (ATA)": (["Centroavante"], "Endrick", "65%", "83%", "ATA")
+    }
 }
 
 def obter_atletas_compativeis(pos_permitidas):
@@ -324,6 +367,7 @@ def obter_atletas_compativeis(pos_permitidas):
     for nome, dados in jogadores.items():
         if dados["posicao"] in pos_permitidas:
             filtrados.append(nome)
+        # Regras de versatilidade tática adicionadas de forma robusta
         elif nome == "Lucas Beraldo" and "Meio-Campo (Defensivo)" in pos_permitidas:
             filtrados.append(nome)
         elif nome == "Gabriel Martinelli" and "Meio-Campo (Criativo)" in pos_permitidas:
@@ -341,23 +385,24 @@ menu = st.sidebar.radio(
     ["🏟️ Campo de Jogo (Escalação)", "👤 Perfis dos Jogadores & Scout", "📋 Gestão do Roster", "📊 Análise de Opiniões"]
 )
 
+# Inicialização padrão para evitar bugs de carregamento do app
 if "escalados" not in st.session_state:
     st.session_state.escalados = {
         "Goleiro (GOL)": "Alisson",
         "Lateral Esquerdo (LE)": "Kaiki Bruno",
-        "Zagueiro Esquerdo (ZE)": "Gabriel Magalhães",
-        "Zagueiro Direito (ZD)": "Lucas Beraldo",
+        "Zagueiro Esquerdo (ZAG)": "Gabriel Magalhães",
+        "Zagueiro Direito (ZAG)": "Lucas Beraldo",
         "Lateral Direito (LD)": "Wesley",
-        "Primeiro Volante (VOL)": "Andrey Santos",
-        "Meio-Campo Apoio (MCE)": "Bruno Guimarães",
-        "Meio-Campo Criativo (10)": "Rodrygo",
+        "Volante (VOL)": "Andrey Santos",
+        "Volante Apoio (VOL)": "Bruno Guimarães",
+        "Meia-Armador (MEI)": "Rodrygo",
         "Ponta Esquerda (PE)": "Vini Jr.",
         "Centroavante (CA)": "Endrick",
         "Ponta Direita (PD)": "Estevão"
     }
 
 # ==========================================
-# TELA 1: CAMPO DE JOGO
+# TELA 1: CAMPO DE JOGO (ESCALAÇÃO)
 # ==========================================
 if menu == "🏟️ Campo de Jogo (Escalação)":
     st.markdown("<h1 class='app-title'>🏆 O Caminho para o Hexa</h1>", unsafe_allow_html=True)
@@ -376,22 +421,54 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
     
     with col_config:
         st.markdown("### 📋 Calibrar Escalação")
+        
+        # 1. Seletor de Esquemas Táticos de Carlo Ancelotti
+        tática_ativa = st.selectbox(
+            "Esquema Tático (Carlo Ancelotti):",
+            ["4-3-3 Clássico", "4-3-3 Diamante", "4-4-2 Clássico", "4-4-2 Diamante"],
+            key="tactical_layout_selector"
+        )
+        
+        layout_ativo = TATICAS[tática_ativa]
+        
+        # 2. Sistema Inteligente de Preservação de Escalação
+        # Se mudarmos a tática, tentamos realocar os atletas compatíveis já escolhidos antes de resetar para o padrão!
+        if "ultima_formacao" not in st.session_state or st.session_state.ultima_formacao != tática_ativa:
+            nova_escalacao = {}
+            for slot, info in layout_ativo.items():
+                pos_validas, atleta_padrao = info[0], info[1]
+                atleta_reutilizado = None
+                
+                if "escalados" in st.session_state:
+                    for old_slot, old_player in st.session_state.escalados.items():
+                        if old_player in jogadores and jogadores[old_player]["posicao"] in pos_validas:
+                            atleta_reutilizado = old_player
+                            break
+                            
+                nova_escalacao[slot] = atleta_reutilizado if atleta_reutilizado else atleta_padrao
+                
+            st.session_state.escalados = nova_escalacao
+            st.session_state.ultima_formacao = tática_ativa
+            st.rerun()
+
         st.write("Substitua os titulares respeitando a posição de origem do atleta.")
         
+        # 3. Renderizar os Dropdowns dinamicamente com base na tática ativa
         novos_titulares = {}
-        for slot, pos_validas in MAPA_POSICOES.items():
+        for slot, info in layout_ativo.items():
+            pos_validas = info[0]
             valid_names = obter_atletas_compativeis(pos_validas)
             if not valid_names:
-                valid_names = [st.session_state.escalados[slot]]
+                valid_names = [st.session_state.escalados.get(slot, info[1])]
                 
-            default_val = st.session_state.escalados[slot]
+            default_val = st.session_state.escalados.get(slot, info[1])
             idx = valid_names.index(default_val) if default_val in valid_names else 0
             
             novos_titulares[slot] = st.selectbox(
                 f"{slot}:",
                 valid_names,
                 index=idx,
-                key=f"field_{slot}"
+                key=f"field_{tática_ativa}_{slot}"
             )
         st.session_state.escalados = novos_titulares
 
@@ -406,24 +483,11 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
         c2.metric("Média Geral (Roberto)", f"{avg_r:.2f}")
         c3.metric("Rating Coletivo", f"{coletivo:.2f}", delta="Candidato ao Título", delta_color="normal")
         
-        # Mapeamento de coordenadas (X, Y) no campo
-        positions_coords = {
-            "Goleiro (GOL)": ("50%", "8%", "GOL"),
-            "Lateral Esquerdo (LE)": ("15%", "28%", "LE"),
-            "Zagueiro Esquerdo (ZE)": ("38%", "25%", "ZAG"),
-            "Zagueiro Direito (ZD)": ("62%", "25%", "ZAG"),
-            "Lateral Direito (LD)": ("85%", "28%", "LD"),
-            "Primeiro Volante (VOL)": ("50%", "48%", "VOL"),
-            "Meio-Campo Apoio (MCE)": ("30%", "54%", "MCE"),
-            "Meio-Campo Criativo (10)": ("70%", "54%", "MC"),
-            "Ponta Esquerda (PE)": ("20%", "80%", "PE"),
-            "Centroavante (CA)": ("50%", "83%", "CA"),
-            "Ponta Direita (PD)": ("80%", "80%", "PD")
-        }
-        
+        # 4. Renderizador do Campo com Coordenadas Dinâmicas
         players_html = ""
-        for slot, (left, bottom, pos_tag) in positions_coords.items():
-            player_name = st.session_state.escalados[slot]
+        for slot, info in layout_ativo.items():
+            left, bottom, pos_tag = info[2], info[3], info[4]
+            player_name = st.session_state.escalados.get(slot, info[1])
             p_data = jogadores.get(player_name, {"nome": player_name, "nota_vini": 0, "nota_roberto": 0})
             players_html += (
                 f'<div class="player-node" style="left:{left};bottom:{bottom};">'
@@ -455,9 +519,8 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
         
         escalados_nomes = list(st.session_state.escalados.values())
         mensagem_share = (
-            f"Montei minha Seleção Brasileira rumo a 2030 no app 'O Caminho para o Hexa'! 🏆\n\n"
-            f"Ataque: {st.session_state.escalados['Ponta Esquerda (PE)']} | {st.session_state.escalados['Centroavante (CA)']} | {st.session_state.escalados['Ponta Direita (PD)']}\n"
-            f"Meio-Campo: {st.session_state.escalados['Meio-Campo Criativo (10)']}\n\n"
+            f"Montei minha Seleção Brasileira no esquema {tática_ativa} do app 'O Caminho para o Hexa'! 🏆\n\n"
+            f"Meu Time: {', '.join(escalados_nomes[:5])} e mais!\n\n"
             f"Monte a sua também no Streamlit!"
         )
         
