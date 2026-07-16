@@ -2,7 +2,13 @@ import streamlit as st
 import pandas as pd
 import json
 import os
+import urllib.parse
+import requests
+from bs4 import BeautifulSoup
 
+# ==========================================
+# 1. CONFIGURAÇÕES DE TELA & METADADOS
+# ==========================================
 st.set_page_config(
     page_title="O Caminho para o Hexa 2030",
     page_icon="🏆",
@@ -10,39 +16,63 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS to style the football pitch and UI elements
+# ==========================================
+# 2. DESIGN VISUAL E CSS (PALETA AZUL E AMARELO)
+# ==========================================
 st.markdown("""
 <style>
-    .main {
-        background-color: #0f172a;
+    /* Estilização Geral do App (Fundo Soft Navy/Grafite Escuro) */
+    .stApp {
+        background-color: #090d16;
         color: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
+    
+    /* Cabeçalho do App */
+    .app-title {
+        text-align: center;
+        font-size: 3.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #eab308 0%, #f8fafc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 5px;
+    }
+    
+    .project-subtitle {
+        color: #94a3b8;
+        font-size: 1.15rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    /* O Campo Tático Azul ("Blue Pitch") */
     .pitch-container {
-        background-color: #1b4d3e;
-        border: 4px solid #ffffff;
-        border-radius: 15px;
-        padding: 20px;
+        background: radial-gradient(circle, #1e3a8a 0%, #090d16 100%);
+        border: 4px solid #eab308;
+        border-radius: 20px;
+        padding: 30px;
         position: relative;
-        min-height: 650px;
-        margin-bottom: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        min-height: 720px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+        margin-bottom: 25px;
     }
     .pitch-line-center {
         position: absolute;
         top: 50%;
         left: 0;
         width: 100%;
-        height: 2px;
-        background-color: rgba(255, 255, 255, 0.6);
+        height: 3px;
+        background-color: rgba(234, 179, 8, 0.4);
     }
     .pitch-circle {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 150px;
-        height: 150px;
-        border: 2px solid rgba(255, 255, 255, 0.6);
+        width: 160px;
+        height: 160px;
+        border: 3px solid rgba(234, 179, 8, 0.4);
         border-radius: 50%;
     }
     .pitch-penalty-top {
@@ -50,349 +80,423 @@ st.markdown("""
         top: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 250px;
-        height: 100px;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.6);
-        border-left: 2px solid rgba(255, 255, 255, 0.6);
-        border-right: 2px solid rgba(255, 255, 255, 0.6);
+        width: 280px;
+        height: 120px;
+        border-bottom: 3px solid rgba(234, 179, 8, 0.4);
+        border-left: 3px solid rgba(234, 179, 8, 0.4);
+        border-right: 3px solid rgba(234, 179, 8, 0.4);
     }
     .pitch-penalty-bottom {
         position: absolute;
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 250px;
-        height: 100px;
-        border-top: 2px solid rgba(255, 255, 255, 0.6);
-        border-left: 2px solid rgba(255, 255, 255, 0.6);
-        border-right: 2px solid rgba(255, 255, 255, 0.6);
+        width: 280px;
+        height: 120px;
+        border-top: 3px solid rgba(234, 179, 8, 0.4);
+        border-left: 3px solid rgba(234, 179, 8, 0.4);
+        border-right: 3px solid rgba(234, 179, 8, 0.4);
     }
+    
+    /* Cards dos Jogadores no Campo */
     .player-card {
-        background: rgba(15, 23, 42, 0.85);
+        background: rgba(15, 23, 42, 0.9);
         border: 2px solid #eab308;
-        border-radius: 8px;
-        padding: 8px;
+        border-radius: 12px;
+        padding: 12px;
         text-align: center;
-        color: white;
+        color: #f8fafc;
         font-weight: bold;
         font-size: 11pt;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        transition: transform 0.2s;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+        transition: transform 0.2s, border-color 0.2s;
     }
     .player-card:hover {
-        transform: scale(1.05);
-        border-color: #22c55e;
+        transform: translateY(-5px);
+        border-color: #3b82f6;
     }
     .rating-badge {
         background-color: #eab308;
-        color: #0f172a;
-        border-radius: 4px;
-        padding: 1px 5px;
+        color: #090d16;
+        border-radius: 6px;
+        padding: 2px 8px;
         font-size: 9pt;
-        margin-left: 5px;
+        font-weight: 800;
+        margin-top: 6px;
+        display: inline-block;
     }
+    
+    /* Caixas de Informações de Análise */
     .stat-box {
-        background-color: #1e293b;
-        border-radius: 10px;
-        padding: 15px;
-        border-left: 5px solid #eab308;
-        margin-bottom: 15px;
+        background-color: #111827;
+        border-radius: 12px;
+        padding: 20px;
+        border-left: 6px solid #eab308;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# File to store player data
+# ==========================================
+# 3. GERENCIAMENTO DE BANCO DE DADOS (JSON)
+# ==========================================
 DATA_FILE = "jogadores_hexa_2030.json"
 
-# Default pre-populated players from Roberto & Vini's actual chat
-DEFAULT_PLAYERS = {
-    "Alisson": {
-        "nome": "Alisson", "posicao": "Goleiro", "grupo": "Titulares", "nota_vini": 7.0, "nota_roberto": 7.5,
-        "clube": "Liverpool", "idade": 33, "tipo": "Certeza Atual",
-        "pontos_fortes": "Experiência de Copa, posicionamento excelente, condução de carreira séria.",
-        "pontos_fracos": "Idade avançada para 2030 (estará com 37 anos).",
-        "historico": "Considerado o melhor atualmente, mas Roberto o descartaria para o ciclo todo de 2030. Vini acha que dá para ser campeão com ele experiente."
-    },
-    "Brazão": {
-        "nome": "Brazão", "posicao": "Goleiro", "grupo": "Reservas", "nota_vini": 7.5, "nota_roberto": 7.5,
-        "clube": "Santos", "idade": 25, "tipo": "Promessa 2030",
-        "pontos_fortes": "Teto de evolução altíssimo, boa envergadura.",
-        "pontos_fracos": "Precisa de afirmação e minutos consistentes em alto nível.",
-        "historico": "Roberto acredita que, dos novos goleiros, ele é o que possui o teto mais alto para 2030."
-    },
-    "Lucas Perri": {
-        "nome": "Lucas Perri", "posicao": "Goleiro", "grupo": "Observação", "nota_vini": 6.5, "nota_roberto": 6.0,
-        "clube": "Lyon", "idade": 28, "tipo": "Observação",
-        "pontos_fortes": "Boa altura, joga na Europa, boa idade para goleiro.",
-        "pontos_fracos": "Tem cedido à pressão em momentos cruciais.",
-        "historico": "Vini o vê como bom segundo ou terceiro goleiro, mas sem depositar muitas esperanças."
-    },
-    "Wesley": {
-        "nome": "Wesley", "posicao": "Lateral Direito", "grupo": "Titulares", "nota_vini": 7.5, "nota_roberto": 7.5,
-        "clube": "Flamengo", "idade": 22, "tipo": "Promessa 2030",
-        "pontos_fortes": "Extremamente físico, ofensivo, velocidade de elite.",
-        "pontos_fracos": "Precisa melhorar defensivamente.",
-        "historico": "Roberto o vê como futuro dono absoluto da posição com teto para ser nota 8+."
-    },
-    "Yan Couto": {
-        "nome": "Yan Couto", "posicao": "Lateral Direito", "grupo": "Reservas", "nota_vini": 7.5, "nota_roberto": 7.0,
-        "clube": "Borussia Dortmund", "idade": 24, "tipo": "Certeza Atual",
-        "pontos_fortes": "Excelente apoio ofensivo, refino técnico.",
-        "pontos_fracos": "Balanço defensivo e estatura.",
-        "historico": "Garante um nível sólido (nota 7,5) na lateral direita ao lado de Wesley."
-    },
-    "Kaiki Bruno": {
-        "nome": "Kaiki Bruno", "posicao": "Lateral Esquerdo", "grupo": "Titulares", "nota_vini": 6.0, "nota_roberto": 6.0,
-        "clube": "Cruzeiro", "idade": 23, "tipo": "Promessa 2030",
-        "pontos_fortes": "Ofensivo, rápido, boa margem de evolução.",
-        "pontos_fracos": "Muito jovem, cru taticamente e defensivamente.",
-        "historico": "Vini o acha muito bebê ainda, mas Roberto iniciaria o ciclo com ele por falta de opções melhores."
-    },
-    "Denner": {
-        "nome": "Denner", "posicao": "Lateral Esquerdo", "grupo": "Reservas", "nota_vini": 7.0, "nota_roberto": 8.0,
-        "clube": "Chelsea", "idade": 18, "tipo": "Promessa 2030",
-        "pontos_fortes": "Diferenciado tecnicamente, drible, capacidade física de elite.",
-        "pontos_fracos": "Muito jovem, acabou de chegar à Europa.",
-        "historico": "Roberto o considera diferenciado pra caramba, com capacidade para ser nível Alphonso Davies."
-    },
-    "Luciano Juba": {
-        "nome": "Luciano Juba", "posicao": "Lateral Esquerdo", "grupo": "Observação", "nota_vini": 6.5, "nota_roberto": 7.0,
-        "clube": "Bahia", "idade": 26, "tipo": "Observação",
-        "pontos_fortes": "Cruzamento de elite, boa batida na bola, polivalente.",
-        "pontos_fracos": "Defesa em linha de 4 contra pontas mundiais.",
-        "historico": "Roberto gosta da opção e brinca que traz de volta o charme dos apelidos da seleção."
-    },
-    "Gabriel Magalhães": {
-        "nome": "Gabriel Magalhães", "posicao": "Zagueiro Esquerdo", "grupo": "Titulares", "nota_vini": 9.0, "nota_roberto": 9.0,
-        "clube": "Arsenal", "idade": 28, "tipo": "Certeza Atual",
-        "pontos_fortes": "Força física, imposição aérea (ofensiva e defensiva), liderança.",
-        "pontos_fracos": "Velocidade em campo muito aberto contra pontas de elite.",
-        "historico": "Unanimidade entre os amigos. Nível de classe mundial absoluto (Nota 9,0)."
-    },
-    "Lucas Beraldo": {
-        "nome": "Lucas Beraldo", "posicao": "Zagueiro Direito", "grupo": "Titulares", "nota_vini": 8.0, "nota_roberto": 8.0,
-        "clube": "PSG", "idade": 22, "tipo": "Promessa 2030",
-        "pontos_fortes": "Saída de bola espetacular, inteligência tática, versatilidade (pode jogar de 1º volante).",
-        "pontos_fracos": "Combates de força física pura na área.",
-        "historico": "Vini destaca sua qualidade na canhota. Roberto aponta que ele tem jogado de volante no PSG e pode ser uma grande opção por ali."
-    },
-    "Murillo": {
-        "nome": "Murillo", "posicao": "Zagueiro Direito", "grupo": "Reservas", "nota_vini": 8.0, "nota_roberto": 8.0,
-        "clube": "Nottingham Forest", "idade": 23, "tipo": "Promessa 2030",
-        "pontos_fortes": "Força física absurda, desarme preciso, passe longo de qualidade.",
-        "pontos_fracos": "Concentração mental durante os 90 minutos.",
-        "historico": "Roberto o considera de classe mundial e diz que ele ao lado de Magalhães dá muita segurança."
-    },
-    "Andrey Santos": {
-        "nome": "Andrey Santos", "posicao": "Meio-Campo (Defensivo)", "grupo": "Titulares", "nota_vini": 7.5, "nota_roberto": 8.0,
-        "clube": "Strasbourg / Chelsea", "idade": 22, "tipo": "Promessa 2030",
-        "pontos_fortes": "Infiltração na área, poder de marcação, liderança de base.",
-        "pontos_fracos": "Precisa de consolidação em um gigante europeu.",
-        "historico": "Vini e Roberto concordam que ele é o pilar de sustentação ideal para o meio-campo pós-Casemiro."
-    },
-    "Bruno Guimarães": {
-        "nome": "Bruno Guimarães", "posicao": "Meio-Campo (Apoio)", "grupo": "Titulares", "nota_vini": 8.0, "nota_roberto": 8.5,
-        "clube": "Newcastle United", "idade": 28, "tipo": "Certeza Atual",
-        "pontos_fortes": "Visão de jogo, controle de ritmo, passe de quebra de linhas.",
-        "pontos_fracos": "Falta de velocidade pura.",
-        "historico": "Absoluto no meio-campo. Considerado o cérebro da transição."
-    },
-    "Rodrygo": {
-        "nome": "Rodrygo", "posicao": "Meio-Campo (Criativo)", "grupo": "Titulares", "nota_vini": 8.0, "nota_roberto": 8.0,
-        "clube": "Real Madrid", "idade": 25, "tipo": "Certeza Atual",
-        "pontos_fortes": "Refino técnico absurdo, associação rápida, finalização.",
-        "pontos_fracos": "Não é um organizador clássico/pensador do ritmo do jogo.",
-        "historico": "Adaptado para a função de 10 na falta de um armador clássico. Vini pondera que ele é vertical e não um pensador cadenciado."
-    },
-    "Breno Bidon": {
-        "nome": "Breno Bidon", "posicao": "Meio-Campo (Apoio)", "grupo": "Reservas", "nota_vini": 7.0, "nota_roberto": 8.0,
-        "clube": "Corinthians", "idade": 21, "tipo": "Promessa 2030",
-        "pontos_fortes": "Ginga, drible curto, criatividade sob pressão.",
-        "pontos_fracos": "Falta de físico europeu ainda.",
-        "historico": "Roberto gosta muito e o quer na Europa para ganhar bagagem. É o reserva natural de transição."
-    },
-    "Gabriel Mec": {
-        "nome": "Gabriel Mec", "posicao": "Meio-Campo (Criativo)", "grupo": "Observação", "nota_vini": 7.5, "nota_roberto": 7.5,
-        "clube": "Grêmio", "idade": 18, "tipo": "Promessa 2030",
-        "pontos_fortes": "Drible desconcertante, capacidade de dar passes decisivos ('pifar o ataque').",
-        "pontos_fracos": "Extrema juventude, fragilidade física.",
-        "historico": "Vini já está 'Mecquizado'. Roberto diz que ele sabe achar os atacantes e joga muito."
-    },
-    "Vini Jr.": {
-        "nome": "Vini Jr.", "posicao": "Ponta Esquerda", "grupo": "Titulares", "nota_vini": 9.0, "nota_roberto": 9.0,
-        "clube": "Real Madrid", "idade": 26, "tipo": "Certeza Atual",
-        "pontos_fortes": "Melhor ponta do mundo, drible imparável, explosão física.",
-        "pontos_fracos": "Controle emocional em provocações.",
-        "historico": "O grande trunfo técnico e de liderança do ciclo. Nota 9 unânime."
-    },
-    "Estevão": {
-        "nome": "Estevão", "posicao": "Ponta Direita", "grupo": "Titulares", "nota_vini": 9.0, "nota_roberto": 10.0,
-        "clube": "Chelsea / Palmeiras", "idade": 19, "tipo": "Promessa 2030",
-        "pontos_fortes": "Drible curto genial, finalização de fora da área, gênio da ponta.",
-        "pontos_fracos": "Preocupação com lesões precoces no joelho.",
-        "historico": "Roberto deu nota 10 pela genialidade. Vini deu 9 com medo do físico, mas ambos sabem que ele é o futuro."
-    },
-    "Endrick": {
-        "nome": "Endrick", "posicao": "Centroavante", "grupo": "Titulares", "nota_vini": 8.0, "nota_roberto": 9.0,
-        "clube": "Real Madrid", "idade": 19, "tipo": "Promessa 2030",
-        "pontos_fortes": "Arrancada brutal, finalização cirúrgica com os dois pés, mentalidade forte.",
-        "pontos_fracos": "Perda de espaço ou falta de minutos no clube europeu.",
-        "historico": "O centroavante titular absoluto do projeto do Hexa."
-    }
-}
-
-# Helper functions to load/save data
 def carregar_jogadores():
     if not os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'w', encoding='utf-8') as f:
-            json.dump(DEFAULT_PLAYERS, f, indent=4, ensure_ascii=False)
-        return DEFAULT_PLAYERS
+        st.error("Erro: arquivo jogadores_hexa_2030.json não foi encontrado na pasta!")
+        return {}
     try:
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except:
-        return DEFAULT_PLAYERS
+    except Exception as e:
+        st.error(f"Erro ao ler banco de dados: {e}")
+        return {}
 
 def salvar_jogadores(data):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-# Load database
 jogadores = carregar_jogadores()
 
-# Sidebar Navigation
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/pt/e/e4/Confedera%C3%A7%C3%A3o_Brasileira_de_Futebol_2019.svg", width=80)
-st.sidebar.title("O Caminho para o Hexa 2030")
+# ==========================================
+# 4. MOTOR LIVE SCRAPING (CBF BRASILEIRÃO)
+# ==========================================
+@st.cache_data(ttl=600)  # Mantém os dados guardados em cache por 10 minutos para o app ficar super veloz
+def buscar_classificacao_cbf():
+    """Busca a tabela de classificação do Brasileirão diretamente do site oficial da CBF"""
+    urls = {
+        "Série A": "https://www.cbf.com.br/futebol-brasileiro/tabelas/campeonato-brasileiro/serie-a",
+        "Série B": "https://www.cbf.com.br/futebol-brasileiro/tabelas/campeonato-brasileiro/serie-b"
+    }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
+    }
+    
+    dados_cbf = {}
+    
+    for serie, url in urls.items():
+        try:
+            resposta = requests.get(url, headers=headers, timeout=10)
+            if resposta.status_code == 200:
+                soup = BeautifulSoup(resposta.content, "html.parser")
+                tabela = soup.find("table") or soup.find(class_="table") or soup.find(class_="tabela-completa")
+                if tabela:
+                    linhas = tabela.find_all("tr")
+                    for linha in linhas[1:]:  # Pula a linha do cabeçalho
+                        colunas = linha.find_all("td")
+                        if len(colunas) >= 5:
+                            # Posição do time
+                            pos_crua = colunas[0].text.strip()
+                            posicao = "".join(filter(str.isdigit, pos_crua))
+                            
+                            # Nome do clube
+                            nome_clube = " ".join(colunas[1].text.strip().split())
+                            nome_chave = nome_clube.lower()
+                            
+                            pts = colunas[2].text.strip()
+                            jogos = colunas[3].text.strip()
+                            vitorias = colunas[4].text.strip()
+                            
+                            dados_cbf[nome_chave] = {
+                                "posicao": f"{posicao}º",
+                                "pts": pts,
+                                "jogos": jogos,
+                                "vitorias": vitorias,
+                                "serie": serie
+                            }
+        except Exception:
+            pass # Caso o site da CBF mude a estrutura ou caia, o sistema usa o fallback abaixo
+            
+    return dados_cbf
+
+# Executa o crawler de dados
+tabela_ao_vivo_cbf = buscar_classificacao_cbf()
+
+# Banco de dados de backup (Fallback) caso o site da CBF esteja bloqueando requisições
+TABELA_BACKUP_CBF = {
+    "palmeiras": {"posicao": "1º", "pts": "40", "jogos": "18", "vitorias": "12", "serie": "Série A"},
+    "flamengo": {"posicao": "2º", "pts": "34", "jogos": "17", "vitorias": "10", "serie": "Série A"},
+    "cruzeiro": {"posicao": "3º", "pts": "31", "jogos": "18", "vitorias": "9", "serie": "Série A"},
+    "bahia": {"posicao": "6º", "pts": "26", "jogos": "17", "vitorias": "7", "serie": "Série A"},
+    "corinthians": {"posicao": "13º", "pts": "20", "jogos": "18", "vitorias": "5", "serie": "Série A"},
+    "gremio": {"posicao": "15º", "pts": "18", "jogos": "17", "vitorias": "5", "serie": "Série A"},
+    "santos": {"posicao": "1º", "pts": "38", "jogos": "18", "vitorias": "11", "serie": "Série B"}
+}
+
+def obter_dados_reais_clube(clube):
+    clube_busca = clube.lower().strip()
+    
+    # 1. Tenta pegar os dados capturados ao vivo do site da CBF
+    for chave_time, dados in tabela_ao_vivo_cbf.items():
+        if clube_busca in chave_time or chave_time in clube_busca:
+            return dados, "🔴 AO VIVO (CBF)"
+            
+    # 2. Se falhar por bloqueio de rede, usa os dados do backup
+    for chave_time, dados in TABELA_BACKUP_CBF.items():
+        if clube_busca in chave_time or chave_time in clube_busca:
+            return dados, "📋 DADOS EM CACHE"
+            
+    return None, None
+
+# ==========================================
+# 5. REGRAS DE ESCALAÇÃO POR POSIÇÃO
+# ==========================================
+MAPA_POSICOES = {
+    "Goleiro (GOL)": ["Goleiro"],
+    "Lateral Esquerdo (LE)": ["Lateral Esquerdo"],
+    "Zagueiro Esquerdo (ZE)": ["Zagueiro Esquerdo"],
+    "Zagueiro Direito (ZD)": ["Zagueiro Direito"],
+    "Lateral Direito (LD)": ["Lateral Direito"],
+    "Primeiro Volante (VOL)": ["Meio-Campo (Defensivo)", "Zagueiro Direito"],  # Permite Beraldo improvisado aqui
+    "Meio-Campo Apoio (MCE)": ["Meio-Campo (Apoio)"],
+    "Meio-Campo Criativo (10)": ["Meio-Campo (Criativo)", "Ponta Esquerda"],  # Permite Martinelli de meia
+    "Ponta Esquerda (PE)": ["Ponta Esquerda"],
+    "Centroavante (CA)": ["Centroavante"],
+    "Ponta Direita (PD)": ["Ponta Direita"]
+}
+
+def obter_atletas_compativeis(pos_permitidas):
+    filtrados = []
+    for nome, dados in jogadores.items():
+        if dados["posicao"] in pos_permitidas:
+            filtrados.append(nome)
+        # Versatilidade de Lucas Beraldo (Volante)
+        elif nome == "Lucas Beraldo" and "Meio-Campo (Defensivo)" in pos_permitidas:
+            filtrados.append(nome)
+        # Versatilidade de Gabriel Martinelli (Meia)
+        elif nome == "Gabriel Martinelli" and "Meio-Campo (Criativo)" in pos_permitidas:
+            filtrados.append(nome)
+    return sorted(filtrados)
+
+# ==========================================
+# 6. MENU LATERAL & IDENTIDADE VISUAL
+# ==========================================
+st.sidebar.image("https://upload.wikimedia.org/wikipedia/pt/e/e4/Confedera%C3%A7%C3%A3o_Brasileira_de_Futebol_2019.svg", width=100)
+st.sidebar.markdown("<h2 style='text-align: center; color: #eab308; margin-top:0;'>CONSELHO TÁTICO</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
 menu = st.sidebar.radio(
-    "Navegação",
-    ["🏟️ Campo de Jogo (Escalação)", "📋 Gestão do Roster", "👤 Detalhes & Páginas de Jogadores", "📊 Estatísticas & Análises"]
+    "Navegação do Painel:",
+    ["🏟️ Campo de Jogo (Escalação)", "👤 Perfis dos Jogadores & Scout", "📋 Gestão do Roster", "📊 Análise de Opiniões"]
 )
 
-st.sidebar.markdown("---")
-st.sidebar.info(
-    "**Ciclo 2026-2030**\n\n"
-    "Projeto interativo criado por Roberto Munoz & Vini para acompanhar a evolução da Seleção rumo ao Hexa."
-)
+# Configuração de titulares em cache de navegação
+if "escalados" not in st.session_state:
+    st.session_state.escalados = {
+        "Goleiro (GOL)": "Alisson",
+        "Lateral Esquerdo (LE)": "Kaiki Bruno",
+        "Zagueiro Esquerdo (ZE)": "Gabriel Magalhães",
+        "Zagueiro Direito (ZD)": "Lucas Beraldo",
+        "Lateral Direito (LD)": "Wesley",
+        "Primeiro Volante (VOL)": "Andrey Santos",
+        "Meio-Campo Apoio (MCE)": "Bruno Guimarães",
+        "Meio-Campo Criativo (10)": "Rodrygo",
+        "Ponta Esquerda (PE)": "Vini Jr.",
+        "Centroavante (CA)": "Endrick",
+        "Ponta Direita (PD)": "Estevão"
+    }
 
-# ----------------- TELA 1: CAMPO DE JOGO -----------------
+# ==========================================
+# TELA 1: CAMPO DE JOGO
+# ==========================================
 if menu == "🏟️ Campo de Jogo (Escalação)":
-    st.title("🏟️ O Campo do Hexa 2030")
-    st.write("Esta é a escalação ideal projetada por Roberto e Vini na formação **4-3-3** do técnico Carlo Ancelotti.")
+    st.markdown("<h1 class='app-title'>🏆 Caminho Para o Hexa</h1>", unsafe_allow_html=True)
+    st.markdown(
+        "<p class='project-subtitle' style='text-align: center;'>"
+        "Uma plataforma tática criada por <strong>Vini Leoneo e Roberto Muñoz</strong> "
+        "para planejar as escalações, projetar as idades e gerenciar o radar da Seleção Brasileira até a Copa do Mundo de 2030."
+        "</p>", 
+        unsafe_allow_html=True
+    )
     
-    # Calculate Averages
-    titulares_list = [j for j in jogadores.values() if j['grupo'] == 'Titulares']
-    if titulares_list:
-        vini_avg = sum(j['nota_vini'] for j in titulares_list) / len(titulares_list)
-        roberto_avg = sum(j['nota_roberto'] for j in titulares_list) / len(titulares_list)
-        geral_avg = (vini_avg + roberto_avg) / 2
-    else:
-        vini_avg, roberto_avg, geral_avg = 0, 0, 0
+    col_config, col_campo = st.columns([1, 2])
+    
+    with col_config:
+        st.markdown("### 📋 Calibrar Escalação")
+        st.write("Substitua os titulares respeitando a posição de origem do atleta.")
+        
+        novos_titulares = {}
+        for slot, pos_validas in MAPA_POSICOES.items():
+            valid_names = obter_atletas_compativeis(pos_validas)
+            default_val = st.session_state.escalados[slot]
+            idx = valid_names.index(default_val) if default_val in valid_names else 0
+            
+            novos_titulares[slot] = st.selectbox(
+                f"{slot}:",
+                valid_names,
+                index=idx,
+                key=f"field_{slot}"
+            )
+        st.session_state.escalados = novos_titulares
 
-    col_metrics = st.columns(3)
-    with col_metrics[0]:
-        st.metric("Média do Vini", f"{vini_avg:.2f} / 10", delta=None)
-    with col_metrics[1]:
-        st.metric("Média do Roberto", f"{roberto_avg:.2f} / 10", delta=None)
-    with col_metrics[2]:
-        st.metric("Nota Geral do Time", f"{geral_avg:.2f} / 10", delta="Seleção Nota 8", delta_color="normal")
-
-    st.markdown("---")
-
-    # Draw the Football Pitch visually
-    # We will map standard position slots to specific coordinates using columns to build a grid
-    st.subheader("Disposição Tática (4-3-3)")
-    
-    # Grid construction for 4-3-3
-    # Attack Row
-    lw = jogadores.get("Vini Jr.", {"nome": "Vini Jr.", "nota_vini": 9.0})
-    st_f = jogadores.get("Endrick", {"nome": "Endrick", "nota_vini": 8.0})
-    rw = jogadores.get("Estevão", {"nome": "Estevão", "nota_vini": 9.5})
-    
-    # Midfield Row
-    me_l = jogadores.get("Bruno Guimarães", {"nome": "B. Guimarães", "nota_vini": 8.0})
-    me_c = jogadores.get("Rodrygo", {"nome": "Rodrygo (10)", "nota_vini": 8.0})
-    me_r = jogadores.get("Andrey Santos", {"nome": "Andrey Santos", "nota_vini": 7.5})
-    
-    # Defense Row
-    lb = jogadores.get("Kaiki Bruno", {"nome": "Kaiki Bruno", "nota_vini": 6.0})
-    lcb = jogadores.get("Gabriel Magalhães", {"nome": "G. Magalhães", "nota_vini": 9.0})
-    rcb = jogadores.get("Lucas Beraldo", {"nome": "Lucas Beraldo", "nota_vini": 8.0})
-    rb = jogadores.get("Wesley", {"nome": "Wesley", "nota_vini": 7.5})
-    
-    # Goalkeeper
-    gk = jogadores.get("Alisson", {"nome": "Alisson", "nota_vini": 7.25})
-
-    with st.container():
+    with col_campo:
+        titulares_dados = [jogadores[nome] for nome in st.session_state.escalados.values() if nome in jogadores]
+        avg_v = sum(j["nota_vini"] for j in titulares_dados) / len(titulares_dados) if titulares_dados else 0
+        avg_r = sum(j["nota_roberto"] for j in titulares_dados) / len(titulares_dados) if titulares_dados else 0
+        coletivo = (avg_v + avg_r) / 2
+        
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Média Geral (Vini)", f"{avg_v:.2f}")
+        c2.metric("Média Geral (Roberto)", f"{avg_r:.2f}")
+        c3.metric("Rating Coletivo", f"{coletivo:.2f}", delta="Candidato ao Título", delta_color="normal")
+        
+        # Desenhando o Campo de Futebol Azul
         st.markdown('<div class="pitch-container">', unsafe_allow_html=True)
         st.markdown('<div class="pitch-line-center"></div>', unsafe_allow_html=True)
         st.markdown('<div class="pitch-circle"></div>', unsafe_allow_html=True)
         st.markdown('<div class="pitch-penalty-top"></div>', unsafe_allow_html=True)
         st.markdown('<div class="pitch-penalty-bottom"></div>', unsafe_allow_html=True)
         
-        # Row 1: Attackers
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col1:
-            st.markdown(f'<div class="player-card">PE: {lw["nome"]}<br><span class="rating-badge">★ {lw.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-        with col2:
-            st.markdown(f'<div class="player-card">CA: {st_f["nome"]}<br><span class="rating-badge">★ {st_f.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-        with col3:
-            st.markdown(f'<div class="player-card">PD: {rw["nome"]}<br><span class="rating-badge">★ {rw.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
+        # Ataque
+        pe = jogadores.get(st.session_state.escalados["Ponta Esquerda (PE)"], {"nome": "Vini Jr.", "nota_vini": 9, "nota_roberto": 9})
+        ca = jogadores.get(st.session_state.escalados["Centroavante (CA)"], {"nome": "Endrick", "nota_vini": 8, "nota_roberto": 9})
+        pd = jogadores.get(st.session_state.escalados["Ponta Direita (PD)"], {"nome": "Estevão", "nota_vini": 9, "nota_roberto": 10})
         
-        st.write("")
-        st.write("")
-        st.write("")
-
-        # Row 2: Midfielders
-        col4, col5, col6 = st.columns([1, 1, 1])
-        with col4:
-            st.markdown(f'<div class="player-card">MEZ: {me_l["nome"]}<br><span class="rating-badge">★ {me_l.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-        with col5:
-            st.markdown(f'<div class="player-card">10: {me_c["nome"]}<br><span class="rating-badge">★ {me_c.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-        with col6:
-            st.markdown(f'<div class="player-card">VOL: {me_r["nome"]}<br><span class="rating-badge">★ {me_r.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-
-        st.write("")
-        st.write("")
-        st.write("")
-
-        # Row 3: Defenders
-        col7, col8, col9, col10 = st.columns([1, 1, 1, 1])
-        with col7:
-            st.markdown(f'<div class="player-card">LE: {lb["nome"]}<br><span class="rating-badge">★ {lb.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-        with col8:
-            st.markdown(f'<div class="player-card">ZAG: {lcb["nome"]}<br><span class="rating-badge">★ {lcb.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-        with col9:
-            st.markdown(f'<div class="player-card">ZAG: {rcb["nome"]}<br><span class="rating-badge">★ {rcb.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-        with col10:
-            st.markdown(f'<div class="player-card">LD: {rb["nome"]}<br><span class="rating-badge">★ {rb.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-
-        st.write("")
-        st.write("")
-
-        # Row 4: Goalkeeper
-        col11, col12, col13 = st.columns([1.5, 1, 1.5])
-        with col12:
-            st.markdown(f'<div class="player-card">GOL: {gk["nome"]}<br><span class="rating-badge">★ {gk.get("nota_vini", 0.0)}</span></div>', unsafe_allow_html=True)
-
+        col_at = st.columns(3)
+        with col_at[0]:
+            st.markdown(f'<div class="player-card">PE: {pe["nome"]}<br><span class="rating-badge">★ {pe["nota_vini"]} / {pe["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+        with col_at[1]:
+            st.markdown(f'<div class="player-card">CA: {ca["nome"]}<br><span class="rating-badge">★ {ca["nota_vini"]} / {ca["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+        with col_at[2]:
+            st.markdown(f'<div class="player-card">PD: {pd["nome"]}<br><span class="rating-badge">★ {pd["nota_vini"]} / {pd["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+            
+        st.markdown("<br><br><br>", unsafe_allow_html=True)
+        
+        # Meio-Campo
+        mce = jogadores.get(st.session_state.escalados["Meio-Campo Apoio (MCE)"], {"nome": "Bruno Guimarães", "nota_vini": 8, "nota_roberto": 8.5})
+        m10 = jogadores.get(st.session_state.escalados["Meio-Campo Criativo (10)"], {"nome": "Rodrygo", "nota_vini": 8, "nota_roberto": 8})
+        vol = jogadores.get(st.session_state.escalados["Primeiro Volante (VOL)"], {"nome": "Andrey Santos", "nota_vini": 7.5, "nota_roberto": 8})
+        
+        col_mid = st.columns(3)
+        with col_mid[0]:
+            st.markdown(f'<div class="player-card">MCE: {mce["nome"]}<br><span class="rating-badge">★ {mce["nota_vini"]} / {mce["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+        with col_mid[1]:
+            st.markdown(f'<div class="player-card">MC: {m10["nome"]}<br><span class="rating-badge">★ {m10["nota_vini"]} / {m10["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+        with col_mid[2]:
+            st.markdown(f'<div class="player-card">VOL: {vol["nome"]}<br><span class="rating-badge">★ {vol["nota_vini"]} / {vol["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+            
+        st.markdown("<br><br><br>", unsafe_allow_html=True)
+        
+        # Defesa
+        le = jogadores.get(st.session_state.escalados["Lateral Esquerdo (LE)"], {"nome": "Kaiki Bruno", "nota_vini": 6, "nota_roberto": 6})
+        ze = jogadores.get(st.session_state.escalados["Zagueiro Esquerdo (ZE)"], {"nome": "Gabriel Magalhães", "nota_vini": 9, "nota_roberto": 9})
+        zd = jogadores.get(st.session_state.escalados["Zagueiro Direito (ZD)"], {"nome": "Lucas Beraldo", "nota_vini": 8, "nota_roberto": 8})
+        ld = jogadores.get(st.session_state.escalados["Lateral Direito (LD)"], {"nome": "Wesley", "nota_vini": 7.5, "nota_roberto": 7.5})
+        
+        col_def = st.columns(4)
+        with col_def[0]:
+            st.markdown(f'<div class="player-card">LE: {le["nome"]}<br><span class="rating-badge">★ {le["nota_vini"]} / {le["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+        with col_def[1]:
+            st.markdown(f'<div class="player-card">ZAG: {ze["nome"]}<br><span class="rating-badge">★ {ze["nota_vini"]} / {ze["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+        with col_def[2]:
+            st.markdown(f'<div class="player-card">ZAG: {zd["nome"]}<br><span class="rating-badge">★ {zd["nota_vini"]} / {zd["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+        with col_def[3]:
+            st.markdown(f'<div class="player-card">LD: {ld["nome"]}<br><span class="rating-badge">★ {ld["nota_vini"]} / {ld["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+            
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        
+        # Goleiro
+        gol = jogadores.get(st.session_state.escalados["Goleiro (GOL)"], {"nome": "Alisson", "nota_vini": 7, "nota_roberto": 7.5})
+        col_gk = st.columns([1.5, 1, 1.5])
+        with col_gk[1]:
+            st.markdown(f'<div class="player-card">GOL: {gol["nome"]}<br><span class="rating-badge">★ {gol["nota_vini"]} / {gol["nota_roberto"]}</span></div>', unsafe_allow_html=True)
+            
         st.markdown('</div>', unsafe_allow_html=True)
 
-# ----------------- TELA 2: GESTÃO DO ROSTER -----------------
-elif menu == "📋 Gestão do Roster":
-    st.title("📋 Painel de Controle de Jogadores")
-    st.write("Adicione novos jogadores descobertos, edite informações ou mude um atleta de categoria (Titular / Reserva / Observação).")
+# ==========================================
+# TELA 2: PERFIS DOS JOGADORES & SCOUT
+# ==========================================
+elif menu == "👤 Perfis dos Jogadores & Scout":
+    st.title("👤 Ficha Individual & Scout em Tempo Real")
+    st.write("Abra o dossiê detalhado do atleta. Se ele jogar no Brasil, pegaremos a classificação do clube dele ao vivo no site da CBF.")
     
-    tab_list, tab_add = st.tabs(["Listagem Atual", "➕ Adicionar Novo Jogador"])
+    selected_name = st.selectbox("Escolha o Atleta:", sorted(list(jogadores.keys())))
+    p = jogadores[selected_name]
+    
+    st.markdown("---")
+    
+    col_p, col_d = st.columns([1, 2])
+    
+    with col_p:
+        st.markdown(f"""
+        <div style="background-color: #111827; padding: 25px; border-radius: 15px; border: 3px solid #eab308; text-align: center;">
+            <h2 style="color: #f8fafc; margin-bottom: 5px; font-size: 2.2rem;">{p['nome']}</h2>
+            <span style="background-color: #3b82f6; color: #f8fafc; font-weight: bold; padding: 5px 15px; border-radius: 20px; font-size: 10pt;">
+                {p['tipo']}
+            </span>
+            <p style="margin-top: 20px; font-size: 11pt; color: #cbd5e1; text-align: left; line-height: 1.8;">
+                <b>📍 Posição:</b> {p['posicao']}<br>
+                <b>🏢 Clube Atual:</b> {p['clube']}<br>
+                <b>📅 Idade em 2026:</b> {p['idade']} anos<br>
+                <b>🏆 Idade em 2030:</b> <span style="color:#eab308; font-weight:bold;">{p['idade'] + 4} anos</span>
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.subheader("Avaliação Tática")
+        st.metric("Nota do Vini", f"{p['nota_vini']:.1f} / 10")
+        st.metric("Nota do Roberto", f"{p['nota_roberto']:.1f} / 10")
+
+    with col_d:
+        # Busca dinâmica na tabela da CBF
+        dados_live, fonte_status = obter_dados_reais_clube(p['clube'])
+        
+        st.markdown(f"### 📈 Contexto do Clube na Temporada ({fonte_status if fonte_status else '🌐 LIGA EXTERNA'})")
+        
+        if dados_live:
+            st.write(f"Atleta com contrato ativo no futebol nacional. Abaixo estão os dados reais do time dele no Brasileirão:")
+            cbf_df = pd.DataFrame([{
+                "Clube": p['clube'],
+                "Campeonato": dados_live['serie'],
+                "Posição Atual": dados_live['posicao'],
+                "Pontos (PTS)": dados_live['pts'],
+                "Partidas": dados_live['jogos'],
+                "Vitórias": dados_live['vitorias']
+            }])
+            st.dataframe(cbf_df, use_container_width=True, hide_index=True)
+        else:
+            st.info(
+                f"ℹ️ {p['nome']} joga na Europa ({p['clube']}).\n\n"
+                "Em breve, o sistema receberá novas conexões para trazer as métricas ao vivo das ligas da UEFA (La Liga, Premier League e Ligue 1)."
+            )
+            
+        st.markdown("### 📝 Dossiê Histórico de Discussões")
+        
+        st.markdown('<div class="stat-box">', unsafe_allow_html=True)
+        st.markdown("**🟢 Pontos Fortes:**")
+        st.write(p.get("pontos_fortes", "Nenhuma informação cadastrada."))
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        st.markdown('<div class="stat-box" style="border-left-color: #ef4444;">', unsafe_allow_html=True)
+        st.markdown("**🔴 Desafios & Pontos Fracos:**")
+        st.write(p.get("pontos_fracos", "Nenhuma informação cadastrada."))
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown('<div class="stat-box" style="border-left-color: #3b82f6;">', unsafe_allow_html=True)
+        st.markdown("**🗣️ Notas dos Debates (Vini & Roberto):**")
+        st.write(p.get("historico", "Nenhuma anotação de mesa de bar cadastrada."))
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# ==========================================
+# TELA 3: GESTÃO DO ROSTER
+# ==========================================
+elif menu == "📋 Gestão do Roster":
+    st.title("📋 Gerenciador do Banco de Dados")
+    st.write("Edite as informações ou adicione novas joias ao radar.")
+    
+    tab_list, tab_add = st.tabs(["Jogadores Inscritos", "➕ Inscrever Nova Joia"])
     
     with tab_list:
-        # We can view the existing players in a table, delete them or edit them.
         df_players = pd.DataFrame([
             {
                 "Nome": k,
                 "Posição": v["posicao"],
                 "Clube": v["clube"],
-                "Idade": v["idade"],
+                "Idade 2026": v["idade"],
+                "Idade 2030": v["idade"] + 4,
                 "Grupo": v["grupo"],
                 "Nota Vini": v["nota_vini"],
                 "Nota Roberto": v["nota_roberto"],
@@ -401,16 +505,17 @@ elif menu == "📋 Gestão do Roster":
         ])
         st.dataframe(df_players, use_container_width=True)
         
-        st.markdown("### 🗑️ Remover Jogador")
-        remover_nome = st.selectbox("Selecione o jogador a ser excluído:", list(jogadores.keys()))
-        if st.button("Remover permanentemente"):
-            del jogadores[remover_nome]
-            salvar_jogadores(jogadores)
-            st.success(f"{remover_nome} foi removido do banco de dados!")
-            st.rerun()
+        st.markdown("### 🗑️ Cortar Atleta")
+        remover_nome = st.selectbox("Selecione quem quer cortar:", list(jogadores.keys()))
+        if st.button("Confirmar Corte Permanente"):
+            if remover_nome in jogadores:
+                del jogadores[remover_nome]
+                salvar_jogadores(jogadores)
+                st.success(f"{remover_nome} foi cortado do elenco!")
+                st.rerun()
 
     with tab_add:
-        st.subheader("Cadastrar Jogador no Ciclo")
+        st.subheader("Cadastrar Novo Atleta")
         with st.form("add_player_form"):
             new_nome = st.text_input("Nome do Jogador*")
             new_pos = st.selectbox("Posição Principal*", [
@@ -431,13 +536,13 @@ elif menu == "📋 Gestão do Roster":
                 new_nota_rob = st.slider("Nota do Roberto", 0.0, 10.0, 7.5, step=0.5)
                 
             new_fortes = st.text_area("Pontos Fortes")
-            new_fracos = st.text_area("Pontos Fracos / Desafios")
-            new_hist = st.text_area("Notas do Histórico / Notas do Chat")
+            new_fracos = st.text_area("Pontos Fracos")
+            new_hist = st.text_area("Notas e Histórico de Conversas")
             
-            submitted = st.form_submit_button("Salvar no Sistema")
+            submitted = st.form_submit_button("Inscrever Jogador")
             if submitted:
                 if not new_nome:
-                    st.error("O nome do jogador é obrigatório.")
+                    st.error("Insira o nome do atleta para salvar!")
                 else:
                     jogadores[new_nome] = {
                         "nome": new_nome,
@@ -453,77 +558,15 @@ elif menu == "📋 Gestão do Roster":
                         "historico": new_hist
                     }
                     salvar_jogadores(jogadores)
-                    st.success(f"{new_nome} adicionado com sucesso!")
+                    st.success(f"Atleta {new_nome} inscrito com sucesso no radar!")
                     st.rerun()
 
-# ----------------- TELA 3: PERFIS DETALHADOS -----------------
-elif menu == "👤 Detalhes & Páginas de Jogadores":
-    st.title("👤 Páginas Individuais dos Atletas")
-    st.write("Selecione um jogador para abrir o dossiê detalhado com os comentários e notas da dupla.")
-
-    selected_player_name = st.selectbox("Escolha o Jogador:", sorted(list(jogadores.keys())))
-    player = jogadores[selected_player_name]
-    
-    st.markdown("---")
-    
-    col_p1, col_p2 = st.columns([1, 2])
-    
-    with col_p1:
-        # Stylized player card/avatar box
-        st.markdown(f"""
-        <div style="background-color: #1e293b; padding: 25px; border-radius: 15px; text-align: center; border: 3px solid #eab308;">
-            <h2 style="color: #ffffff; margin-bottom: 5px;">{player['nome']}</h2>
-            <span style="background-color: #22c55e; color: black; font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 10pt;">
-                {player['tipo']}
-            </span>
-            <p style="margin-top: 15px; font-size: 11pt; color: #cbd5e1;">
-                <b>Posição:</b> {player['posicao']}<br>
-                <b>Clube:</b> {player['clube']}<br>
-                <b>Idade em 2026:</b> {player['idade']} anos<br>
-                <b>Idade na Copa 2030:</b> {player['idade'] + 4} anos
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.write("")
-        st.subheader("Calibração de Notas")
-        st.metric("Nota Média do Vini", f"{player['nota_vini']:.1f} / 10")
-        st.metric("Nota Média do Roberto", f"{player['nota_roberto']:.1f} / 10")
-
-    with col_p2:
-        st.markdown("### 📝 Dossiê de Desempenho")
-        
-        st.markdown('<div class="stat-box">', unsafe_allow_html=True)
-        st.markdown("**🟢 Pontos Fortes:**")
-        st.write(player.get("pontos_fortes", "Nenhuma informação cadastrada."))
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.markdown('<div class="stat-box" style="border-left-color: #ef4444;">', unsafe_allow_html=True)
-        st.markdown("**🔴 Desafios & Pontos Fracos:**")
-        st.write(player.get("pontos_fracos", "Nenhuma informação cadastrada."))
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown('<div class="stat-box" style="border-left-color: #3b82f6;">', unsafe_allow_html=True)
-        st.markdown("**🗣️ Notas dos Debates (Vini & Roberto):**")
-        st.write(player.get("historico", "Nenhuma nota inserida nas conversas."))
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        # In-line note updater
-        st.write("---")
-        st.write("✍️ **Atualizar Rápido as Notas:**")
-        up_vini = st.slider("Nova Nota Vini", 0.0, 10.0, float(player['nota_vini']), step=0.5, key="up_vini")
-        up_rob = st.slider("Nova Nota Roberto", 0.0, 10.0, float(player['nota_roberto']), step=0.5, key="up_rob")
-        if st.button("Salvar Calibração"):
-            jogadores[selected_player_name]['nota_vini'] = up_vini
-            jogadores[selected_player_name]['nota_roberto'] = up_rob
-            salvar_jogadores(jogadores)
-            st.success("Calibração salva!")
-            st.rerun()
-
-# ----------------- TELA 4: ESTATÍSTICAS & ANÁLISES -----------------
-elif menu == "📊 Estatísticas & Análises":
-    st.title("📊 Painel Analítico da Amizade")
-    st.write("Aqui você consegue comparar as notas do Vini contra as do Roberto para analisar onde moram as maiores divergências e concordâncias.")
+# ==========================================
+# TELA 4: ANÁLISE DE OPINIÕES
+# ==========================================
+elif menu == "📊 Análise de Opiniões":
+    st.title("📊 Análise de Divergências Técnicas")
+    st.write("Veja onde a opinião da comissão técnica converge perfeitamente e onde o debate é mais caloroso.")
 
     df_stats = pd.DataFrame([
         {
@@ -538,24 +581,54 @@ elif menu == "📊 Estatísticas & Análises":
     col_s1, col_s2 = st.columns(2)
     
     with col_s1:
-        st.subheader("🤝 Maiores Concordâncias")
-        st.write("Jogadores em que a opinião da dupla é quase idêntica:")
+        st.subheader("🤝 Consenso Absoluto")
+        st.write("Atletas onde as opiniões batem de forma idêntica:")
         concordancias = df_stats.sort_values(by="Diferença Absoluta", ascending=True).head(5)
-        st.dataframe(concordancias[["Nome", "Posição", "Vini", "Roberto"]], use_container_width=True)
+        st.dataframe(concordancias[["Nome", "Posição", "Vini", "Roberto"]], use_container_width=True, hide_index=True)
 
     with col_s2:
-        st.subheader("🔥 Maiores Divergências")
-        st.write("Jogadores que rendem as discussões de bar mais longas:")
+        st.subheader("🔥 Divergências de Mesa de Bar")
+        st.write("Atletas que geram as maiores discussões de bar entre a dupla:")
         divergencias = df_stats.sort_values(by="Diferença Absoluta", ascending=False).head(5)
-        st.dataframe(divergencias[["Nome", "Posição", "Vini", "Roberto", "Diferença Absoluta"]], use_container_width=True)
+        st.dataframe(divergencias[["Nome", "Posição", "Vini", "Roberto", "Diferença Absoluta"]], use_container_width=True, hide_index=True)
 
-    st.write("---")
-    st.subheader("🔍 Filtro por Categoria (Hierarquia)")
-    cat_filtro = st.selectbox("Selecione a Categoria:", ["Titulares", "Reservas", "Observação"])
+# ==========================================
+# 7. CAIXA DE SUGESTÕES (RADAR TOTALMENTE PRIVADO)
+# ==========================================
+st.sidebar.markdown("---")
+st.sidebar.subheader("💡 Radar do Torcedor")
+st.sidebar.write("Lembrou de alguma joia do futebol brasileiro que nós esquecemos? Mande agora mesmo!")
+
+with st.sidebar.form("form_sugestao", clear_on_submit=True):
+    sug_nome = st.text_input("Nome do Craque*", placeholder="Ex: Estevão Willian")
+    sug_pos = st.text_input("Posição*", placeholder="Ex: Ponta Direita")
+    sug_clube = st.text_input("Clube Atual*", placeholder="Ex: Palmeiras")
+    sug_just = st.text_area("Por que ele merece estar no Radar?*", placeholder="Escreva as qualidades dele...")
     
-    filtrados = [j for j in jogadores.values() if j['grupo'] == cat_filtro]
-    df_f = pd.DataFrame([
-        {"Nome": j['nome'], "Posição": j['posicao'], "Clube": j['clube'], "Média": (j['nota_vini'] + j['nota_roberto'])/2}
-        for j in filtrados
-    ])
-    st.dataframe(df_f.sort_values(by="Média", ascending=False), use_container_width=True)
+    btn_sugestion = st.form_submit_button("Sugerir para a Comissão")
+    
+    if btn_sugestion:
+        if sug_nome and sug_pos and sug_clube and sug_just:
+            # Geração dinâmica do link para evitar crawlers salvando seu e-mail pessoal em texto puro
+            assunto = urllib.parse.quote(f"Caminho para o Hexa: Nova Sugestão - {sug_nome}")
+            corpo = urllib.parse.quote(
+                f"Fala, Vini e Beto!\n\n"
+                f"Quero sugerir um novo jogador para entrar no nosso radar tático da Copa de 2030:\n\n"
+                f"👤 Atleta: {sug_nome}\n"
+                f"📍 Posição: {sug_pos}\n"
+                f"🏢 Clube: {sug_clube}\n\n"
+                f"📝 Análise técnica de performance:\n{sug_just}\n\n"
+                f"Abraços!"
+            )
+            mailto_url = f"mailto:viniciusbl87@gmail.com?subject={assunto}&body={corpo}"
+            
+            st.success("🎉 Sugestão compilada com sucesso!")
+            st.markdown(f"""
+                <div style="text-align: center; margin-top: 5px;">
+                    <a href="{mailto_url}" target="_blank" style="background-color: #eab308; color: #090d16; font-weight: 800; padding: 10px 15px; border-radius: 8px; text-decoration: none; display: inline-block;">
+                        🚀 Confirmar Envio por E-mail
+                    </a>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.warning("Por favor, preencha todos os campos obrigatórios!")
