@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 # 1. CONFIGURAÇÕES DE TELA & METADADOS
 # ==========================================
 st.set_page_config(
-    page_title="O Caminho para o Hexa 2030",
+    page_title="O Caminho para o Hexa | 2030",
     page_icon="🏆",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -161,7 +161,7 @@ st.markdown("""
     }
 
     /* ========================================================== */
-    /* 🚨 CORREÇÃO DE BUG (BUG 2): FORÇADOR DE CORES NA SIDEBAR   */
+    /* 🚨 CORREÇÃO DE BUG: FORÇADOR DE CORES NA SIDEBAR           */
     /* ========================================================== */
     section[data-testid="stSidebar"] {
         background-color: #0c1220 !important;
@@ -339,7 +339,6 @@ def obter_atletas_compativeis(pos_permitidas):
 # ==========================================
 # 6. MENU LATERAL & NAVEGAÇÃO
 # ==========================================
-# BUG 1 CORRIGIDO DEFINITIVAMENTE: Sem imagens externas quebradas na sidebar
 st.sidebar.markdown("<h2 style='text-align: center; color: #eab308; margin-top:15px;'>CONSELHO TÁTICO</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
@@ -367,9 +366,8 @@ if "escalados" not in st.session_state:
 # TELA 1: CAMPO DE JOGO
 # ==========================================
 if menu == "🏟️ Campo de Jogo (Escalação)":
-    st.markdown("<h1 class='app-title'>🏆 Caminho Para o Hexa</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='app-title'>🏆 O Caminho para o Hexa</h1>", unsafe_allow_html=True)
     
-    # IMPORTANTE: String alterada para multi-line triple quotes, eliminando bugs de aspas e concatenação!
     st.markdown(
         """
         <p class="project-subtitle" style="text-align: center;">
@@ -454,6 +452,43 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
         )
         
         st.markdown(pitch_html, unsafe_allow_html=True)
+
+        # ==========================================
+        # RECURSO DE INTERAÇÃO: COMPARTILHAR ESCALAÇÃO
+        # ==========================================
+        st.markdown("---")
+        st.markdown("### 📣 Compartilhe sua Convocação!")
+        
+        escalados_nomes = list(st.session_state.escalados.values())
+        mensagem_share = (
+            f"Montei minha Seleção Brasileira rumo a 2030 no app 'O Caminho para o Hexa'! 🏆\n\n"
+            f"Ataque: {st.session_state.escalados['Ponta Esquerda (PE)']} | {st.session_state.escalados['Centroavante (CA)']} | {st.session_state.escalados['Ponta Direita (PD)']}\n"
+            f"Meio-Campo: {st.session_state.escalados['Meio-Campo Criativo (10)']}\n\n"
+            f"Monte a sua também no Streamlit!"
+        )
+        
+        texto_codificado = urllib.parse.quote(mensagem_share)
+        twitter_url = f"https://twitter.com/intent/tweet?text={texto_codificado}"
+        whatsapp_url = f"https://api.whatsapp.com/send?text={texto_codificado}"
+        
+        col_share1, col_share2 = st.columns(2)
+        with col_share1:
+            st.markdown(f"""
+                <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
+                    <div style="background-color:#166534; color:#f8fafc; text-align:center; padding:10px; border-radius:8px; font-weight:bold; border: 1px solid #eab308; cursor:pointer;">
+                        🟢 Compartilhar no WhatsApp
+                    </div>
+                </a>
+            """, unsafe_allow_html=True)
+            
+        with col_share2:
+            st.markdown(f"""
+                <a href="{twitter_url}" target="_blank" style="text-decoration:none;">
+                    <div style="background-color:#1e293b; color:#f8fafc; text-align:center; padding:10px; border-radius:8px; font-weight:bold; border: 1px solid #eab308; cursor:pointer;">
+                        🔵 Compartilhar no X / Threads
+                    </div>
+                </a>
+            """, unsafe_allow_html=True)
 
 # ==========================================
 # TELA 2: PERFIS DOS JOGADORES & SCOUT
@@ -691,3 +726,4 @@ with st.sidebar.form("form_sugestao", clear_on_submit=True):
             """, unsafe_allow_html=True)
         else:
             st.sidebar.warning("Insira o texto antes de enviar!")
+}
