@@ -572,12 +572,12 @@ if "escalados" not in st.session_state:
 if menu == "🏟️ Campo de Jogo (Escalação)":
     st.markdown("<h1 class='app-title'>🏆 O Caminho para o Hexa</h1>", unsafe_allow_html=True)
     st.markdown(
-        \"\"\"
+        """
         <p class="project-subtitle" style="text-align: center;">
         Painel tático interativo desenvolvido para organizar escalações, avaliar pontuações de scout 
         e planejar o percurso de renovação da nossa seleção canarinho rumo ao mundial de 2030.
         </p>
-        \"\"\", 
+        """, 
         unsafe_allow_html=True
     )
     
@@ -711,7 +711,7 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
         st.markdown(pitch_html, unsafe_allow_html=True)
         
         # Legenda de Adaptabilidade Tática
-        st.markdown(\"\"\"
+        st.markdown("""
         <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-top: -10px; margin-bottom: 25px; background-color: #0b0f19; padding: 12px; border-radius: 10px; border: 1px solid #1e293b;">
             <div style="display: flex; align-items: center; gap: 8px; font-size: 9.5pt; color: #f8fafc;">
                 <span style="display: inline-block; width: 12px; height: 12px; background-color: #22c55e; border-radius: 50%;"></span>
@@ -726,7 +726,7 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
                 <b>Linha Laranja:</b> Função Terciária (Opção emergencial de elenco)
             </div>
         </div>
-        \"\"\", unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
         st.markdown("---")
         st.markdown("### 📣 Compartilhe sua Convocação!")
@@ -744,22 +744,22 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
         
         col_share1, col_share2 = st.columns(2)
         with col_share1:
-            st.markdown(f\"\"\"
+            st.markdown(f"""
                 <a href="{whatsapp_url}" target="_blank" style="text-decoration:none;">
                     <div style="background-color:#166534; color:#f8fafc; text-align:center; padding:10px; border-radius:8px; font-weight:bold; border: 1px solid #eab308; cursor:pointer;">
                         🟢 Compartilhar no WhatsApp
                     </div>
                 </a>
-            \"\"\", unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
             
         with col_share2:
-            st.markdown(f\"\"\"
+            st.markdown(f"""
                 <a href="{twitter_url}" target="_blank" style="text-decoration:none;">
                     <div style="background-color:#1e293b; color:#f8fafc; text-align:center; padding:10px; border-radius:8px; font-weight:bold; border: 1px solid #eab308; cursor:pointer;">
                         🔵 Compartilhar no X / Threads
                     </div>
                 </a>
-            \"\"\", unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
 # ==========================================
 # TELA 2: PERFIS DOS JOGADORES & SCOUT
@@ -784,7 +784,7 @@ elif menu == "👤 Perfis dos Jogadores & Scout":
                 abrevs_clean.append(a)
         abrev_str = "/".join(abrevs_clean)
 
-        st.markdown(f\"\"\"
+        st.markdown(f"""
         <div style="background-color: #111827; padding: 25px; border-radius: 15px; border: 3px solid #eab308; text-align: center;">
             <h2 style="color: #f8fafc; margin-bottom: 5px; font-size: 2.2rem;">{p.get('nome', selected_name)}</h2>
             <span style="background-color: #3b82f6; color: #f8fafc; font-weight: bold; padding: 5px 15px; border-radius: 20px; font-size: 10pt;">
@@ -797,7 +797,7 @@ elif menu == "👤 Perfis dos Jogadores & Scout":
                 <b>🏆 Idade em 2030:</b> <span style="color:#eab308; font-weight:bold;">{p.get('idade', 22) + 4} anos</span>
             </p>
         </div>
-        \"\"\", unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
         
         st.markdown("<br>", unsafe_allow_html=True)
         st.subheader("Avaliação Tática")
@@ -996,13 +996,13 @@ with st.sidebar.form("form_sugestao", clear_on_submit=True):
             mailto_url = f"mailto:viniciusbl87@gmail.com?subject={assunto}&body={corpo}"
             
             st.sidebar.success("Sugestão salva!")
-            st.sidebar.markdown(f\"\"\"
+            st.sidebar.markdown(f"""
                 <div style=\"text-align: center; margin-top: 5px; margin-bottom: 5px;\">
                     <a href=\"{mailto_url}\" target=\"_blank\" style=\"background-color: #eab308; color: #090d16; font-weight: 800; padding: 10px 15px; border-radius: 8px; text-decoration: none; display: inline-block; width: 100%;\">
                         🚀 Enviar por E-mail
                     </a>
                 </div>
-            \"\"\", unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
         else:
             st.sidebar.warning("Insira o texto antes de enviar!")
 """
