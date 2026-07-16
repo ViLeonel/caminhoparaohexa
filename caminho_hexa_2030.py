@@ -111,7 +111,7 @@ st.markdown("""
     }
     .player-card-pitch {
         background: rgba(9, 13, 22, 0.95);
-        border: 2px solid #eab308;
+        border: 2px solid #eab308; /* Fallback padrão */
         border-radius: 8px;
         padding: 6px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.5);
@@ -215,7 +215,6 @@ ABREVIACOES = {
 DATA_FILE = "jogadores_hexa_2030.json"
 
 def normalizar_banco_dados(data):
-    # 1. Ajuste de chaves antigas e migração de nomes (preservando debates históricos!)
     if "Vini Jr." in data:
         data["Vinicius Junior"] = data.pop("Vini Jr.")
         data["Vinicius Junior"]["nome"] = "Vinicius Junior"
@@ -224,7 +223,6 @@ def normalizar_banco_dados(data):
         data["Wesley França"] = data.pop("Wesley")
         data["Wesley França"]["nome"] = "Wesley França"
 
-    # 2. Configuração precisa de clubes e posicionamentos multi-funções solicitados
     atualizacoes_obrigatorias = {
         "Wesley França": {
             "posicao": "Lateral-direito",
@@ -257,7 +255,7 @@ def normalizar_banco_dados(data):
             "clube": "Newcastle"
         },
         "Rodrygo": {
-            "posicao": "Ponta-alta",
+            "posicao": "Ponta-direita",
             "posicoes_multiplas": ["Ponta-direita", "Ponta-esquerda", "Meia-armador", "Segundo atacante", "Centroavante"],
             "clube": "Real Madrid"
         },
@@ -277,24 +275,22 @@ def normalizar_banco_dados(data):
             "clube": "Real Madrid"
         },
         "Estevão": {
-            "posicao": "Ponta-alta",
+            "posicao": "Ponta-direita",
             "posicoes_multiplas": ["Ponta-direita", "Meia-armador"],
             "clube": "Palmeiras"
         },
         "Gabriel Martinelli": {
-            "posicao": "Ponta-base",
+            "posicao": "Ponta-esquerda",
             "posicoes_multiplas": ["Ponta-esquerda", "Meia-armador", "Mezzala esquerdo"],
             "clube": "Arsenal"
         }
     }
 
-    # Mesclar correções sem deletar as avaliações originais de scout do JSON
     for jogador, campos in atualizacoes_obrigatorias.items():
         if jogador in data:
             for campo, valor in campos.items():
                 data[jogador][campo] = valor
 
-    # Unificação de hifens e novos padrões de strings
     pos_map_limpeza = {
         "Goleiro": "Goleiro",
         "Lateral Esquerdo": "Lateral-esquerdo",
@@ -334,7 +330,7 @@ def carregar_jogadores():
         "Wesley França": {"nome": "Wesley França", "posicao": "Lateral-direito", "clube": "Roma", "idade": 22, "grupo": "Titulares", "tipo": "Certeza Atual", "nota_vini": 7.5, "nota_roberto": 7.5, "posicoes_multiplas": ["Lateral-direito", "Lateral-esquerdo"]},
         "Andrey Santos": {"nome": "Andrey Santos", "posicao": "Volante", "clube": "Chelsea", "idade": 22, "grupo": "Titulares", "tipo": "Certeza Atual", "nota_vini": 7.5, "nota_roberto": 8.0, "posicoes_multiplas": ["Volante", "Mezzala esquerdo", "Mezzala direito", "Lateral-esquerdo"]},
         "Bruno Guimarães": {"nome": "Bruno Guimarães", "posicao": "Mezzala esquerdo", "clube": "Newcastle", "idade": 28, "grupo": "Titulares", "tipo": "Certeza Atual", "nota_vini": 8.0, "nota_roberto": 8.5, "posicoes_multiplas": ["Mezzala esquerdo", "Mezzala direito", "Volante"]},
-        "Rodrygo": {"nome": "Rodrygo", "posicao": "Ponta-direita", "clube": "Real Madrid", "idade": 25, "grupo": "Titulares", "tipo": "Certeza Atual", "nota_vini": 8.0, "nota_roberto": 8.0, "posicoes_multiplas": ["Ponta-direita", "Ponta-esquerda", "Meia-armador", "Segundo atacante", "Centroavante"]},
+        "Rodrygo": {"nome": "Rodrygo", "posicao": "Ponta-direito", "clube": "Real Madrid", "idade": 25, "grupo": "Titulares", "tipo": "Certeza Atual", "nota_vini": 8.0, "nota_roberto": 8.0, "posicoes_multiplas": ["Ponta-direito", "Ponta-esquerda", "Meia-armador", "Segundo atacante", "Centroavante"]},
         "Vinicius Junior": {"nome": "Vinicius Junior", "posicao": "Ponta-esquerda", "clube": "Real Madrid", "idade": 26, "grupo": "Titulares", "tipo": "Certeza Atual", "nota_vini": 9.0, "nota_roberto": 9.0, "posicoes_multiplas": ["Ponta-esquerda", "Segundo atacante", "Centroavante"]},
         "Endrick": {"nome": "Endrick", "posicao": "Centroavante", "clube": "Real Madrid", "idade": 19, "grupo": "Titulares", "tipo": "Certeza Atual", "nota_vini": 8.0, "nota_roberto": 9.0, "posicoes_multiplas": ["Centroavante"]},
         "Estevão": {"nome": "Estevão", "posicao": "Ponta-direita", "clube": "Palmeiras", "idade": 19, "grupo": "Titulares", "tipo": "Promessa 2030", "nota_vini": 9.0, "nota_roberto": 10.0, "posicoes_multiplas": ["Ponta-direita", "Meia-armador"]},
@@ -395,7 +391,7 @@ def buscar_classificacao_cbf():
                 if tabela:
                     linhas = tabela.find_all("tr")
                     for linha in linhas[1:]:
-                        colunas = linha.find_all("td")
+                        colunas = merge = linha.find_all("td")
                         if len(colunas) >= 5:
                             pos_crua = colunas[0].text.strip()
                             posicao = "".join(filter(str.isdigit, pos_crua))
@@ -479,7 +475,7 @@ TATICAS = {
         "Volante (VOL)": (["Volante"], "Andrey Santos", "38%", "45%", "VOL"),
         "Volante Apoio (VOL)": (["Volante", "Mezzala esquerdo", "Mezzala direito"], "Bruno Guimarães", "62%", "45%", "VOL"),
         "Meia-Direita (MD)": (["Ponta-direita", "Lateral-direito"], "Estevão", "85%", "55%", "MD"),
-        "Segundo Atacante (SA)": (["Segundo atacante", "Ponta-esquerda", "Ponta-direita", "Meia-armador"], "Rodrygo", "35%", "82%", "SA"),
+        "Segundo Atacante (SA)": (["Segundo atacante", "Ponta-esquerda", "Ponta-direito", "Meia-armador"], "Rodrygo", "35%", "82%", "SA"),
         "Centroavante (CA)": (["Centroavante"], "Endrick", "65%", "82%", "CA")
     },
     "4-4-2 Diamante": {
@@ -492,7 +488,7 @@ TATICAS = {
         "Mezzala Esquerdo (MCE)": (["Mezzala esquerdo"], "Bruno Guimarães", "32%", "53%", "MCE"),
         "Mezzala Direito (MCD)": (["Mezzala direito", "Mezzala esquerdo", "Meia-armador"], "Breno Bidon", "68%", "53%", "MCD"),
         "Meia-Armador (MEI)": (["Meia-armador"], "Rodrygo", "50%", "65%", "MEI"),
-        "Segundo Atacante (SA)": (["Ponta-esquerda", "Ponta-direita", "Segundo atacante", "Centroavante"], "Vinicius Junior", "35%", "83%", "SA"),
+        "Segundo Atacante (SA)": (["Ponta-esquerda", "Ponta-direito", "Segundo atacante", "Centroavante"], "Vinicius Junior", "35%", "83%", "SA"),
         "Centroavante (CA)": (["Centroavante"], "Endrick", "65%", "83%", "CA")
     }
 }
@@ -528,6 +524,22 @@ menu = st.sidebar.radio(
     "Navegação do Painel:",
     ["🏟️ Campo de Jogo (Escalação)", "👤 Perfis dos Jogadores & Scout", "📋 Gestão do Roster", "📊 Análise de Opiniões"]
 )
+
+# Inicialização padrão dos dados de sessão
+if "escalados" not in st.session_state:
+    st.session_state.escalados = {
+        "Goleiro (GOL)": "Alisson",
+        "Lateral-esquerdo (LE)": "Kaiki Bruno",
+        "Zagueiro Esquerdo (ZAG)": "Gabriel Magalhães",
+        "Zagueiro Direito (ZAG)": "Lucas Beraldo",
+        "Lateral-direito (LD)": "Wesley França",
+        "Volante (VOL)": "Andrey Santos",
+        "Volante Apoio (VOL)": "Bruno Guimarães",
+        "Meia-Armador (MEI)": "Rodrygo",
+        "Ponta-esquerda (PE)": "Vinicius Junior",
+        "Centroavante (CA)": "Endrick",
+        "Ponta-direito (PD)": "Estevão"
+    }
 
 # ==========================================
 # 8. TELA 1: CAMPO DE JOGO (ESCALAÇÃO)
@@ -627,24 +639,36 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
         c2.metric("Média Geral (Roberto)", f"{avg_r:.2f}")
         c3.metric("Rating Coletivo", f"{coletivo:.2f}", delta="Candidato ao Título", delta_color="normal")
         
+        # Renderização do campo de futebol responsivo com bordas dinâmicas
         players_html = ""
         for slot, info in layout_ativo.items():
-            left, bottom, pos_tag = info[2], info[3], info[4]
+            pos_validas, left, bottom, pos_tag = info[0], info[2], info[3], info[4]
             player_name = st.session_state.escalados.get(slot, info[1])
             p_data = jogadores.get(player_name, {"nome": player_name, "nota_vini": 0, "nota_roberto": 0})
             
-            pos_list = p_data.get("posicoes_multiplas", [p_data.get("posicao", "OBS")])
-            abrevs = [ABREVIACOES.get(pos, "OBS") for pos in pos_list]
-            abrevs_clean = []
-            for a in abrevs:
-                if a not in abrevs_clean:
-                    abrevs_clean.append(a)
-            abrev_str = "/".join(abrevs_clean)
+            # --- ALGORITMO DE COR DE BORDA POR PRIORIDADE DE FUNÇÃO ---
+            player_multi_pos = p_data.get("posicoes_multiplas", [p_data.get("posicao")])
+            
+            match_index = -1
+            for idx, p_pos in enumerate(player_multi_pos):
+                if p_pos in pos_validas:
+                    match_index = idx
+                    break
+            
+            # Atribuição estrita de cores (Verde Claro, Amarelo Matte ou Laranja)
+            if match_index == 0:
+                border_color = "#22c55e"  # Verde Claro (Primária)
+            elif match_index == 1:
+                border_color = "#eab308"  # Amarelo Matte (Secundária)
+            elif match_index >= 2:
+                border_color = "#f97316"  # Laranja (Terciária)
+            else:
+                border_color = "#eab308"  # Fallback seguro
             
             players_html += (
                 f'<div class="player-node" style="left:{left};bottom:{bottom};">'
-                f'<div class="player-card-pitch">'
-                f'<div class="player-pos-tag">{pos_tag} ({abrev_str})</div>'
+                f'<div class="player-card-pitch" style="border-color: {border_color} !important;">'
+                f'<div class="player-pos-tag">{pos_tag}</div>'  # Apenas a tag original da tática!
                 f'<div class="player-name-tag">{p_data["nome"]}</div>'
                 f'<div class="player-rating-tag">★ {p_data["nota_vini"]:.1f} / {p_data["nota_roberto"]:.1f}</div>'
                 f'</div>'
@@ -662,6 +686,24 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
         )
         
         st.markdown(pitch_html, unsafe_allow_html=True)
+        
+        # --- LEGENDA DE ADAPTABILIDADE DINÂMICA ---
+        st.markdown("""
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-top: -10px; margin-bottom: 25px; background-color: #0b0f19; padding: 12px; border-radius: 10px; border: 1px solid #1e293b;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 9.5pt; color: #f8fafc;">
+                <span style="display: inline-block; width: 12px; height: 12px; background-color: #22c55e; border-radius: 50%;"></span>
+                <b>Linha Verde:</b> Função Primária (Posição principal do atleta)
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 9.5pt; color: #f8fafc;">
+                <span style="display: inline-block; width: 12px; height: 12px; background-color: #eab308; border-radius: 50%;"></span>
+                <b>Linha Amarela:</b> Função Secundária (Atleta adaptado no setor)
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 9.5pt; color: #f8fafc;">
+                <span style="display: inline-block; width: 12px; height: 12px; background-color: #f97316; border-radius: 50%;"></span>
+                <b>Linha Laranja:</b> Função Terciária (Opção emergencial de elenco)
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
         st.markdown("---")
         st.markdown("### 📣 Compartilhe sua Convocação!")
