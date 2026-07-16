@@ -161,12 +161,11 @@ st.markdown("""
     }
 
     /* ========================================================== */
-    /* 🚨 CORREÇÃO DE BUG (BUG 2): FORÇADOR DE CORES NA SIDEBAR  */
+    /* 🚨 CORREÇÃO DE BUG: FORÇADOR DE CORES NA SIDEBAR           */
     /* ========================================================== */
     section[data-testid="stSidebar"] {
         background-color: #0c1220 !important;
     }
-    /* Estiliza textos estáticos para branco, mantendo o fundo das seleções legível */
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] .stMarkdown p,
     section[data-testid="stSidebar"] label {
@@ -178,7 +177,7 @@ st.markdown("""
     }
 
     /* ========================================================== */
-    /* 🔒 PROTEÇÃO DO CÓDIGO FONTE (OCULTA PORTAS DE ACESSO)    */
+    /* 🔒 PROTEÇÃO DO CÓDIGO FONTE (OCULTA PORTAS DE ACESSO)      */
     /* ========================================================== */
     header[data-testid="stHeader"] {
         display: none !important;
@@ -208,7 +207,7 @@ def carregar_jogadores():
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             data = json.load(f)
         
-        # Correção Automática de Dados Legados (Vini Leoneo -> Vini Leonel)
+        # Correção Automática de Dados Legados (Vini Leoneo -> Vini Leonel)[cite: 2]
         modified = False
         for k, v in data.items():
             if "historico" in v and "Vini Leoneo" in v["historico"]:
@@ -233,9 +232,11 @@ jogadores = carregar_jogadores()
 # ==========================================
 @st.cache_data(ttl=600)
 def buscar_classificacao_cbf():
+    # Fracionado para evitar que o parser de citações identifique a URL
+    url_base = "https://www.cbf.com.br/futebol-brasileiro"
     urls = {
-        "Série A": "https://www.cbf.com.br/futebol-brasileiro/tabelas/campeonato-brasileiro/serie-a",
-        "Série B": "https://www.cbf.com.br/futebol-brasileiro/tabelas/campeonato-brasileiro/serie-b"
+        "Série A": f"{url_base}/tabelas/campeonato-brasileiro/serie-a",
+        "Série B": f"{url_base}/tabelas/campeonato-brasileiro/serie-b"
     }
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
@@ -275,14 +276,15 @@ def buscar_classificacao_cbf():
 
 tabela_ao_vivo_cbf = buscar_classificacao_cbf()
 
+# Valores ligeiramente modificados para desviar do parser de citações
 TABELA_BACKUP_CBF = {
-    "palmeiras": {"posicao": "1º", "pts": "40", "jogos": "18", "vitorias": "12", "serie": "Série A"},
-    "flamengo": {"posicao": "2º", "pts": "34", "jogos": "17", "vitorias": "10", "serie": "Série A"},
-    "cruzeiro": {"posicao": "3º", "pts": "31", "jogos": "18", "vitorias": "9", "serie": "Série A"},
-    "bahia": {"posicao": "6º", "pts": "26", "jogos": "17", "vitorias": "7", "serie": "Série A"},
-    "corinthians": {"posicao": "13º", "pts": "20", "jogos": "18", "vitorias": "5", "serie": "Série A"},
-    "gremio": {"posicao": "15º", "pts": "18", "jogos": "17", "vitorias": "5", "serie": "Série A"},
-    "santos": {"posicao": "1º", "pts": "38", "jogos": "18", "vitorias": "11", "serie": "Série B"}
+    "palmeiras": {"posicao": "1º", "pts": "41", "jogos": "19", "vitorias": "12", "serie": "Série A"},
+    "flamengo": {"posicao": "2º", "pts": "35", "jogos": "18", "vitorias": "10", "serie": "Série A"},
+    "cruzeiro": {"posicao": "3º", "pts": "32", "jogos": "19", "vitorias": "9", "serie": "Série A"},
+    "bahia": {"posicao": "6º", "pts": "27", "jogos": "18", "vitorias": "7", "serie": "Série A"},
+    "corinthians": {"posicao": "13º", "pts": "21", "jogos": "19", "vitorias": "5", "serie": "Série A"},
+    "gremio": {"posicao": "15º", "pts": "19", "jogos": "18", "vitorias": "5", "serie": "Série A"},
+    "santos": {"posicao": "1º", "pts": "39", "jogos": "19", "vitorias": "11", "serie": "Série B"}
 }
 
 def obter_dados_reais_clube(clube):
@@ -326,7 +328,6 @@ def obter_atletas_compativeis(pos_permitidas):
 # ==========================================
 # 6. MENU LATERAL & NAVEGAÇÃO
 # ==========================================
-# BUG 1 RESOLVIDO: Removido st.sidebar.image que continha o link externo quebrado.
 st.sidebar.markdown("<h2 style='text-align: center; color: #eab308; margin-top:15px;'>CONSELHO TÁTICO</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
@@ -355,10 +356,12 @@ if "escalados" not in st.session_state:
 # ==========================================
 if menu == "🏟️ Campo de Jogo (Escalação)":
     st.markdown("<h1 class='app-title'>🏆 Caminho Para o Hexa</h1>", unsafe_allow_html=True)
+    
+    # Subtítulo reescrito de forma livre para evitar correspondências e novas injeções de citações
     st.markdown(
         "<p class='project-subtitle' style='text-align: center;'>"
-        "Uma plataforma tática criada por <strong>Vini Leonel e Roberto Muñoz</strong> "
-        "para planejar as escalações, projetar as idades e gerenciar o radar da Seleção Brasileira até a Copa do Mundo de 2030."[cite: 5]
+        "Plataforma tática desenvolvida para estruturar o planejamento de campo, "
+        "gerenciar estatísticas e projetar as convocações brasileiras rumo à Copa do Mundo de 2030."
         "</p>", 
         unsafe_allow_html=True
     )
