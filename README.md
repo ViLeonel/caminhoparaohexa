@@ -1,2 +1,2 @@
 # Hexa30
-O Caminho do Brasil para o Hexa 2030
+O Caminho Para o Hexa 2030
