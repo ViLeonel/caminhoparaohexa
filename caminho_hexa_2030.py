@@ -17,148 +17,226 @@ st.set_page_config(
 )
 
 # ==========================================
-# 2. DESIGN VISUAL E CSS (VERDE FLORESTA NO CAMPO, NAVY E OURO NO APP)
+# 2. DESIGN VISUAL E CSS (IDENTIDADE BRASIL ATUALIZADA)
 # ==========================================
+# Melhorias de UX: Paleta de Cores WCAG, Tipografia Moderna 'Inter' e Navegação Customizada
 st.markdown("""
 <style>
-    /* Estilização Geral do App (Soft Navy & Grafite Escuro) */
-    .stApp {
-        background-color: #090d16;
-        color: #f8fafc;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    
-    /* Cabeçalho do App */
-    .app-title {
-        text-align: center;
-        font-size: 3.2rem;
-        font-weight: 800;
-        background: linear-gradient(135deg, #eab308 0%, #f8fafc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 5px;
-    }
-    
-    .project-subtitle {
-        color: #94a3b8;
-        font-size: 1.15rem;
-        margin-bottom: 2rem;
-        line-height: 1.6;
-    }
-    
-    /* O Campo Tático Verde Floresta Realista */
-    .pitch-container {
-        background-color: #14532d; /* Verde Floresta */
-        background-image: linear-gradient(to bottom, #14532d 0%, #114023 100%);
-        border: 4px solid #eab308; /* Borda Ouro */
-        border-radius: 20px;
-        position: relative;
-        width: 100%;
-        height: 680px; /* Altura ideal travada para posicionamento preciso */
-        overflow: hidden;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.7);
-        margin-bottom: 25px;
-    }
-    .pitch-line-center {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background-color: rgba(248, 250, 252, 0.4);
-    }
-    .pitch-circle {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 150px;
-        height: 150px;
-        border: 2px solid rgba(248, 250, 252, 0.4);
-        border-radius: 50%;
-    }
-    .pitch-penalty-top {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 280px;
-        height: 100px;
-        border-bottom: 2px solid rgba(248, 250, 252, 0.4);
-        border-left: 2px solid rgba(248, 250, 252, 0.4);
-        border-right: 2px solid rgba(248, 250, 252, 0.4);
-    }
-    .pitch-penalty-bottom {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 280px;
-        height: 100px;
-        border-top: 2px solid rgba(248, 250, 252, 0.4);
-        border-left: 2px solid rgba(248, 250, 252, 0.4);
-        border-right: 2px solid rgba(248, 250, 252, 0.4);
-    }
-    
-    /* Nós dos Jogadores Absolutos no Campo */
-    .player-node {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        width: 135px;
-        text-align: center;
-        z-index: 10;
-    }
-    .player-card-pitch {
-        background: rgba(9, 13, 22, 0.95);
-        border: 2px solid #eab308;
-        border-radius: 8px;
-        padding: 6px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    }
-    .player-pos-tag {
-        font-size: 7.5pt;
-        color: #eab308;
-        font-weight: 800;
-        text-transform: uppercase;
-        margin-bottom: 1px;
-    }
-    .player-name-tag {
-        font-size: 9pt;
-        color: #f8fafc;
-        font-weight: 700;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .player-rating-tag {
-        background-color: #eab308;
-        color: #090d16;
-        font-size: 7.5pt;
-        font-weight: 800;
-        border-radius: 4px;
-        padding: 1px 5px;
-        margin-top: 3px;
-        display: inline-block;
-    }
-    
-    /* Caixas de Informações de Análise */
-    .stat-box {
-        background-color: #111827;
-        border-radius: 12px;
-        padding: 20px;
-        border-left: 6px solid #eab308;
-        margin-bottom: 18px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-    
-    /* Estilização do Rodapé */
-    .fine-print {
-        font-size: 8.5pt;
-        color: #64748b;
-        text-align: center;
-        margin-top: 40px;
-        margin-bottom: 10px;
-    }
+/* IMPORTAÇÃO DE FONTE MODERNA */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+/* Estilização Geral do App (Soft Navy & Grafite Escuro) */
+.stApp {
+    background-color: #090d16;
+    color: #f8fafc;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* [MELHORIA IMAGEM 01]: Cabeçalho do App com Gradiente Ouro da Taça */
+.app-title-container {
+    text-align: center;
+    margin-top: -30px;
+    margin-bottom: 5px;
+}
+.app-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    /* Gradiente simulando o Ouro Queimado da Taça */
+    background: linear-gradient(135deg, #eab308 0%, #d97706 45%, #f1f5f9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1.5px;
+    filter: drop-shadow(0px 4px 12px rgba(234, 179, 8, 0.15));
+}
+
+.project-subtitle {
+    color: #94a3b8;
+    font-size: 1.15rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+/* [MELHORIA IMAGEM 02]: Título Elegante do Menu Lateral */
+.sidebar-title {
+    text-align: center;
+    color: #eab308;
+    font-weight: 800;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    letter-spacing: 1px;
+}
+
+/* [MELHORIA IMAGEM 03]: Modernização Radical do Radio Button do Menu */
+/* Oculta os círculos de seleção padrão do Streamlit */
+div[role="radiogroup"] label div:first-child {
+    display: none !important;
+}
+
+/* Customização dos itens como Cards de Menu elegantes */
+div[role="radiogroup"] label {
+    background-color: #111827 !important;
+    border: 1px solid #1e293b !important;
+    padding: 12px 15px !important;
+    border-radius: 10px !important;
+    margin-bottom: 8px !important;
+    transition: all 0.2s ease-in-out !important;
+    cursor: pointer !important;
+    color: #cbd5e1 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+/* Efeito de passar o mouse por cima (Hover) */
+div[role="radiogroup"] label:hover {
+    border-color: #eab308 !important;
+    color: #eab308 !important;
+}
+
+/* Estilo do Card quando Selecionado (Verde Floresta CBF) */
+div[role="radiogroup"] label:has(input[type="radio"]:checked) {
+    background-color: #14532d !important;
+    border-color: #eab308 !important;
+    color: #f8fafc !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(20, 83, 45, 0.4) !important;
+}
+
+/* O Campo Tático Verde Floresta Realista */
+.pitch-container {
+    background-color: #14532d;
+    background-image: linear-gradient(to bottom, #14532d 0%, #114023 100%);
+    border: 4px solid #eab308;
+    border-radius: 20px;
+    position: relative;
+    width: 100%;
+    height: 680px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+    margin-bottom: 25px;
+}
+.pitch-line-center {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(248, 250, 252, 0.4);
+}
+.pitch-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    border: 2px solid rgba(248, 250, 252, 0.4);
+    border-radius: 50%;
+}
+.pitch-penalty-top {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    height: 100px;
+    border-bottom: 2px solid rgba(248, 250, 252, 0.4);
+    border-left: 2px solid rgba(248, 250, 252, 0.4);
+    border-right: 2px solid rgba(248, 250, 252, 0.4);
+}
+.pitch-penalty-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    height: 100px;
+    border-top: 2px solid rgba(248, 250, 252, 0.4);
+    border-left: 2px solid rgba(248, 250, 252, 0.4);
+    border-right: 2px solid rgba(248, 250, 252, 0.4);
+}
+
+/* Nós dos Jogadores Absolutos no Campo */
+.player-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 135px;
+    text-align: center;
+    z-index: 10;
+}
+.player-card-pitch {
+    background: rgba(9, 13, 22, 0.95);
+    border: 2px solid #eab308;
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.player-pos-tag {
+    font-size: 7.5pt;
+    color: #eab308;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 1px;
+}
+.player-name-tag {
+    font-size: 9pt;
+    color: #f8fafc;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.player-rating-tag {
+    background-color: #eab308;
+    color: #090d16;
+    font-size: 7.5pt;
+    font-weight: 800;
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-top: 3px;
+    display: inline-block;
+}
+
+/* Caixas de Informações de Análise */
+.stat-box {
+    background-color: #111827;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 6px solid #eab308;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Estilização do Rodapé */
+.fine-print {
+    font-size: 8.5pt;
+    color: #64748b;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 10px;
+}
+
+/* Estilização do Botão de Enviar E-mail (Radar) */
+.btn-email-radar {
+    background-color: #eab308;
+    color: #090d16;
+    font-weight: 800;
+    padding: 12px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    border: none;
+    transition: background-color 0.2s;
+}
+.btn-email-radar:hover {
+    background-color: #d97706;
+    color: #090d16;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -293,13 +371,16 @@ def obter_atletas_compativeis(pos_permitidas):
 # ==========================================
 # 6. MENU LATERAL & NAVEGAÇÃO
 # ==========================================
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/pt/e/e4/Confedera%C3%A7%C3%A3o_Brasileira_de_Futebol_2019.svg", width=100)
-st.sidebar.markdown("<h2 style='text-align: center; color: #eab308; margin-top:0;'>CONSELHO TÁTICO</h2>", unsafe_allow_html=True)
+# [MELHORIA IMAGEM 02]: URL de imagem oficial estável e modernização do título
+st.sidebar.image("https://upload.wikimedia.org/wikipedia/pt/thumb/e/e4/Confedera%C3%A7%C3%A3o_Brasileira_de_Futebol_2019.svg/1200px-Confedera%C3%A7%C3%A3o_Brasileira_de_Futebol_2019.svg.png", width=100)
+st.sidebar.markdown("<div class='sidebar-title'>CONSELHO TÁTICO</div>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
+# [MELHORIA IMAGEM 03]: Injeção de Emojis para o Radio Customizado
 menu = st.sidebar.radio(
     "Navegação do Painel:",
-    ["🏟️ Campo de Jogo (Escalação)", "👤 Perfis dos Jogadores & Scout", "📋 Gestão do Roster", "📊 Análise de Opiniões"]
+    ["🏟️ Campo de Jogo (Escalação)", "👤 Perfis dos Jogadores & Scout", "📋 Gestão do Roster", "📊 Análise de Opiniões"],
+    label_visibility="collapsed" # Esconde o label padrão para usarmos a nossa estrutura de cards
 )
 
 if "escalados" not in st.session_state:
@@ -321,7 +402,13 @@ if "escalados" not in st.session_state:
 # TELA 1: CAMPO DE JOGO
 # ==========================================
 if menu == "🏟️ Campo de Jogo (Escalação)":
-    st.markdown("<h1 class='app-title'>🏆 Caminho Para o Hexa</h1>", unsafe_allow_html=True)
+    # [MELHORIA IMAGEM 01]: Título com Gradiente Ouro simulando o troféu (livre de direitos autorais)
+    st.markdown(
+        "<div class='app-title-container'>"
+        "<h1 class='app-title'>Caminho Para o Hexa</h1>"
+        "</div>",
+        unsafe_allow_html=True
+    )
     st.markdown(
         "<p class='project-subtitle' style='text-align: center;'>"
         "Uma plataforma tática criada por <strong>Vini Leonel e Roberto Muñoz</strong> "
@@ -376,7 +463,7 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
             "Ponta Direita (PD)": ("80%", "80%", "PD")
         }
         
-        # GERAÇÃO DINÂMICA LIVRE DE TABULAÇÃO (Para contornar o bug de exibição)
+        # GERAÇÃO DINÂMICA LIVRE DE TABULAÇÃO (Contornando bug de visualização)
         players_html = ""
         for slot, (left, bottom, pos_tag) in positions_coords.items():
             player_name = st.session_state.escalados[slot]
@@ -599,22 +686,23 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("💡 Radar do Torcedor")
 
 with st.sidebar.form("form_sugestao", clear_on_submit=True):
+    # [MELHORIA IMAGEM 04]: Revisão Ortográfica e Semântica nos Labels
     tipo_sugestao = st.selectbox(
         "O que deseja enviar?*",
-        ["Atleta Faltante", "Sugestão de Melhoria"]
+        ["Adicionar jogador", "Sugestões de melhoria"]
     )
     
     detalhes_sugestao = st.text_area(
         "Escreva sua mensagem:*",
-        placeholder="Se escolheu Atleta: Nome, posição, clube e motivo.\nSe escolheu Melhoria: Ideia de nova tela ou recurso..."
+        placeholder="Se escolheu Adicionar jogador: Nome, posição, clube e motivo.\nSe escolheu Sugestões de melhoria: Ideia de nova tela ou recurso..."
     )
     
     btn_sugestion = st.form_submit_button("Sugerir para a Comissão")
     
     if btn_sugestion:
         if detalhes_sugestao:
-            # Tratamento dinâmico do e-mail com base na escolha
-            if tipo_sugestao == "Atleta Faltante":
+            # Tratamento dinâmico do e-mail com base na escolha do torcedor
+            if tipo_sugestao == "Adicionar jogador":
                 assunto = urllib.parse.quote("Caminho para o Hexa: Indicação de Jogador para o Radar")
                 corpo = urllib.parse.quote(
                     f"Fala, Vini e Roberto!\n\n"
@@ -634,9 +722,10 @@ with st.sidebar.form("form_sugestao", clear_on_submit=True):
             mailto_url = f"mailto:viniciusbl87@gmail.com?subject={assunto}&body={corpo}"
             
             st.sidebar.success("🎉 Sugestão compilada com sucesso!")
+            # [MELHORIA UX]: Botão de e-mail integrado e estilizado profissionalmente
             st.sidebar.markdown(f"""
                 <div style="text-align: center; margin-top: 5px; margin-bottom: 5px;">
-                    <a href="{mailto_url}" target="_blank" style="background-color: #eab308; color: #090d16; font-weight: 800; padding: 10px 15px; border-radius: 8px; text-decoration: none; display: inline-block; width: 100%;">
+                    <a href="{mailto_url}" target="_blank" class="btn-email-radar">
                         🚀 Enviar e-mail agora
                     </a>
                 </div>
