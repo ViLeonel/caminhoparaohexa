@@ -81,7 +81,7 @@
         "grupo": "Observação",
         "nota_vini": 6.5,
         "nota_roberto": 6.0,
-        "clube": "Lyon",
+        "clube": "Leeds United FC",
         "idade": 28,
         "tipo": "Observação",
         "pontos_fortes": "Físico imponente e experiência recente em solo europeu.",
@@ -90,8 +90,30 @@
         "posicoes_multiplas": [
             "Goleiro"
         ],
-        "tm_nacionalidades": [],
-        "tm_posicoes_secundarias_site": []
+        "tm_nacionalidades": [
+            "Brasil",
+            "Itália"
+        ],
+        "tm_posicoes_secundarias_site": [],
+        "nome_completo": "Lucas Estella Perri",
+        "tm_nascimento": "10/12/1997",
+        "tm_naturalidade": "Valinhos, Brasil",
+        "tm_altura": "1,97 m",
+        "tm_pe": "Direito",
+        "tm_empresario": "LEFT Sports",
+        "tm_clube_desde": "26/07/2025",
+        "tm_contrato": "30/06/2029",
+        "tm_equipador": "adidas",
+        "tm_posicao_site": "Guarda-redes",
+        "tm_valor_mercado": "10,00 M. €",
+        "tm_valor_mercado_milhoes": 10.0,
+        "tm_valor_maximo": "16,00 M. €",
+        "tm_valor_maximo_milhoes": 16.0,
+        "tm_data_valor_maximo": "16/10/2025",
+        "tm_ultima_atualizacao": "02/06/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.97
     },
     "Wesley França": {
         "nome": "Wesley França",
@@ -109,8 +131,32 @@
             "Lateral-direito",
             "Lateral-esquerdo"
         ],
-        "tm_nacionalidades": [],
-        "tm_posicoes_secundarias_site": []
+        "tm_nacionalidades": [
+            "Brasil"
+        ],
+        "tm_posicoes_secundarias_site": [
+            "Médio Direito",
+            "Médio Esquerdo"
+        ],
+        "nome_completo": "Wesley Vinícius França Lima",
+        "tm_nascimento": "06/09/2003",
+        "tm_naturalidade": "Açailândia, Brasil",
+        "tm_altura": "1,78 m",
+        "tm_pe": "Direito",
+        "tm_empresario": "MCL Agency",
+        "tm_clube_desde": "28/07/2025",
+        "tm_contrato": "30/06/2030",
+        "tm_equipador": "Nike",
+        "tm_posicao_site": "Lateral Direito",
+        "tm_valor_mercado": "40,00 M. €",
+        "tm_valor_mercado_milhoes": 40.0,
+        "tm_valor_maximo": "40,00 M. €",
+        "tm_valor_maximo_milhoes": 40.0,
+        "tm_data_valor_maximo": "23/03/2026",
+        "tm_ultima_atualizacao": "28/05/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.78
     },
     "Kaiki Bruno": {
         "nome": "Kaiki Bruno",
@@ -118,7 +164,7 @@
         "grupo": "Titulares",
         "nota_vini": 6.0,
         "nota_roberto": 6.0,
-        "clube": "Cruzeiro",
+        "clube": "Como 1907",
         "idade": 23,
         "tipo": "Certeza Atual",
         "pontos_fortes": "Apoio tático consistente e boa margem para evolução física.",
@@ -127,8 +173,32 @@
         "posicoes_multiplas": [
             "Lateral-esquerdo"
         ],
-        "tm_nacionalidades": [],
-        "tm_posicoes_secundarias_site": []
+        "tm_nacionalidades": [
+            "Brasil"
+        ],
+        "tm_posicoes_secundarias_site": [],
+        "nome_completo": "Kaiki Bruno da Silva",
+        "tm_nascimento": "08/03/2003",
+        "tm_naturalidade": "Betim, Brasil",
+        "tm_altura": "1,72 m",
+        "tm_pe": "Esquerdo",
+        "tm_empresario": "CAA Stellar",
+        "tm_clube_desde": "02/07/2026",
+        "tm_contrato": "30/06/2027",
+        "tm_opcao_contrato": "Compra obrigatória com condições",
+        "tm_emprestado_de": "Cruzeiro EC",
+        "tm_contrato_clube_origem": "31/12/2027",
+        "tm_equipador": "adidas",
+        "tm_posicao_site": "Lateral Esquerdo",
+        "tm_valor_mercado": "14,00 M. €",
+        "tm_valor_mercado_milhoes": 14.0,
+        "tm_valor_maximo": "14,00 M. €",
+        "tm_valor_maximo_milhoes": 14.0,
+        "tm_data_valor_maximo": "25/05/2026",
+        "tm_ultima_atualizacao": "25/05/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.72
     },
     "Yan Couto": {
         "nome": "Yan Couto",
@@ -146,8 +216,31 @@
             "Lateral-direito",
             "Mezzala direito"
         ],
-        "tm_nacionalidades": [],
-        "tm_posicoes_secundarias_site": []
+        "tm_nacionalidades": [
+            "Brasil",
+            "Portugal"
+        ],
+        "tm_posicoes_secundarias_site": [
+            "Médio Direito"
+        ],
+        "nome_completo": "Yan Bueno Couto",
+        "tm_nascimento": "03/06/2002",
+        "tm_naturalidade": "Curitiba, Brasil",
+        "tm_altura": "1,68 m",
+        "tm_pe": "Direito",
+        "tm_empresario": "CAA Stellar",
+        "tm_clube_desde": "01/07/2025",
+        "tm_contrato": "30/06/2030",
+        "tm_posicao_site": "Lateral Direito",
+        "tm_valor_mercado": "17,00 M. €",
+        "tm_valor_mercado_milhoes": 17.0,
+        "tm_valor_maximo": "25,00 M. €",
+        "tm_valor_maximo_milhoes": 25.0,
+        "tm_data_valor_maximo": "06/06/2024",
+        "tm_ultima_atualizacao": "26/05/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.68
     },
     "Denner": {
         "nome": "Denner",
@@ -155,7 +248,7 @@
         "grupo": "Reservas",
         "nota_vini": 7.0,
         "nota_roberto": 8.0,
-        "clube": "Corinthians",
+        "clube": "Chelsea FC",
         "idade": 18,
         "tipo": "Promessa 2030",
         "pontos_fortes": "Capacidade técnica invejável e ótima leitura tática.",
@@ -164,8 +257,23 @@
         "posicoes_multiplas": [
             "Lateral-esquerdo"
         ],
-        "tm_nacionalidades": [],
-        "tm_posicoes_secundarias_site": []
+        "tm_nacionalidades": [
+            "Brasil"
+        ],
+        "tm_posicoes_secundarias_site": [],
+        "nome_completo": "Denner Alves Evangelista Pereira",
+        "tm_nascimento": "25/02/2008",
+        "tm_altura": "1,75 m",
+        "tm_pe": "Esquerdo",
+        "tm_clube_desde": "01/07/2026",
+        "tm_contrato": "30/06/2032",
+        "tm_equipador": "adidas",
+        "tm_posicao_site": "Lateral Esquerdo",
+        "tm_observacao": "Primo de Gabriel Magalhães (FC Arsenal).",
+        "tm_valor_transferencia": "10,00 M. €",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.75
     },
     "Luciano Juba": {
         "nome": "Luciano Juba",
@@ -224,8 +332,29 @@
         "posicoes_multiplas": [
             "Zagueiro"
         ],
-        "tm_nacionalidades": [],
-        "tm_posicoes_secundarias_site": []
+        "tm_nacionalidades": [
+            "Brasil"
+        ],
+        "tm_posicoes_secundarias_site": [],
+        "nome_completo": "Gabriel dos Santos Magalhães",
+        "tm_nascimento": "19/12/1997",
+        "tm_naturalidade": "São Paulo, Brasil",
+        "tm_altura": "1,90 m",
+        "tm_pe": "Esquerdo",
+        "tm_empresario": "Bertolucci Sports",
+        "tm_clube_desde": "01/09/2020",
+        "tm_contrato": "30/06/2029",
+        "tm_ultima_renovacao": "06/06/2025",
+        "tm_posicao_site": "Defesa Central",
+        "tm_valor_mercado": "75,00 M. €",
+        "tm_valor_mercado_milhoes": 75.0,
+        "tm_valor_maximo": "75,00 M. €",
+        "tm_valor_maximo_milhoes": 75.0,
+        "tm_data_valor_maximo": "30/09/2024",
+        "tm_ultima_atualizacao": "02/06/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.9
     },
     "Lucas Beraldo": {
         "nome": "Lucas Beraldo",
@@ -415,8 +544,34 @@
             "Segundo atacante",
             "Centroavante"
         ],
-        "tm_nacionalidades": [],
-        "tm_posicoes_secundarias_site": []
+        "tm_nacionalidades": [
+            "Brasil",
+            "Espanha"
+        ],
+        "tm_posicoes_secundarias_site": [
+            "Extremo Esquerdo",
+            "Ponta de Lança"
+        ],
+        "nome_completo": "Rodrygo Silva de Goes",
+        "tm_nascimento": "09/01/2001",
+        "tm_naturalidade": "Osasco, Brasil",
+        "tm_altura": "1,74 m",
+        "tm_pe": "Direito",
+        "tm_empresario": "Familiar",
+        "tm_clube_desde": "01/07/2019",
+        "tm_contrato": "30/06/2028",
+        "tm_ultima_renovacao": "02/11/2023",
+        "tm_equipador": "adidas",
+        "tm_posicao_site": "Extremo Direito",
+        "tm_valor_mercado": "45,00 M. €",
+        "tm_valor_mercado_milhoes": 45.0,
+        "tm_valor_maximo": "110,00 M. €",
+        "tm_valor_maximo_milhoes": 110.0,
+        "tm_data_valor_maximo": "06/06/2024",
+        "tm_ultima_atualizacao": "04/06/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.74
     },
     "Breno Bidon": {
         "nome": "Breno Bidon",
@@ -468,7 +623,7 @@
         "grupo": "Observação",
         "nota_vini": 7.5,
         "nota_roberto": 7.5,
-        "clube": "Grêmio",
+        "clube": "Grêmio FBPA",
         "idade": 18,
         "tipo": "Promessa 2030",
         "pontos_fortes": "Passe cirúrgico, criatividade acima da média e inteligência.",
@@ -479,8 +634,31 @@
             "Ponta-esquerda",
             "Segundo atacante"
         ],
-        "tm_nacionalidades": [],
-        "tm_posicoes_secundarias_site": []
+        "tm_nacionalidades": [
+            "Brasil"
+        ],
+        "tm_posicoes_secundarias_site": [
+            "Extremo Esquerdo",
+            "Extremo Direito"
+        ],
+        "nome_completo": "Gabriel Ferreira de Carvalho",
+        "tm_nascimento": "11/04/2008",
+        "tm_naturalidade": "Campos dos Goytacazes, Brasil",
+        "tm_altura": "1,73 m",
+        "tm_pe": "Ambos",
+        "tm_empresario": "Hub Agent Sports",
+        "tm_clube_desde": "28/01/2025",
+        "tm_contrato": "30/06/2027",
+        "tm_posicao_site": "Médio Ofensivo",
+        "tm_valor_mercado": "16,00 M. €",
+        "tm_valor_mercado_milhoes": 16.0,
+        "tm_valor_maximo": "16,00 M. €",
+        "tm_valor_maximo_milhoes": 16.0,
+        "tm_data_valor_maximo": "25/05/2026",
+        "tm_ultima_atualizacao": "25/05/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.73
     },
     "Vinicius Junior": {
         "nome": "Vinicius Junior",
@@ -1959,5 +2137,218 @@
         "tm_fonte": "Imagem fornecida pelo usuário",
         "tm_extraido_em": "17/07/2026",
         "tm_altura_metros": 1.86
+    },
+    "Luiz Henrique": {
+        "nome": "Luiz Henrique",
+        "nome_completo": "Luiz Henrique André Rosa da Silva",
+        "posicao": "Ponta-direita",
+        "posicoes_multiplas": [
+            "Ponta-direita",
+            "Ponta-esquerda",
+            "Centroavante"
+        ],
+        "clube": "Zenit São Petersburgo",
+        "idade": 25,
+        "grupo": "Observação",
+        "tipo": "Observação",
+        "nota_vini": 0.0,
+        "nota_roberto": 0.0,
+        "pontos_fortes": "",
+        "pontos_fracos": "",
+        "historico": "",
+        "tm_nascimento": "02/01/2001",
+        "tm_naturalidade": "Petrópolis, Brasil",
+        "tm_altura": "1,82 m",
+        "tm_nacionalidades": [
+            "Brasil"
+        ],
+        "tm_pe": "Esquerdo",
+        "tm_empresario": "REASON FOOTBALL",
+        "tm_clube_desde": "20/01/2025",
+        "tm_contrato": "31/12/2028",
+        "tm_opcao_contrato": "Mais um ano",
+        "tm_equipador": "adidas",
+        "tm_posicao_site": "Extremo Direito",
+        "tm_posicoes_secundarias_site": [
+            "Extremo Esquerdo",
+            "Ponta de Lança"
+        ],
+        "tm_valor_mercado": "24,00 M. €",
+        "tm_valor_mercado_milhoes": 24.0,
+        "tm_valor_maximo": "25,00 M. €",
+        "tm_valor_maximo_milhoes": 25.0,
+        "tm_data_valor_maximo": "18/03/2025",
+        "tm_ultima_atualizacao": "25/05/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.82
+    },
+    "Vitor Roque": {
+        "nome": "Vitor Roque",
+        "nome_completo": "Vitor Hugo Roque Ferreira",
+        "posicao": "Centroavante",
+        "posicoes_multiplas": [
+            "Centroavante",
+            "Segundo atacante",
+            "Ponta-esquerda"
+        ],
+        "clube": "SE Palmeiras",
+        "idade": 21,
+        "grupo": "Observação",
+        "tipo": "Observação",
+        "nota_vini": 0.0,
+        "nota_roberto": 0.0,
+        "pontos_fortes": "",
+        "pontos_fracos": "",
+        "historico": "",
+        "tm_nascimento": "28/02/2005",
+        "tm_naturalidade": "Timóteo, Brasil",
+        "tm_altura": "1,74 m",
+        "tm_nacionalidades": [
+            "Brasil"
+        ],
+        "tm_pe": "Direito",
+        "tm_empresario": "LINK SPORTS",
+        "tm_clube_desde": "28/02/2025",
+        "tm_contrato": "31/12/2029",
+        "tm_equipador": "Nike",
+        "tm_posicao_site": "Ponta de Lança",
+        "tm_posicoes_secundarias_site": [
+            "Segundo Avançado",
+            "Extremo Esquerdo"
+        ],
+        "tm_valor_mercado": "38,00 M. €",
+        "tm_valor_mercado_milhoes": 38.0,
+        "tm_valor_maximo": "40,00 M. €",
+        "tm_valor_maximo_milhoes": 40.0,
+        "tm_data_valor_maximo": "10/12/2023",
+        "tm_ultima_atualizacao": "25/05/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.74
+    },
+    "Gabriel Moscardo": {
+        "nome": "Gabriel Moscardo",
+        "nome_completo": "Gabriel Silva Moscardo de Salles",
+        "posicao": "Volante",
+        "posicoes_multiplas": [
+            "Volante"
+        ],
+        "clube": "RCD Espanyol",
+        "idade": 20,
+        "grupo": "Observação",
+        "tipo": "Promessa 2030",
+        "nota_vini": 0.0,
+        "nota_roberto": 0.0,
+        "pontos_fortes": "",
+        "pontos_fracos": "",
+        "historico": "",
+        "tm_nascimento": "28/09/2005",
+        "tm_naturalidade": "Taubaté, Brasil",
+        "tm_altura": "1,85 m",
+        "tm_nacionalidades": [
+            "Brasil"
+        ],
+        "tm_pe": "Direito",
+        "tm_empresario": "SportsMaxi",
+        "tm_clube_desde": "08/07/2026",
+        "tm_contrato": "30/06/2027",
+        "tm_emprestado_de": "FC Paris Saint-Germain",
+        "tm_contrato_clube_origem": "30/06/2028",
+        "tm_equipador": "adidas",
+        "tm_posicao_site": "Médio Defensivo",
+        "tm_posicoes_secundarias_site": [],
+        "tm_valor_mercado": "7,00 M. €",
+        "tm_valor_mercado_milhoes": 7.0,
+        "tm_valor_maximo": "15,00 M. €",
+        "tm_valor_maximo_milhoes": 15.0,
+        "tm_data_valor_maximo": "10/12/2023",
+        "tm_ultima_atualizacao": "27/05/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.85
+    },
+    "Roger Ibañez": {
+        "nome": "Roger Ibañez",
+        "nome_completo": "Roger Ibañez da Silva",
+        "posicao": "Zagueiro",
+        "posicoes_multiplas": [
+            "Zagueiro",
+            "Lateral-direito"
+        ],
+        "clube": "Al-Ahli SFC",
+        "idade": 27,
+        "grupo": "Observação",
+        "tipo": "Observação",
+        "nota_vini": 0.0,
+        "nota_roberto": 0.0,
+        "pontos_fortes": "",
+        "pontos_fracos": "",
+        "historico": "",
+        "tm_nascimento": "23/11/1998",
+        "tm_naturalidade": "Canela, Brasil",
+        "tm_altura": "1,86 m",
+        "tm_nacionalidades": [
+            "Brasil",
+            "Itália"
+        ],
+        "tm_pe": "Direito",
+        "tm_empresario": "Promanager",
+        "tm_clube_desde": "10/08/2023",
+        "tm_contrato": "30/06/2027",
+        "tm_posicao_site": "Defesa Central",
+        "tm_posicoes_secundarias_site": [
+            "Lateral Direito"
+        ],
+        "tm_valor_mercado": "18,00 M. €",
+        "tm_valor_mercado_milhoes": 18.0,
+        "tm_valor_maximo": "30,00 M. €",
+        "tm_valor_maximo_milhoes": 30.0,
+        "tm_data_valor_maximo": "20/03/2023",
+        "tm_ultima_atualizacao": "03/06/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.86
+    },
+    "Lucca Meirelles": {
+        "nome": "Lucca Meirelles",
+        "nome_completo": "Lucca Oliveira Meirelles",
+        "posicao": "Centroavante",
+        "posicoes_multiplas": [
+            "Centroavante",
+            "Ponta-esquerda"
+        ],
+        "clube": "Shakhtar Donetsk",
+        "idade": 19,
+        "grupo": "Observação",
+        "tipo": "Promessa 2030",
+        "nota_vini": 0.0,
+        "nota_roberto": 0.0,
+        "pontos_fortes": "",
+        "pontos_fracos": "",
+        "historico": "",
+        "tm_nascimento": "15/03/2007",
+        "tm_naturalidade": "Goiânia, Brasil",
+        "tm_altura": "1,85 m",
+        "tm_nacionalidades": [
+            "Brasil"
+        ],
+        "tm_pe": "Direito",
+        "tm_empresario": "Bertolucci Sports",
+        "tm_clube_desde": "28/08/2025",
+        "tm_contrato": "30/06/2030",
+        "tm_posicao_site": "Ponta de Lança",
+        "tm_posicoes_secundarias_site": [
+            "Extremo Esquerdo"
+        ],
+        "tm_valor_mercado": "10,00 M. €",
+        "tm_valor_mercado_milhoes": 10.0,
+        "tm_valor_maximo": "10,00 M. €",
+        "tm_valor_maximo_milhoes": 10.0,
+        "tm_data_valor_maximo": "17/12/2025",
+        "tm_ultima_atualizacao": "01/06/2026",
+        "tm_fonte": "Imagem fornecida pelo usuário",
+        "tm_extraido_em": "17/07/2026",
+        "tm_altura_metros": 1.85
     }
 }
