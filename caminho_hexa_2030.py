@@ -152,7 +152,7 @@ st.markdown("""
         margin-bottom: 18px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
-    
+
     /* Sidebar Forçando Cores WCAG */
     section[data-testid="stSidebar"] {
         background-color: #020617 !important;
@@ -167,6 +167,7 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
+    /* Clean UI Customizations */
     header[data-testid="stHeader"], #MainMenu, footer, .stDeployButton {
         display: none !important;
     }
@@ -184,7 +185,6 @@ ABREVIACOES = {
 }
 
 def extrair_numero(valor_texto, padrao=0.0):
-    """Extrai valor numérico via RegEx para viabilizar cálculos (ex: financeiro e altura)."""
     if not valor_texto or valor_texto == "N/A":
         return padrao
     texto_min = str(valor_texto).lower()
@@ -200,9 +200,48 @@ def extrair_numero(valor_texto, padrao=0.0):
     return padrao
 
 # ==========================================
-# 4. GERENCIAMENTO DE BANCO DE DADOS (JSON)
+# 4. GERENCIAMENTO DE BANCO DE DADOS (JSON) & SELF-HEALING
 # ==========================================
 DATA_FILE = "jogadores_hexa_2030.json"
+
+# Injeção Completa da Base Histórica
+BASE_HISTORICA_COMPLETA = {
+    "Alisson": {"nome": "Alisson", "posicao": "Goleiro", "grupo": "Titulares", "nota_vini": 7.0, "nota_roberto": 7.5, "clube": "Liverpool", "idade": 33, "tipo": "Certeza Atual", "pontos_fortes": "Excelente posicionamento e carreira internacional sólida.", "pontos_fracos": "Idade avançada para o planejamento de longo prazo de 2030.", "historico": "Vini prefere sua liderança experiente, enquanto Roberto defende transição rápida.", "posicoes_multiplas": ["Goleiro"]},
+    "Brazão": {"nome": "Brazão", "posicao": "Goleiro", "grupo": "Reservas", "nota_vini": 7.5, "nota_roberto": 7.5, "clube": "Santos", "idade": 25, "tipo": "Promessa 2030", "pontos_fortes": "Físico privilegiado e excelente potencial sob as traves.", "pontos_fracos": "Necessita de mais testes sob extrema pressão tática.", "historico": "Ambos concordam que ele reúne totais condições de disputar a titularidade.", "posicoes_multiplas": ["Goleiro"]},
+    "Lucas Perri": {"nome": "Lucas Perri", "posicao": "Goleiro", "grupo": "Observação", "nota_vini": 6.5, "nota_roberto": 6.0, "clube": "Lyon", "idade": 28, "tipo": "Observação", "pontos_fortes": "Físico imponente e experiência recente em solo europeu.", "pontos_fracos": "Oscilações em momentos de alta carga decisiva.", "historico": "Visto como opção viável de elenco, mas sem garantias de liderar a meta.", "posicoes_multiplas": ["Goleiro"]},
+    "Wesley França": {"nome": "Wesley França", "posicao": "Lateral-direito", "grupo": "Titulares", "nota_vini": 7.5, "nota_roberto": 7.5, "clube": "AS Roma", "idade": 22, "tipo": "Certeza Atual", "pontos_fortes": "Velocidade impressionante e excelente transição ofensiva.", "pontos_fracos": "Precisa calibrar o posicionamento defensivo nas coberturas.", "historico": "Roberto aposta em sua evolução máxima. Unanimidade no corredor direito.", "posicoes_multiplas": ["Lateral-direito", "Lateral-esquerdo"]},
+    "Kaiki Bruno": {"nome": "Kaiki Bruno", "posicao": "Lateral-esquerdo", "grupo": "Titulares", "nota_vini": 6.0, "nota_roberto": 6.0, "clube": "Cruzeiro", "idade": 23, "tipo": "Certeza Atual", "pontos_fortes": "Apoio tático consistente e boa margem para evolução física.", "pontos_fracos": "Ainda inexperiente em confrontos internacionais de alto calibre.", "historico": "Aprovado por Roberto para iniciar a rodagem de testes devido ao gargalo do setor.", "posicoes_multiplas": ["Lateral-esquerdo"]},
+    "Yan Couto": {"nome": "Yan Couto", "posicao": "Lateral-direito", "grupo": "Reservas", "nota_vini": 7.5, "nota_roberto": 7.0, "clube": "Borussia Dortmund", "idade": 24, "tipo": "Certeza Atual", "pontos_fortes": "Fácil associação no terço final e boa técnica de cruzamento.", "pontos_fracos": "Pode deixar o setor defensivo exposto ao subir constantemente.", "historico": "Grande opção de rotação para manter a intensidade do ataque lateral.", "posicoes_multiplas": ["Lateral-direito", "Mezzala direito"]},
+    "Denner": {"nome": "Denner", "posicao": "Lateral-esquerdo", "grupo": "Reservas", "nota_vini": 7.0, "nota_roberto": 8.0, "clube": "Corinthians", "idade": 18, "tipo": "Promessa 2030", "pontos_fortes": "Capacidade técnica invejável e ótima leitura tática.", "pontos_fracos": "Muito jovem, precisa ser lapidado no time principal profissional.", "historico": "Roberto projeta teto competitivo muito elevado, similar a estrelas globais.", "posicoes_multiplas": ["Lateral-esquerdo"]},
+    "Luciano Juba": {"nome": "Luciano Juba", "posicao": "Lateral-esquerdo", "grupo": "Observação", "nota_vini": 6.5, "nota_roberto": 7.0, "clube": "Bahia", "idade": 26, "tipo": "Observação", "pontos_fortes": "Excelente batida na bola e grande carisma com a torcida.", "pontos_fracos": "Dúvidas se suportaria o ritmo físico de pontas de elite na Copa.", "historico": "Roberto valoriza sua bola parada, enquanto Vini demonstra ressalvas táticas.", "posicoes_multiplas": ["Lateral-esquerdo"]},
+    "Gabriel Magalhães": {"nome": "Gabriel Magalhães", "posicao": "Zagueiro", "grupo": "Titulares", "nota_vini": 9.0, "nota_roberto": 9.0, "clube": "FC Arsenal", "idade": 28, "tipo": "Certeza Atual", "pontos_fortes": "Combate aéreo imbatível, liderança nata e estabilidade de elite.", "pontos_fracos": "Nenhum ponto fraco relevante apontado no ciclo tático.", "historico": "Dono absoluto da posição e grande líder da defesa brasileira.", "posicoes_multiplas": ["Zagueiro"]},
+    "Lucas Beraldo": {"nome": "Lucas Beraldo", "posicao": "Zagueiro", "grupo": "Titulares", "nota_vini": 8.0, "nota_roberto": 8.0, "clube": "Paris Saint-Germain", "idade": 22, "tipo": "Certeza Atual", "pontos_fortes": "Saída de bola primorosa e excelente senso de antecipação.", "pontos_fracos": "Pode sofrer contra atacantes de extrema imposição física direta.", "historico": "Cotado como curinga, podendo atuar também como primeiro homem de meio-campo.", "posicoes_multiplas": ["Zagueiro", "Lateral-esquerdo"]},
+    "Murillo": {"nome": "Murillo", "posicao": "Zagueiro", "grupo": "Reservas", "nota_vini": 8.0, "nota_roberto": 8.0, "clube": "Nottingham Forest", "idade": 23, "tipo": "Certeza Atual", "pontos_fortes": "Força física impressionante nos duelos terrestres e ótimo passe longo.", "pontos_fracos": "Precisa ganhar mais minutos em jogos oficiais da seleção principal.", "historico": "Garante segurança total para qualquer alteração na dupla de zaga.", "posicoes_multiplas": ["Zagueiro"]},
+    "Andrey Santos": {"nome": "Andrey Santos", "posicao": "Volante", "grupo": "Titulares", "nota_vini": 7.5, "nota_roberto": 8.0, "clube": "Chelsea FC", "idade": 22, "tipo": "Certeza Atual", "pontos_fortes": "Volante moderno de grande infiltração na área e pegada defensiva.", "pontos_fracos": "Precisa de estabilidade técnica como titular absoluto na Europa.", "historico": "Escolhido para ser a grande engrenagem de sustentação do meio-campo brasileiro.", "posicoes_multiplas": ["Volante", "Mezzala esquerdo", "Mezzala direito", "Lateral-esquerdo"]},
+    "Bruno Guimarães": {"nome": "Bruno Guimarães", "posicao": "Mezzala esquerdo", "grupo": "Titulares", "nota_vini": 8.0, "nota_roberto": 8.5, "clube": "Newcastle", "idade": 28, "tipo": "Certeza Atual", "pontos_fortes": "Visão de jogo privilegiada e passes precisos que quebram linhas defensivas.", "pontos_fracos": "Desgaste em partidas que exijam excessiva cobertura de campo.", "historico": "Considerado indispensável para ditar o ritmo de posse de bola do time.", "posicoes_multiplas": ["Mezzala esquerdo", "Mezzala direito", "Volante"]},
+    "Rodrygo": {"nome": "Rodrygo", "posicao": "Meia-armador", "grupo": "Titulares", "nota_vini": 8.0, "nota_roberto": 8.0, "clube": "Real Madrid CF", "idade": 25, "tipo": "Certeza Atual", "pontos_fortes": "Técnica apurada, facilidade no drible e ótimo poder de decisão.", "pontos_fracos": "Não possui características naturais de cadência de jogo.", "historico": "Atua como o elo criativo dinâmico para dar verticalidade às jogadas táticas.", "posicoes_multiplas": ["Meia-armador", "Ponta-direita", "Ponta-esquerda", "Segundo atacante", "Centroavante"]},
+    "Breno Bidon": {"nome": "Breno Bidon", "posicao": "Mezzala esquerdo", "grupo": "Reservas", "nota_vini": 7.0, "nota_roberto": 8.0, "clube": "Corinthians", "idade": 21, "tipo": "Promessa 2030", "pontos_fortes": "Controle refinado da bola e estilo tático clássico brasileiro.", "pontos_fracos": "Necessita adquirir maior massa física e experiência tática europeia.", "historico": "Identificado como potencial herdeiro técnico para as próximas competições.", "posicoes_multiplas": ["Mezzala esquerdo", "Mezzala direito", "Volante", "Meia-armador"]},
+    "Gabriel Mec": {"nome": "Gabriel Mec", "posicao": "Meia-armador", "grupo": "Observação", "nota_vini": 7.5, "nota_roberto": 7.5, "clube": "Grêmio", "idade": 18, "tipo": "Promessa 2030", "pontos_fortes": "Passe cirúrgico, criatividade acima da média e inteligência.", "pontos_fracos": "Ainda em processo inicial de maturação física no esporte profissional.", "historico": "Vini acompanha de perto o garoto, vislumbrando um armador ideal para o futuro.", "posicoes_multiplas": ["Meia-armador", "Ponta-esquerda", "Segundo atacante"]},
+    "Vinicius Junior": {"nome": "Vinicius Junior", "posicao": "Ponta-esquerda", "grupo": "Titulares", "nota_vini": 9.0, "nota_roberto": 9.0, "clube": "Real Madrid CF", "idade": 26, "tipo": "Certeza Atual", "pontos_fortes": "Melhor drible do planeta, aceleração letal e faro de gols em decisões.", "pontos_fracos": "Pode sofrer desgaste físico excessivo se isolado na ponta.", "historico": "A principal referência ofensiva e grande estrela do planejamento nacional.", "posicoes_multiplas": ["Ponta-esquerda", "Segundo atacante", "Centroavante", "Meia-esquerda"]},
+    "Estevão": {"nome": "Estevão", "posicao": "Ponta-direita", "grupo": "Titulares", "nota_vini": 9.0, "nota_roberto": 10.0, "clube": "Chelsea FC", "idade": 19, "tipo": "Promessa 2030", "pontos_fortes": "Capacidade de drible genial, mentalidade vencedora e criatividade extrema.", "pontos_fracos": "Cuidados necessários com a carga física nesta transição inicial.", "historico": "Classificado com nota 10 por Roberto devido à sua genialidade sem precedentes.", "posicoes_multiplas": ["Ponta-direita", "Meia-armador", "Meia-direita"]},
+    "Endrick": {"nome": "Endrick", "posicao": "Centroavante", "grupo": "Titulares", "nota_vini": 8.0, "nota_roberto": 9.0, "clube": "Real Madrid CF", "idade": 19, "tipo": "Certeza Atual", "pontos_fortes": "Explosão muscular fantástica, poder de chute e faro artilheiro.", "pontos_fracos": "Necessita de minutagem constante em competições de elite.", "historico": "O centroavante titular absoluto projetado para liderar o ataque em 2030.", "posicoes_multiplas": ["Centroavante", "Segundo atacante", "Ponta-direita"]},
+    "Gabriel Martinelli": {"nome": "Gabriel Martinelli", "posicao": "Ponta-esquerda", "grupo": "Reservas", "nota_vini": 7.5, "nota_roberto": 8.0, "clube": "FC Arsenal", "idade": 25, "tipo": "Certeza Atual", "pontos_fortes": "Intensidade sem a bola, recomposição exemplar e poder de explosão.", "pontos_fracos": "Menor refino técnico se comparado aos titulares da ponta.", "historico": "Roberto destaca sua competitividade tática incomparável no elenco.", "posicoes_multiplas": ["Ponta-esquerda", "Meia-armador", "Mezzala esquerdo"]},
+    "João Gomes": {"nome": "João Gomes", "nome_completo": "João Victor Gomes da Silva", "posicao": "Volante", "grupo": "Reservas", "nota_vini": 7.5, "nota_roberto": 8.0, "clube": "Wolverhampton Wanderers", "idade": 25, "tipo": "Certeza Atual", "pontos_fortes": "Combate defensivo agressivo de elite, alto índice de desarmes e fôlego interminável.", "pontos_fracos": "Controle disciplinar e passes longos de quebra de bloco.", "historico": "O verdadeiro cão de guarda do radar. Excelente para fechar a casinha.", "posicoes_multiplas": ["Volante", "Mezzala direito", "Mezzala esquerdo", "Meia-direita"]},
+    "Allan": {"nome": "Allan", "posicao": "Ponta-direita", "clube": "SE Palmeiras", "idade": 22, "grupo": "Observação", "tipo": "Promessa 2030", "nota_vini": 7.0, "nota_roberto": 7.5, "pontos_fortes": "Dinâmica veloz na ponta e controle colado.", "posicoes_multiplas": ["Ponta-direita", "Meia-armador", "Mezzala direito"]},
+    "Diego Callai": {"nome": "Diego Callai", "posicao": "Goleiro", "clube": "Sporting CP B", "idade": 22, "grupo": "Observação", "tipo": "Observação", "nota_vini": 6.5, "nota_roberto": 6.5, "posicoes_multiplas": ["Goleiro"]},
+    "Luis Gustavo": {"nome": "Luis Gustavo", "posicao": "Zagueiro", "clube": "SE Palmeiras", "idade": 20, "grupo": "Observação", "tipo": "Promessa 2030", "nota_vini": 7.0, "nota_roberto": 7.0, "posicoes_multiplas": ["Zagueiro"]},
+    "Guilherme Garutti": {"nome": "Guilherme Garutti", "posicao": "Zagueiro", "clube": "ACSC FC Arges", "idade": 32, "grupo": "Observação", "tipo": "Certeza Atual", "nota_vini": 6.0, "nota_roberto": 6.5, "posicoes_multiplas": ["Zagueiro"]},
+    "Luis Felipe": {"nome": "Luis Felipe", "posicao": "Volante", "clube": "SE Palmeiras Sub-20", "idade": 18, "grupo": "Observação", "tipo": "Promessa 2030", "nota_vini": 6.5, "nota_roberto": 7.0, "posicoes_multiplas": ["Volante", "Mezzala direito", "Mezzala esquerdo"]},
+    "Jhuan": {"nome": "Jhuan", "posicao": "Ponta-direita", "clube": "RB Bragantino Sub-20", "idade": 19, "grupo": "Observação", "tipo": "Observação", "nota_vini": 6.0, "nota_roberto": 6.5, "posicoes_multiplas": ["Ponta-direita"]},
+    "Carlos Miguel": {"nome": "Carlos Miguel", "posicao": "Goleiro", "clube": "SE Palmeiras", "idade": 27, "grupo": "Observação", "tipo": "Certeza Atual", "nota_vini": 7.0, "nota_roberto": 7.0, "posicoes_multiplas": ["Goleiro"]},
+    "Leonardo Nannetti": {"nome": "Leonardo Nannetti", "posicao": "Goleiro", "clube": "CR Flamengo Sub-20", "idade": 18, "grupo": "Observação", "tipo": "Promessa 2030", "nota_vini": 6.5, "nota_roberto": 7.0, "posicoes_multiplas": ["Goleiro"]},
+    "Hugo Souza": {"nome": "Hugo Souza", "posicao": "Goleiro", "clube": "SC Corinthians", "idade": 27, "grupo": "Reservas", "tipo": "Certeza Atual", "nota_vini": 7.5, "nota_roberto": 7.5, "posicoes_multiplas": ["Goleiro"]},
+    "Igor Jesus": {"nome": "Igor Jesus", "posicao": "Centroavante", "clube": "Nottingham Forest", "idade": 25, "grupo": "Reservas", "tipo": "Certeza Atual", "nota_vini": 7.5, "nota_roberto": 8.0, "posicoes_multiplas": ["Centroavante"]},
+    "Kauã Elias": {"nome": "Kauã Elias", "posicao": "Centroavante", "clube": "Shakhtar Donetsk", "idade": 20, "grupo": "Observação", "tipo": "Promessa 2030", "nota_vini": 7.5, "nota_roberto": 8.0, "posicoes_multiplas": ["Centroavante", "Segundo atacante"]},
+    "André": {"nome": "André", "posicao": "Mezzala esquerdo", "clube": "Wolverhampton Wanderers", "idade": 24, "grupo": "Reservas", "nota_vini": 7.5, "nota_roberto": 7.5, "posicoes_multiplas": ["Mezzala esquerdo", "Mezzala direito", "Volante", "Meia-esquerda"]},
+    "Matheus Cunha": {"nome": "Matheus Cunha", "posicao": "Centroavante", "clube": "Wolverhampton Wanderers", "idade": 27, "grupo": "Reservas", "nota_vini": 7.0, "nota_roberto": 7.5, "posicoes_multiplas": ["Centroavante", "Segundo atacante", "Meia-armador"]},
+    "Danilo": {"nome": "Danilo", "posicao": "Volante", "clube": "Juventus", "idade": 25, "grupo": "Observação", "nota_vini": 6.5, "nota_roberto": 7.0, "posicoes_multiplas": ["Volante", "Mezzala direito", "Mezzala esquerdo"]}
+}
 
 def normalizar_banco_dados(data):
     if "Vini Jr." in data:
@@ -213,47 +252,7 @@ def normalizar_banco_dados(data):
         data["Wesley França"] = data.pop("Wesley")
         data["Wesley França"]["nome"] = "Wesley França"
 
-    # Atualizações estritas priorizando comissão técnica do Brasil
-    atualizacoes_obrigatorias = {
-        "Yan Couto": {"posicao": "Lateral-direito", "posicoes_multiplas": ["Lateral-direito", "Mezzala direito"], "clube": "Borussia Dortmund", "tm_nascimento": "03/06/2002", "tm_naturalidade": "Curitiba, Brasil", "tm_altura": "1,68 m", "tm_pe": "direito", "tm_empresario": "CAA Stellar", "tm_contrato": "30/06/2030", "tm_valor_mercado": "17,00 M. €"},
-        "Andrey Santos": {"posicao": "Volante", "posicoes_multiplas": ["Volante", "Mezzala esquerdo", "Mezzala direito", "Lateral-esquerdo"], "clube": "Chelsea FC", "tm_nascimento": "03/05/2004", "tm_naturalidade": "Rio de Janeiro, Brasil", "tm_altura": "1,80 m", "tm_pe": "direito", "tm_empresario": "Bertolucci Sports", "tm_contrato": "30/06/2031", "tm_equipador": "adidas", "tm_valor_mercado": "40,00 M. €"},
-        "Estevão": {"posicao": "Ponta-direita", "posicoes_multiplas": ["Ponta-direita", "Meia-armador", "Meia-direita"], "clube": "Chelsea FC", "tm_nascimento": "24/04/2007", "tm_naturalidade": "Franca, Brasil", "tm_altura": "1,78 m", "tm_pe": "esquerdo", "tm_empresario": "LINK SPORTS", "tm_contrato": "30/06/2033", "tm_equipador": "Nike", "tm_valor_mercado": "80,00 M. €"},
-        "Vinicius Junior": {"posicao": "Ponta-esquerda", "posicoes_multiplas": ["Ponta-esquerda", "Segundo atacante", "Centroavante", "Meia-esquerda"], "clube": "Real Madrid CF", "tm_nascimento": "12/07/2000", "tm_naturalidade": "São Gonçalo, Brasil", "tm_altura": "1,76 m", "tm_pe": "direito", "tm_empresario": "Roc Nation Sports", "tm_contrato": "30/06/2027", "tm_equipador": "Nike", "tm_valor_mercado": "140,00 M. €"},
-        "Endrick": {"posicao": "Centroavante", "posicoes_multiplas": ["Centroavante", "Segundo atacante", "Ponta-direita"], "clube": "Real Madrid CF", "tm_nascimento": "21/07/2006", "tm_naturalidade": "Taguatinga, Brasil", "tm_altura": "1,72 m", "tm_pe": "esquerdo", "tm_empresario": "Roc Nation Sports", "tm_contrato": "30/06/2030", "tm_equipador": "New Balance", "tm_valor_mercado": "40,00 M. €"},
-        "Gabriel Magalhães": {"posicao": "Zagueiro", "posicoes_multiplas": ["Zagueiro"], "clube": "FC Arsenal", "tm_nascimento": "19/12/1997", "tm_naturalidade": "São Paulo, Brasil", "tm_altura": "1,90 m", "tm_pe": "esquerdo", "tm_empresario": "Bertolucci Sports", "tm_contrato": "30/06/2029", "tm_equipador": "N/A", "tm_valor_mercado": "75,00 M. €"},
-        "Rodrygo": {"posicao": "Ponta-direita", "posicoes_multiplas": ["Ponta-direita", "Ponta-esquerda", "Meia-armador", "Segundo atacante", "Centroavante", "Meia-direita"], "clube": "Real Madrid CF", "tm_nascimento": "09/01/2001", "tm_naturalidade": "Osasco, Brasil", "tm_altura": "1,74 m", "tm_pe": "direito", "tm_empresario": "Familiar", "tm_contrato": "30/06/2028", "tm_equipador": "adidas", "tm_valor_mercado": "45,00 M. €"},
-        "Wesley França": {"posicao": "Lateral-direito", "posicoes_multiplas": ["Lateral-direito", "Lateral-esquerdo"], "clube": "AS Roma", "tm_nascimento": "06/09/2003", "tm_naturalidade": "Açailândia, Brasil", "tm_altura": "1,78 m", "tm_pe": "direito", "tm_empresario": "MCL Agency", "tm_contrato": "30/06/2030", "tm_equipador": "Nike", "tm_valor_mercado": "40,00 M. €"},
-        "André": {"posicao": "Mezzala esquerdo", "posicoes_multiplas": ["Mezzala esquerdo", "Mezzala direito", "Volante", "Meia-esquerda"]},
-        "Bruno Guimarães": {"posicao": "Mezzala esquerdo", "posicoes_multiplas": ["Mezzala esquerdo", "Mezzala direito", "Volante", "Meia-esquerda", "Meia-direita"]}
-    }
-
-    for jogador, campos in atualizacoes_obrigatorias.items():
-        if jogador in data:
-            for campo, valor in campos.items():
-                data[jogador][campo] = valor
-
-    novos_atletas = {
-        "João Gomes": {
-            "nome": "João Gomes", "nome_completo": "João Victor Gomes da Silva", "posicao": "Volante", 
-            "posicoes_multiplas": ["Volante", "Mezzala direito", "Mezzala esquerdo", "Meia-direita"],
-            "clube": "Wolverhampton Wanderers", "idade": 25, "grupo": "Reservas", "tipo": "Certeza Atual", 
-            "nota_vini": 7.5, "nota_roberto": 8.0,
-            "pontos_fortes": "Combate defensivo agressivo de elite, alto índice de desarmes e fôlego interminável.", 
-            "pontos_fracos": "Controle disciplinar e passes longos de quebra de bloco.", 
-            "historico": "O verdadeiro cão de guarda do radar. Excelente para fechar a casinha."
-        }
-    }
-
-    # Mescla Segura (Self-Healing JSON)
-    for nome, dados in novos_atletas.items():
-        if nome not in data:
-            data[nome] = dados
-        else:
-            for k, v in dados.items():
-                if k.startswith('tm_') or k == "nome_completo" or k == "clube":
-                    data[nome][k] = v
-
-    # Padronização WCAG/Arquitetura de Limpeza
+    # Faxina de Padronização WCAG/Arquitetura
     pos_map_limpeza = {
         "Lateral Esquerdo": "Lateral-esquerdo", "Lateral Direito": "Lateral-direito",
         "Zagueiro Esquerdo": "Zagueiro", "Zagueiro Direito": "Zagueiro", "Zagueiro": "Zagueiro",
@@ -273,20 +272,29 @@ def normalizar_banco_dados(data):
     return data
 
 def carregar_jogadores():
-    contingencia = {
-        "Alisson": {"nome": "Alisson", "posicao": "Goleiro", "clube": "Liverpool", "idade": 33, "posicoes_multiplas": ["Goleiro"]}
-    }
     if not os.path.exists(DATA_FILE):
-        salvar_jogadores(contingencia)
-        return contingencia
-    try:
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        data = normalizar_banco_dados(data)
+        data = BASE_HISTORICA_COMPLETA.copy()
         salvar_jogadores(data)
-        return data if data else contingencia
-    except Exception:
-        return contingencia
+    else:
+        try:
+            with open(DATA_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # Rotina de Self-Healing: Injeta jogadores históricos faltantes
+            for nome, dados in BASE_HISTORICA_COMPLETA.items():
+                if nome not in data:
+                    data[nome] = dados
+                else:
+                    for k, v in dados.items():
+                        if k not in data:
+                            data[nome][k] = v
+
+        except Exception:
+            data = BASE_HISTORICA_COMPLETA.copy()
+            
+    data = normalizar_banco_dados(data)
+    salvar_jogadores(data)
+    return data
 
 def salvar_jogadores(data):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
@@ -338,7 +346,6 @@ def obter_dados_reais_clube(clube):
 # ==========================================
 # 6. MATRIZ TÁTICA DO CARLO ANCELOTTI
 # ==========================================
-# Ordem e balanceamento geométrico ajustados para otimização de espaço. CA não passa dos 82% do eixo Y.
 TATICAS = {
     "4-3-3 Diamante": {
         "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
@@ -468,7 +475,6 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
     
     with col_config:
         st.markdown("### 📋 Calibrar Escalação")
-        # As formações agora carregam na ordem exata solicitada (Imagem 01)
         tática_ativa = st.selectbox("Esquema Tático (Carlo Ancelotti):", list(TATICAS.keys()), key="tactical_selector")
         layout_ativo = TATICAS[tática_ativa]
         
@@ -597,7 +603,6 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
 
         st.markdown("---")
         
-        # Compartilhamento via Print Screen e Redes Sociais no lugar do Arquivo JSON (Imagem 03)
         escalados_nomes = list(st.session_state.escalados.values())
         mensagem_share = f"Montei minha Seleção Brasileira no esquema {tática_ativa} do app 'O Caminho para o Hexa'! 🏆\\n\\nMeu Time: {', '.join(escalados_nomes[:5])} e mais!\\n\\nMonte a sua também!"
         texto_codificado = urllib.parse.quote(mensagem_share)
@@ -761,7 +766,6 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("💡 Radar do Torcedor")
 
 with st.sidebar.form("form_sugestao", clear_on_submit=True):
-    # Alterado o termo para UX/UI mais amigável (Imagem 05)
     tipo_sugestao = st.selectbox("Tipo de Envio:", ["Sugerir Jogador", "Sugestão de Melhoria"])
     detalhes_sugestao = st.text_area("Conteúdo da Mensagem:", placeholder="Escreva sua sugestão...")
     
