@@ -176,7 +176,6 @@ st.markdown("""
 # ==========================================
 # 3. DICIONÁRIOS E FUNÇÕES DE LIMPEZA MATEMÁTICA
 # ==========================================
-# Adicionadas funções de Meia-esquerda (ME) e Meia-direita (MD)
 ABREVIACOES = {
     "Goleiro": "GOL", "Lateral-esquerdo": "LE", "Zagueiro": "ZAG", "Lateral-direito": "LD",
     "Volante": "VOL", "Mezzala esquerdo": "MCE", "Mezzala direito": "MCD", "Meia-armador": "MEI",
@@ -185,7 +184,7 @@ ABREVIACOES = {
 }
 
 def extrair_numero(valor_texto, padrao=0.0):
-    """Extrai valor numérico via RegEx. Ex: '175 mil €' -> 0.175 M | '20,00 M. €' -> 20.0 M"""
+    """Extrai valor numérico via RegEx para viabilizar cálculos (ex: financeiro e altura)."""
     if not valor_texto or valor_texto == "N/A":
         return padrao
     texto_min = str(valor_texto).lower()
@@ -233,7 +232,6 @@ def normalizar_banco_dados(data):
             for campo, valor in campos.items():
                 data[jogador][campo] = valor
 
-    # Adicionando o João Gomes para robustez tática
     novos_atletas = {
         "João Gomes": {
             "nome": "João Gomes", "nome_completo": "João Victor Gomes da Silva", "posicao": "Volante", 
@@ -340,84 +338,85 @@ def obter_dados_reais_clube(clube):
 # ==========================================
 # 6. MATRIZ TÁTICA DO CARLO ANCELOTTI
 # ==========================================
+# Ordem e balanceamento geométrico ajustados para otimização de espaço. CA não passa dos 82% do eixo Y.
 TATICAS = {
+    "4-3-3 Diamante": {
+        "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
+        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "28%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "22%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "22%", "ZAG"),
+        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "28%", "LD"),
+        "Mezzala Esquerdo (MCE)": (["Mezzala esquerdo", "Meia-esquerda", "Volante"], "Bruno Guimarães", "30%", "52%", "MCE"),
+        "Volante (VOL)": (["Volante"], "André", "50%", "40%", "VOL"),
+        "Mezzala Direito (MCD)": (["Mezzala direito", "Meia-direita", "Volante"], "João Gomes", "70%", "52%", "MCD"),
+        "Ponta-esquerda (PE)": (["Ponta-esquerda", "Segundo atacante"], "Vinicius Junior", "20%", "72%", "PE"),
+        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "82%", "CA"),
+        "Ponta-direita (PD)": (["Ponta-direita", "Meia-armador"], "Estevão", "80%", "72%", "PD")
+    },
     "4-3-3 Clássico": {
         "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
-        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "23%", "ZAG"),
-        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "26%", "LD"),
-        "Volante (VOL)": (["Volante"], "André", "38%", "46%", "VOL"),
-        "Volante Apoio (VOL)": (["Volante", "Mezzala esquerdo", "Mezzala direito"], "Bruno Guimarães", "62%", "46%", "VOL"),
-        "Meia-Armador (MEI)": (["Meia-armador"], "Rodrygo", "50%", "58%", "MEI"),
-        "Ponta-esquerda (PE)": (["Ponta-esquerda"], "Vinicius Junior", "20%", "80%", "PE"),
-        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "84%", "CA"),
-        "Ponta-direita (PD)": (["Ponta-direita"], "Estevão", "80%", "80%", "PD")
+        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "28%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "22%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "22%", "ZAG"),
+        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "28%", "LD"),
+        "Volante (VOL)": (["Volante"], "André", "38%", "45%", "VOL"),
+        "Volante Apoio (VOL)": (["Volante", "Mezzala esquerdo", "Mezzala direito"], "Bruno Guimarães", "62%", "45%", "VOL"),
+        "Meia-Armador (MEI)": (["Meia-armador"], "Rodrygo", "50%", "60%", "MEI"),
+        "Ponta-esquerda (PE)": (["Ponta-esquerda"], "Vinicius Junior", "20%", "72%", "PE"),
+        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "82%", "CA"),
+        "Ponta-direita (PD)": (["Ponta-direita"], "Estevão", "80%", "72%", "PD")
     },
     "4-4-2 Diamante": {
         "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
-        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "23%", "ZAG"),
-        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "26%", "LD"),
-        "Volante (VOL)": (["Volante"], "André", "50%", "42%", "VOL"),
-        "Mezzala Esquerdo (MCE)": (["Mezzala esquerdo"], "Bruno Guimarães", "32%", "53%", "MCE"),
-        "Mezzala Direito (MCD)": (["Mezzala direito", "Mezzala esquerdo", "Meia-armador"], "João Gomes", "68%", "53%", "MCD"),
+        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "28%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "22%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "22%", "ZAG"),
+        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "28%", "LD"),
+        "Volante (VOL)": (["Volante"], "André", "50%", "40%", "VOL"),
+        "Mezzala Esquerdo (MCE)": (["Mezzala esquerdo"], "Bruno Guimarães", "30%", "52%", "MCE"),
+        "Mezzala Direito (MCD)": (["Mezzala direito", "Mezzala esquerdo", "Meia-armador"], "João Gomes", "70%", "52%", "MCD"),
         "Meia-Armador (MEI)": (["Meia-armador"], "Rodrygo", "50%", "65%", "MEI"),
-        "Segundo Atacante (SA)": (["Segundo atacante", "Ponta-esquerda", "Ponta-direita", "Centroavante"], "Vinicius Junior", "35%", "83%", "SA"),
-        "Centroavante (CA)": (["Centroavante"], "Endrick", "65%", "83%", "CA")
+        "Segundo Atacante (SA)": (["Segundo atacante", "Ponta-esquerda", "Ponta-direita", "Centroavante"], "Vinicius Junior", "38%", "78%", "SA"),
+        "Centroavante (CA)": (["Centroavante"], "Endrick", "62%", "78%", "CA")
     },
     "4-4-2 Clássico": {
         "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
-        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "23%", "ZAG"),
-        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "26%", "LD"),
+        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "28%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "22%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "22%", "ZAG"),
+        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "28%", "LD"),
         "Meia-esquerda (ME)": (["Meia-esquerda", "Mezzala esquerdo", "Ponta-esquerda"], "Bruno Guimarães", "20%", "55%", "ME"),
         "Volante Esquerdo (VOL)": (["Volante"], "André", "40%", "45%", "VOL"),
         "Volante Direito (VOL)": (["Volante"], "João Gomes", "60%", "45%", "VOL"),
         "Meia-direita (MD)": (["Meia-direita", "Mezzala direito", "Ponta-direita"], "Estevão", "80%", "55%", "MD"),
-        "Segundo Atacante (SA)": (["Segundo atacante", "Meia-armador", "Ponta-esquerda"], "Vinicius Junior", "38%", "80%", "SA"),
-        "Centroavante (CA)": (["Centroavante", "Segundo atacante"], "Endrick", "62%", "83%", "CA")
-    },
-    "4-3-3 Diamante": {
-        "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
-        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "23%", "ZAG"),
-        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "26%", "LD"),
-        "Mezzala Esquerdo (MCE)": (["Mezzala esquerdo", "Meia-esquerda", "Volante"], "Bruno Guimarães", "30%", "45%", "MCE"),
-        "Volante (VOL)": (["Volante"], "André", "50%", "35%", "VOL"),
-        "Mezzala Direito (MCD)": (["Mezzala direito", "Meia-direita", "Volante"], "João Gomes", "70%", "45%", "MCD"),
-        "Ponta-esquerda (PE)": (["Ponta-esquerda", "Segundo atacante"], "Vinicius Junior", "20%", "75%", "PE"),
-        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "85%", "CA"),
-        "Ponta-direita (PD)": (["Ponta-direita", "Meia-armador"], "Estevão", "80%", "75%", "PD")
+        "Segundo Atacante (SA)": (["Segundo atacante", "Meia-armador", "Ponta-esquerda"], "Vinicius Junior", "38%", "78%", "SA"),
+        "Centroavante (CA)": (["Centroavante", "Segundo atacante"], "Endrick", "62%", "78%", "CA")
     },
     "4-2-3-1": {
         "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
-        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "23%", "ZAG"),
-        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "26%", "LD"),
+        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "28%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "22%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "22%", "ZAG"),
+        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "28%", "LD"),
         "Volante Esquerdo (VOL)": (["Volante", "Mezzala esquerdo"], "André", "38%", "42%", "VOL"),
         "Volante Direito (VOL)": (["Volante", "Mezzala direito"], "Bruno Guimarães", "62%", "42%", "VOL"),
         "Ponta-esquerda (PE)": (["Ponta-esquerda", "Meia-esquerda"], "Vinicius Junior", "20%", "65%", "PE"),
-        "Meia-Armador (MEI)": (["Meia-armador", "Segundo atacante"], "Rodrygo", "50%", "60%", "MEI"),
+        "Meia-Armador (MEI)": (["Meia-armador", "Segundo atacante"], "Rodrygo", "50%", "62%", "MEI"),
         "Ponta-direita (PD)": (["Ponta-direita", "Meia-direita"], "Estevão", "80%", "65%", "PD"),
-        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "85%", "CA")
+        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "82%", "CA")
     },
     "4-3-2-1 Árvore de Natal": {
         "Goleiro (GOL)": (["Goleiro"], "Alisson", "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "26%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "23%", "ZAG"),
-        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "23%", "ZAG"),
-        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "26%", "LD"),
-        "Mezzala Esquerdo (MCE)": (["Mezzala esquerdo", "Volante"], "Bruno Guimarães", "30%", "45%", "MCE"),
+        "Lateral-esquerdo (LE)": (["Lateral-esquerdo"], "Kaiki Bruno", "15%", "28%", "LE"),
+        "Zagueiro Esquerdo (ZAG)": (["Zagueiro"], "Gabriel Magalhães", "37%", "22%", "ZAG"),
+        "Zagueiro Direito (ZAG)": (["Zagueiro"], "Lucas Beraldo", "63%", "22%", "ZAG"),
+        "Lateral-direito (LD)": (["Lateral-direito"], "Wesley França", "85%", "28%", "LD"),
+        "Mezzala Esquerdo (MCE)": (["Mezzala esquerdo", "Volante"], "Bruno Guimarães", "25%", "45%", "MCE"),
         "Volante (VOL)": (["Volante"], "André", "50%", "42%", "VOL"),
-        "Mezzala Direito (MCD)": (["Mezzala direito", "Volante"], "João Gomes", "70%", "45%", "MCD"),
+        "Mezzala Direito (MCD)": (["Mezzala direito", "Volante"], "João Gomes", "75%", "45%", "MCD"),
         "Meia-Armador Esq (MEI)": (["Meia-armador", "Segundo atacante", "Ponta-esquerda"], "Vinicius Junior", "35%", "65%", "MEI"),
         "Meia-Armador Dir (MEI)": (["Meia-armador", "Segundo atacante", "Ponta-direita"], "Rodrygo", "65%", "65%", "MEI"),
-        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "85%", "CA")
+        "Centroavante (CA)": (["Centroavante"], "Endrick", "50%", "82%", "CA")
     }
 }
 
@@ -469,6 +468,7 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
     
     with col_config:
         st.markdown("### 📋 Calibrar Escalação")
+        # As formações agora carregam na ordem exata solicitada (Imagem 01)
         tática_ativa = st.selectbox("Esquema Tático (Carlo Ancelotti):", list(TATICAS.keys()), key="tactical_selector")
         layout_ativo = TATICAS[tática_ativa]
         
@@ -555,7 +555,6 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
         titulares_dados = [jogadores[n] for n in st.session_state.escalados.values() if n in jogadores]
         idades_26 = [j.get("idade", 22) for j in titulares_dados]
         alturas = [extrair_numero(j.get("tm_altura", "0")) for j in titulares_dados]
-        pesos = [extrair_numero(j.get("tm_peso", "0")) for j in titulares_dados] 
         valores = [extrair_numero(j.get("tm_valor_mercado", "0")) for j in titulares_dados]
 
         media_id_26 = sum(idades_26) / len(idades_26) if idades_26 else 0
@@ -563,9 +562,6 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
         
         alt_validas = [a for a in alturas if a > 0]
         media_alt = sum(alt_validas) / len(alt_validas) if alt_validas else 0
-        
-        peso_validas = [p for p in pesos if p > 0]
-        media_peso = sum(peso_validas) / len(peso_validas) if peso_validas else 0
         
         val_validas = [v for v in valores if v > 0]
         total_valor = sum(val_validas)
@@ -588,10 +584,6 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
                     <div style="color: #F8FAFC; font-size: 14pt; font-weight: 800;">{media_alt:.2f} m</div>
                 </div>
                 <div style="flex: 1; min-width: 100px;">
-                    <div style="color: #94A3B8; font-size: 8pt; text-transform: uppercase; font-weight: bold;">Peso Médio</div>
-                    <div style="color: #F8FAFC; font-size: 14pt; font-weight: 800;">{f'{media_peso:.1f} kg' if media_peso > 0 else 'N/A'}</div>
-                </div>
-                <div style="flex: 1; min-width: 100px;">
                     <div style="color: #94A3B8; font-size: 8pt; text-transform: uppercase; font-weight: bold;">Valor do Time</div>
                     <div style="color: #22C55E; font-size: 14pt; font-weight: 800;">€ {total_valor:.1f} M</div>
                 </div>
@@ -605,21 +597,19 @@ if menu == "🏟️ Campo de Jogo (Escalação)":
 
         st.markdown("---")
         
-        export_data = json.dumps(st.session_state.escalados, indent=4, ensure_ascii=False)
-        st.download_button(
-            label="📥 Baixar Escalação (JSON)",
-            data=export_data,
-            file_name=f"tática_{tática_ativa.replace(' ', '_').lower()}.json",
-            mime="application/json",
-            use_container_width=True
-        )
-            
+        # Compartilhamento via Print Screen e Redes Sociais no lugar do Arquivo JSON (Imagem 03)
         escalados_nomes = list(st.session_state.escalados.values())
         mensagem_share = f"Montei minha Seleção Brasileira no esquema {tática_ativa} do app 'O Caminho para o Hexa'! 🏆\\n\\nMeu Time: {', '.join(escalados_nomes[:5])} e mais!\\n\\nMonte a sua também!"
         texto_codificado = urllib.parse.quote(mensagem_share)
         
+        st.markdown("""
+        <p style="text-align: center; color: #94A3B8; font-size: 0.95rem; margin-bottom: 5px;">
+            <i>📸 Dica: Tire um <b>print (screenshot)</b> desta tela e compartilhe sua escalação usando os botões abaixo!</i>
+        </p>
+        """, unsafe_allow_html=True)
+
         st.markdown(f"""
-        <div style="display: flex; gap: 12px; margin-top: 15px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap;">
             <a href="https://api.whatsapp.com/send?text={texto_codificado}" target="_blank" style="flex: 1; min-width: 120px; background-color: #166534; color: #F8FAFC; text-align: center; padding: 12px; border-radius: 8px; font-weight: 800; text-decoration: none; border: 1px solid #22C55E; transition: 0.3s;">
                 🟢 WhatsApp
             </a>
@@ -771,7 +761,8 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("💡 Radar do Torcedor")
 
 with st.sidebar.form("form_sugestao", clear_on_submit=True):
-    tipo_sugestao = st.selectbox("Tipo de Envio:", ["Atleta Faltante", "Sugestão de Melhoria"])
+    # Alterado o termo para UX/UI mais amigável (Imagem 05)
+    tipo_sugestao = st.selectbox("Tipo de Envio:", ["Sugerir Jogador", "Sugestão de Melhoria"])
     detalhes_sugestao = st.text_area("Conteúdo da Mensagem:", placeholder="Escreva sua sugestão...")
     
     if st.form_submit_button("Sugerir"):
