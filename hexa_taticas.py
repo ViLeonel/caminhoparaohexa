@@ -1,8 +1,8 @@
-"""Vocabulário oficial, formações e regras de compatibilidade tática."""
+"""Vocabulário oficial, fábricas de formações e regras de compatibilidade tática."""
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -86,88 +86,157 @@ class SlotTatico:
     tag: str
 
 
-# Não existem atletas padrão. Cada formação começa vazia e é preenchida pelo usuário.
-TATICAS: dict[str, dict[str, SlotTatico]] = {
-    "4-3-3 Diamante": {
-        "Goleiro (GOL)": SlotTatico(("Goleiro",), "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": SlotTatico(("Lateral-esquerdo",), "15%", "28%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": SlotTatico(("Zagueiro",), "37%", "22%", "ZAG"),
-        "Zagueiro Direito (ZAG)": SlotTatico(("Zagueiro",), "63%", "22%", "ZAG"),
-        "Lateral-direito (LD)": SlotTatico(("Lateral-direito",), "85%", "28%", "LD"),
-        "Mezzala Esquerdo (MCE)": SlotTatico(("Mezzala esquerdo", "Meia-esquerda", "Volante"), "30%", "52%", "MCE"),
-        "Volante (VOL)": SlotTatico(("Volante",), "50%", "40%", "VOL"),
-        "Mezzala Direito (MCD)": SlotTatico(("Mezzala direito", "Meia-direita", "Volante"), "70%", "52%", "MCD"),
-        "Ponta-esquerda (PE)": SlotTatico(("Ponta-esquerda", "Segundo atacante"), "20%", "72%", "PE"),
-        "Centroavante (CA)": SlotTatico(("Centroavante",), "50%", "82%", "CA"),
-        "Ponta-direita (PD)": SlotTatico(("Ponta-direita", "Meia-armador"), "80%", "72%", "PD"),
-    },
-    "4-3-3 Clássico": {
-        "Goleiro (GOL)": SlotTatico(("Goleiro",), "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": SlotTatico(("Lateral-esquerdo",), "15%", "28%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": SlotTatico(("Zagueiro",), "37%", "22%", "ZAG"),
-        "Zagueiro Direito (ZAG)": SlotTatico(("Zagueiro",), "63%", "22%", "ZAG"),
-        "Lateral-direito (LD)": SlotTatico(("Lateral-direito",), "85%", "28%", "LD"),
-        "Volante (VOL)": SlotTatico(("Volante",), "38%", "45%", "VOL"),
-        "Volante Apoio (VOL)": SlotTatico(("Volante", "Mezzala esquerdo", "Mezzala direito"), "62%", "45%", "VOL"),
-        "Meia-Armador (MEI)": SlotTatico(("Meia-armador",), "50%", "60%", "MEI"),
-        "Ponta-esquerda (PE)": SlotTatico(("Ponta-esquerda",), "20%", "72%", "PE"),
-        "Centroavante (CA)": SlotTatico(("Centroavante",), "50%", "82%", "CA"),
-        "Ponta-direita (PD)": SlotTatico(("Ponta-direita",), "80%", "72%", "PD"),
-    },
-    "4-4-2 Diamante": {
-        "Goleiro (GOL)": SlotTatico(("Goleiro",), "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": SlotTatico(("Lateral-esquerdo",), "15%", "28%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": SlotTatico(("Zagueiro",), "37%", "22%", "ZAG"),
-        "Zagueiro Direito (ZAG)": SlotTatico(("Zagueiro",), "63%", "22%", "ZAG"),
-        "Lateral-direito (LD)": SlotTatico(("Lateral-direito",), "85%", "28%", "LD"),
-        "Volante (VOL)": SlotTatico(("Volante",), "50%", "40%", "VOL"),
-        "Mezzala Esquerdo (MCE)": SlotTatico(("Mezzala esquerdo",), "30%", "52%", "MCE"),
-        "Mezzala Direito (MCD)": SlotTatico(("Mezzala direito", "Mezzala esquerdo", "Meia-armador"), "70%", "52%", "MCD"),
-        "Meia-Armador (MEI)": SlotTatico(("Meia-armador",), "50%", "65%", "MEI"),
-        "Segundo Atacante (SA)": SlotTatico(("Segundo atacante", "Ponta-esquerda", "Ponta-direita", "Centroavante"), "38%", "78%", "SA"),
-        "Centroavante (CA)": SlotTatico(("Centroavante",), "62%", "78%", "CA"),
-    },
-    "4-4-2 Clássico": {
-        "Goleiro (GOL)": SlotTatico(("Goleiro",), "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": SlotTatico(("Lateral-esquerdo",), "15%", "28%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": SlotTatico(("Zagueiro",), "37%", "22%", "ZAG"),
-        "Zagueiro Direito (ZAG)": SlotTatico(("Zagueiro",), "63%", "22%", "ZAG"),
-        "Lateral-direito (LD)": SlotTatico(("Lateral-direito",), "85%", "28%", "LD"),
-        "Meia-esquerda (ME)": SlotTatico(("Meia-esquerda", "Mezzala esquerdo", "Ponta-esquerda"), "20%", "55%", "ME"),
-        "Volante Esquerdo (VOL)": SlotTatico(("Volante",), "40%", "45%", "VOL"),
-        "Volante Direito (VOL)": SlotTatico(("Volante",), "60%", "45%", "VOL"),
-        "Meia-direita (MD)": SlotTatico(("Meia-direita", "Mezzala direito", "Ponta-direita"), "80%", "55%", "MD"),
-        "Segundo Atacante (SA)": SlotTatico(("Segundo atacante", "Meia-armador", "Ponta-esquerda"), "38%", "78%", "SA"),
-        "Centroavante (CA)": SlotTatico(("Centroavante", "Segundo atacante"), "62%", "78%", "CA"),
-    },
-    "4-2-3-1": {
-        "Goleiro (GOL)": SlotTatico(("Goleiro",), "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": SlotTatico(("Lateral-esquerdo",), "15%", "28%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": SlotTatico(("Zagueiro",), "37%", "22%", "ZAG"),
-        "Zagueiro Direito (ZAG)": SlotTatico(("Zagueiro",), "63%", "22%", "ZAG"),
-        "Lateral-direito (LD)": SlotTatico(("Lateral-direito",), "85%", "28%", "LD"),
-        "Volante Esquerdo (VOL)": SlotTatico(("Volante", "Mezzala esquerdo"), "38%", "42%", "VOL"),
-        "Volante Direito (VOL)": SlotTatico(("Volante", "Mezzala direito"), "62%", "42%", "VOL"),
-        "Ponta-esquerda (PE)": SlotTatico(("Ponta-esquerda", "Meia-esquerda"), "20%", "65%", "PE"),
-        "Meia-Armador (MEI)": SlotTatico(("Meia-armador", "Segundo atacante"), "50%", "62%", "MEI"),
-        "Ponta-direita (PD)": SlotTatico(("Ponta-direita", "Meia-direita"), "80%", "65%", "PD"),
-        "Centroavante (CA)": SlotTatico(("Centroavante",), "50%", "82%", "CA"),
-    },
-    "4-3-2-1 Árvore de Natal": {
-        "Goleiro (GOL)": SlotTatico(("Goleiro",), "50%", "8%", "GOL"),
-        "Lateral-esquerdo (LE)": SlotTatico(("Lateral-esquerdo",), "15%", "28%", "LE"),
-        "Zagueiro Esquerdo (ZAG)": SlotTatico(("Zagueiro",), "37%", "22%", "ZAG"),
-        "Zagueiro Direito (ZAG)": SlotTatico(("Zagueiro",), "63%", "22%", "ZAG"),
-        "Lateral-direito (LD)": SlotTatico(("Lateral-direito",), "85%", "28%", "LD"),
-        "Mezzala Esquerdo (MCE)": SlotTatico(("Mezzala esquerdo", "Volante"), "25%", "45%", "MCE"),
-        "Volante (VOL)": SlotTatico(("Volante",), "50%", "42%", "VOL"),
-        "Mezzala Direito (MCD)": SlotTatico(("Mezzala direito", "Volante"), "75%", "45%", "MCD"),
-        "Meia-Armador Esq (MEI)": SlotTatico(("Meia-armador", "Segundo atacante", "Ponta-esquerda"), "35%", "65%", "MEI"),
-        "Meia-Armador Dir (MEI)": SlotTatico(("Meia-armador", "Segundo atacante", "Ponta-direita"), "65%", "65%", "MEI"),
-        "Centroavante (CA)": SlotTatico(("Centroavante",), "50%", "82%", "CA"),
-    },
+TipoEntradaSlot = tuple[str, SlotTatico]
+FabricaTatica = Callable[[], dict[str, SlotTatico]]
+
+
+def _slot(
+    nome: str,
+    posicoes: Sequence[str],
+    left: int,
+    bottom: int,
+    tag: str,
+) -> TipoEntradaSlot:
+    """Cria uma entrada de slot com coordenadas percentuais padronizadas."""
+    if not nome.strip():
+        raise ValueError("O nome do slot tático não pode ser vazio.")
+    if not posicoes:
+        raise ValueError(f"{nome}: informe ao menos uma posição compatível.")
+    if not 0 <= left <= 100 or not 0 <= bottom <= 100:
+        raise ValueError(f"{nome}: coordenadas devem ficar entre 0 e 100.")
+    return nome, SlotTatico(tuple(posicoes), f"{left}%", f"{bottom}%", tag)
+
+
+def _combinar_linhas(*linhas: Sequence[TipoEntradaSlot]) -> dict[str, SlotTatico]:
+    """Combina linhas preservando ordem e rejeitando nomes de slots duplicados."""
+    formacao: dict[str, SlotTatico] = {}
+    for linha in linhas:
+        for nome, configuracao in linha:
+            if nome in formacao:
+                raise ValueError(f"Slot tático duplicado: {nome}.")
+            formacao[nome] = configuracao
+    return formacao
+
+
+def _linha_goleiro() -> tuple[TipoEntradaSlot, ...]:
+    return (_slot("Goleiro (GOL)", ("Goleiro",), 50, 8, "GOL"),)
+
+
+def _linha_defensiva_quatro() -> tuple[TipoEntradaSlot, ...]:
+    return (
+        _slot("Lateral-esquerdo (LE)", ("Lateral-esquerdo",), 15, 28, "LE"),
+        _slot("Zagueiro Esquerdo (ZAG)", ("Zagueiro",), 37, 22, "ZAG"),
+        _slot("Zagueiro Direito (ZAG)", ("Zagueiro",), 63, 22, "ZAG"),
+        _slot("Lateral-direito (LD)", ("Lateral-direito",), 85, 28, "LD"),
+    )
+
+
+def _formacao_433_diamante() -> dict[str, SlotTatico]:
+    meio = (
+        _slot("Mezzala Esquerdo (MCE)", ("Mezzala esquerdo", "Meia-esquerda", "Volante"), 30, 52, "MCE"),
+        _slot("Volante (VOL)", ("Volante",), 50, 40, "VOL"),
+        _slot("Mezzala Direito (MCD)", ("Mezzala direito", "Meia-direita", "Volante"), 70, 52, "MCD"),
+    )
+    ataque = (
+        _slot("Ponta-esquerda (PE)", ("Ponta-esquerda", "Segundo atacante"), 20, 72, "PE"),
+        _slot("Centroavante (CA)", ("Centroavante",), 50, 82, "CA"),
+        _slot("Ponta-direita (PD)", ("Ponta-direita", "Meia-armador"), 80, 72, "PD"),
+    )
+    return _combinar_linhas(_linha_goleiro(), _linha_defensiva_quatro(), meio, ataque)
+
+
+def _formacao_433_classico() -> dict[str, SlotTatico]:
+    meio = (
+        _slot("Volante (VOL)", ("Volante",), 38, 45, "VOL"),
+        _slot("Volante Apoio (VOL)", ("Volante", "Mezzala esquerdo", "Mezzala direito"), 62, 45, "VOL"),
+        _slot("Meia-Armador (MEI)", ("Meia-armador",), 50, 60, "MEI"),
+    )
+    ataque = (
+        _slot("Ponta-esquerda (PE)", ("Ponta-esquerda",), 20, 72, "PE"),
+        _slot("Centroavante (CA)", ("Centroavante",), 50, 82, "CA"),
+        _slot("Ponta-direita (PD)", ("Ponta-direita",), 80, 72, "PD"),
+    )
+    return _combinar_linhas(_linha_goleiro(), _linha_defensiva_quatro(), meio, ataque)
+
+
+def _formacao_442_diamante() -> dict[str, SlotTatico]:
+    meio = (
+        _slot("Volante (VOL)", ("Volante",), 50, 40, "VOL"),
+        _slot("Mezzala Esquerdo (MCE)", ("Mezzala esquerdo",), 30, 52, "MCE"),
+        _slot("Mezzala Direito (MCD)", ("Mezzala direito", "Mezzala esquerdo", "Meia-armador"), 70, 52, "MCD"),
+        _slot("Meia-Armador (MEI)", ("Meia-armador",), 50, 65, "MEI"),
+    )
+    ataque = (
+        _slot("Segundo Atacante (SA)", ("Segundo atacante", "Ponta-esquerda", "Ponta-direita", "Centroavante"), 38, 78, "SA"),
+        _slot("Centroavante (CA)", ("Centroavante",), 62, 78, "CA"),
+    )
+    return _combinar_linhas(_linha_goleiro(), _linha_defensiva_quatro(), meio, ataque)
+
+
+def _formacao_442_classico() -> dict[str, SlotTatico]:
+    meio = (
+        _slot("Meia-esquerda (ME)", ("Meia-esquerda", "Mezzala esquerdo", "Ponta-esquerda"), 20, 55, "ME"),
+        _slot("Volante Esquerdo (VOL)", ("Volante",), 40, 45, "VOL"),
+        _slot("Volante Direito (VOL)", ("Volante",), 60, 45, "VOL"),
+        _slot("Meia-direita (MD)", ("Meia-direita", "Mezzala direito", "Ponta-direita"), 80, 55, "MD"),
+    )
+    ataque = (
+        _slot("Segundo Atacante (SA)", ("Segundo atacante", "Meia-armador", "Ponta-esquerda"), 38, 78, "SA"),
+        _slot("Centroavante (CA)", ("Centroavante", "Segundo atacante"), 62, 78, "CA"),
+    )
+    return _combinar_linhas(_linha_goleiro(), _linha_defensiva_quatro(), meio, ataque)
+
+
+def _formacao_4231() -> dict[str, SlotTatico]:
+    meio = (
+        _slot("Volante Esquerdo (VOL)", ("Volante", "Mezzala esquerdo"), 38, 42, "VOL"),
+        _slot("Volante Direito (VOL)", ("Volante", "Mezzala direito"), 62, 42, "VOL"),
+        _slot("Ponta-esquerda (PE)", ("Ponta-esquerda", "Meia-esquerda"), 20, 65, "PE"),
+        _slot("Meia-Armador (MEI)", ("Meia-armador", "Segundo atacante"), 50, 62, "MEI"),
+        _slot("Ponta-direita (PD)", ("Ponta-direita", "Meia-direita"), 80, 65, "PD"),
+    )
+    ataque = (_slot("Centroavante (CA)", ("Centroavante",), 50, 82, "CA"),)
+    return _combinar_linhas(_linha_goleiro(), _linha_defensiva_quatro(), meio, ataque)
+
+
+def _formacao_4321_arvore_natal() -> dict[str, SlotTatico]:
+    meio = (
+        _slot("Mezzala Esquerdo (MCE)", ("Mezzala esquerdo", "Volante"), 25, 45, "MCE"),
+        _slot("Volante (VOL)", ("Volante",), 50, 42, "VOL"),
+        _slot("Mezzala Direito (MCD)", ("Mezzala direito", "Volante"), 75, 45, "MCD"),
+        _slot("Meia-Armador Esq (MEI)", ("Meia-armador", "Segundo atacante", "Ponta-esquerda"), 35, 65, "MEI"),
+        _slot("Meia-Armador Dir (MEI)", ("Meia-armador", "Segundo atacante", "Ponta-direita"), 65, 65, "MEI"),
+    )
+    ataque = (_slot("Centroavante (CA)", ("Centroavante",), 50, 82, "CA"),)
+    return _combinar_linhas(_linha_goleiro(), _linha_defensiva_quatro(), meio, ataque)
+
+
+FABRICAS_TATICAS: dict[str, FabricaTatica] = {
+    "4-3-3 Diamante": _formacao_433_diamante,
+    "4-3-3 Clássico": _formacao_433_classico,
+    "4-4-2 Diamante": _formacao_442_diamante,
+    "4-4-2 Clássico": _formacao_442_classico,
+    "4-2-3-1": _formacao_4231,
+    "4-3-2-1 Árvore de Natal": _formacao_4321_arvore_natal,
 }
 
+
+def construir_taticas(
+    fabricas: Mapping[str, FabricaTatica] | None = None,
+) -> dict[str, dict[str, SlotTatico]]:
+    """Materializa as formações registradas em dicionários independentes."""
+    registro = fabricas or FABRICAS_TATICAS
+    taticas: dict[str, dict[str, SlotTatico]] = {}
+    for nome, fabrica in registro.items():
+        formacao = fabrica()
+        if nome in taticas:
+            raise ValueError(f"Formação duplicada: {nome}.")
+        taticas[nome] = formacao
+    return taticas
+
+
+# Não existem atletas padrão. Cada formação começa vazia e é preenchida pelo usuário.
+TATICAS: dict[str, dict[str, SlotTatico]] = construir_taticas()
 
 def normalizar_posicao(posicao: Any) -> str | None:
     """Converte grafias antigas/externas para uma posição oficial."""
