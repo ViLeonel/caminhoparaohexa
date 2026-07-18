@@ -35,6 +35,14 @@ MERCADO_ATLETA_AUSENTE = (
 )
 DOSSIE_CAMPO_AUSENTE = "Este tópico editorial ainda não foi registrado."
 
+CONFLITO_PERSISTENCIA = (
+    "A base foi atualizada por outra sessão desde que esta página foi carregada. "
+    "Recarregue a aplicação para receber a versão mais recente antes de salvar novamente."
+)
+REPOSITORIO_OCUPADO = (
+    "Outra gravação da base está em andamento. Aguarde a conclusão e tente novamente."
+)
+
 AVISO_PERSISTENCIA = (
     "O JSON é a fonte canônica temporária. Em execução local, o cadastro é escrito no arquivo. "
     "No Streamlit Community Cloud, alterações feitas pela interface podem ser perdidas em reinícios "

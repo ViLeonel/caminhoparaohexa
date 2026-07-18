@@ -10,7 +10,6 @@ from __future__ import annotations
 import copy
 import json
 import re
-import shutil
 from datetime import datetime
 from typing import Any, Mapping
 
@@ -20,7 +19,38 @@ from hexa_config import (
     GRUPO_OBSERVACAO,
     IDADE_PADRAO,
 )
+from hexa_models import (
+    RelatorioIntegridade,
+    validar_estrutura_bruta,
+    validar_jogadores_normalizados,
+)
+from hexa_repository import (
+    DataIntegrityError,
+    JogadoresRepository,
+    JsonJogadoresRepository,
+    RegistroVersao,
+    VERSAO_AUSENTE,
+)
 from hexa_taticas import POSICOES_OFICIAIS, normalizar_lista_posicoes, normalizar_posicao
+
+
+
+class BaseJogadores(dict[str, dict[str, Any]]):
+    """Dicionário de jogadores acompanhado da versão lida da fonte."""
+
+    def __init__(
+        self,
+        dados: Mapping[str, Mapping[str, Any]] | None = None,
+        *,
+        versao_fonte: str = VERSAO_AUSENTE,
+    ) -> None:
+        super().__init__(
+            {
+                str(nome): copy.deepcopy(dict(registro))
+                for nome, registro in (dados or {}).items()
+            }
+        )
+        self.versao_fonte = versao_fonte
 
 CAMPOS_EDITORIAIS_PROTEGIDOS = {
     "nota_vini",
@@ -39,7 +69,7 @@ CAMPOS_TATICOS_PROTEGIDOS = {
 
 CAMPOS_MINIMOS: dict[str, Any] = {
     "nome": "",
-    "posicao": "Centroavante",
+    "posicao": "",
     "posicoes_multiplas": [],
     "clube": "N/A",
     "idade": IDADE_PADRAO,
@@ -58,9 +88,6 @@ ALIASES_JOGADORES = {
 }
 
 # Enriquecimentos externos são mantidos em JSON separado para auditoria e atualização segura.
-
-class DataIntegrityError(RuntimeError):
-    """Indica que o JSON não pôde ser lido sem risco de perda de dados."""
 
 
 def extrair_numero(valor_texto: Any, padrao: float = 0.0) -> float:
@@ -140,43 +167,6 @@ def valor_mercado_maximo(dados: Mapping[str, Any]) -> float:
     return extrair_valor_milhoes(dados.get("tm_valor_maximo"), 0.0)
 
 
-def _reparar_json_simples(texto: str) -> dict[str, Any] | None:
-    """Tenta reparar somente separadores ausentes entre objetos de primeiro nível."""
-    reparado = re.sub(r"}\s*(\"[^\"]+\"\s*:\s*{)", r"},\n    \1", texto)
-    try:
-        resultado = json.loads(reparado)
-    except json.JSONDecodeError:
-        return None
-    return resultado if isinstance(resultado, dict) else None
-
-
-def _ler_json() -> tuple[dict[str, Any], bool]:
-    if not DATA_FILE.exists():
-        raise DataIntegrityError(
-            f"Arquivo de dados não encontrado: {DATA_FILE.name}. "
-            "Inclua o JSON na raiz do repositório."
-        )
-
-    texto = DATA_FILE.read_text(encoding="utf-8-sig")
-    try:
-        dados = json.loads(texto)
-        if not isinstance(dados, dict):
-            raise DataIntegrityError("O JSON precisa conter um objeto de jogadores no nível principal.")
-        return dados, False
-    except json.JSONDecodeError as erro_original:
-        reparado = _reparar_json_simples(texto)
-        if reparado is None:
-            raise DataIntegrityError(
-                f"O arquivo {DATA_FILE.name} está inválido e não foi sobrescrito. "
-                f"Erro: {erro_original}"
-            ) from erro_original
-
-        carimbo = datetime.now().strftime("%Y%m%d-%H%M%S")
-        backup = DATA_FILE.with_name(f"{DATA_FILE.stem}.corrompido-{carimbo}.json")
-        backup.write_text(texto, encoding="utf-8")
-        return reparado, True
-
-
 def _normalizar_registro(nome_chave: str, registro: Mapping[str, Any]) -> dict[str, Any]:
     dados = dict(registro)
     dados["nome"] = str(dados.get("nome") or nome_chave).strip()
@@ -196,12 +186,10 @@ def _normalizar_registro(nome_chave: str, registro: Mapping[str, Any]) -> dict[s
     posicoes = normalizar_lista_posicoes(dados.get("posicoes_multiplas"))
     if not posicao and posicoes:
         posicao = posicoes[0]
-    if not posicao:
-        posicao = "Centroavante"
-    if posicao not in posicoes:
+    if posicao and posicao not in posicoes:
         posicoes.insert(0, posicao)
 
-    dados["posicao"] = posicao
+    dados["posicao"] = posicao or ""
     dados["posicoes_multiplas"] = posicoes
 
     for campo, valor_padrao in CAMPOS_MINIMOS.items():
@@ -315,7 +303,14 @@ def _aplicar_enriquecimentos(
 
     for nome, enriquecimento in enriquecimentos.items():
         if nome not in dados:
-            dados[nome] = copy.deepcopy(dict(enriquecimento))
+            posicao_nova = normalizar_posicao(enriquecimento.get("posicao"))
+            if not posicao_nova:
+                # Um enriquecimento parcial não pode criar um atleta sem posição
+                # editorial válida; isso evitaria inventar uma função tática.
+                continue
+            novo_registro = copy.deepcopy(dict(enriquecimento))
+            novo_registro["posicao"] = posicao_nova
+            dados[nome] = novo_registro
             alterado = True
             continue
 
@@ -345,33 +340,81 @@ def _aplicar_enriquecimentos(
     return alterado
 
 
-def salvar_jogadores(dados: Mapping[str, Any]) -> None:
-    """Grava JSON de forma atômica e mantém um backup da versão anterior."""
-    DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
-    temporario = DATA_FILE.with_suffix(".json.tmp")
-    backup = DATA_FILE.with_suffix(".json.bak")
-
-    conteudo = json.dumps(dados, indent=4, ensure_ascii=False, sort_keys=False)
-    temporario.write_text(conteudo + "\n", encoding="utf-8")
-
-    # Valida o arquivo temporário antes de substituir a base.
-    json.loads(temporario.read_text(encoding="utf-8"))
-
-    if DATA_FILE.exists():
-        shutil.copy2(DATA_FILE, backup)
-    temporario.replace(DATA_FILE)
+def _mensagem_erros_integridade(
+    relatorio: RelatorioIntegridade,
+    contexto: str,
+) -> str:
+    detalhes = " | ".join(problema.mensagem for problema in relatorio.erros)
+    return (
+        f"{contexto} contém erros bloqueantes e não foi salvo. "
+        f"Corrija a fonte canônica antes de continuar. {detalhes}"
+    )
 
 
-def carregar_jogadores() -> dict[str, dict[str, Any]]:
-    """Carrega, migra e enriquece o JSON sem apagar conteúdo editorial."""
-    dados_brutos, reparado = _ler_json()
+def validar_integridade_jogadores(
+    jogadores: Mapping[str, Mapping[str, Any]],
+) -> RelatorioIntegridade:
+    """Gera o relatório público de integridade da base normalizada."""
+    return validar_jogadores_normalizados(jogadores)
+
+
+def repositorio_padrao() -> JogadoresRepository:
+    """Cria a implementação padrão sem manter estado global mutável."""
+    return JsonJogadoresRepository(DATA_FILE)
+
+
+def salvar_jogadores(
+    dados: Mapping[str, Any],
+    repositorio: JogadoresRepository | None = None,
+    *,
+    versao_esperada: str | None = None,
+    origem: str = "aplicacao",
+) -> RegistroVersao:
+    """Valida e persiste a base respeitando a versão lida pela sessão."""
+    estrutural = validar_estrutura_bruta(dados)
+    if estrutural.possui_erros:
+        raise DataIntegrityError(
+            _mensagem_erros_integridade(estrutural, "A base a persistir")
+        )
+
+    relatorio = validar_jogadores_normalizados(dados)  # type: ignore[arg-type]
+    if relatorio.possui_erros:
+        raise DataIntegrityError(
+            _mensagem_erros_integridade(relatorio, "A base a persistir")
+        )
+
+    if versao_esperada is None and isinstance(dados, BaseJogadores):
+        versao_esperada = dados.versao_fonte
+
+    registro = (repositorio or repositorio_padrao()).salvar(
+        dados,
+        versao_esperada=versao_esperada,
+        origem=origem,
+    )
+    if isinstance(dados, BaseJogadores):
+        dados.versao_fonte = registro.versao
+    return registro
+
+
+def carregar_jogadores(
+    repositorio: JogadoresRepository | None = None,
+) -> BaseJogadores:
+    """Carrega, migra e enriquece os jogadores sem apagar conteúdo editorial."""
+    repositorio_ativo = repositorio or repositorio_padrao()
+    resultado = repositorio_ativo.carregar()
+    dados_brutos = resultado.jogadores
+
+    relatorio_bruto = validar_estrutura_bruta(dados_brutos)
+    if relatorio_bruto.possui_erros:
+        raise DataIntegrityError(
+            _mensagem_erros_integridade(relatorio_bruto, "A fonte de jogadores")
+        )
+
     enriquecimentos = _ler_enriquecimentos()
-    alterado = reparado or _mesclar_aliases(dados_brutos)
+    alterado = resultado.reparado or _mesclar_aliases(dados_brutos)
 
     normalizados: dict[str, dict[str, Any]] = {}
     for nome, registro in dados_brutos.items():
-        if not isinstance(registro, Mapping):
-            continue
         registro_normalizado = _normalizar_registro(nome, registro)
         chave = registro_normalizado.get("nome") or nome
         normalizados[str(chave)] = registro_normalizado
@@ -381,20 +424,33 @@ def carregar_jogadores() -> dict[str, dict[str, Any]]:
     if _aplicar_enriquecimentos(normalizados, enriquecimentos):
         alterado = True
 
-    # Segunda normalização cobre os atletas recém-injetados.
     normalizados = {
         nome: _normalizar_registro(nome, registro)
         for nome, registro in normalizados.items()
     }
 
+    relatorio_final = validar_jogadores_normalizados(normalizados)
+    if relatorio_final.possui_erros:
+        raise DataIntegrityError(
+            _mensagem_erros_integridade(relatorio_final, "A base normalizada")
+        )
+
+    base = BaseJogadores(normalizados, versao_fonte=resultado.versao)
     if alterado:
-        salvar_jogadores(normalizados)
-    return normalizados
+        registro = salvar_jogadores(
+            base,
+            repositorio_ativo,
+            versao_esperada=resultado.versao,
+            origem="self_healing",
+        )
+        base.versao_fonte = registro.versao
+    return base
 
 
 def adicionar_jogador(
     jogadores: dict[str, dict[str, Any]],
     dados_novos: Mapping[str, Any],
+    repositorio: JogadoresRepository | None = None,
 ) -> str:
     nome = str(dados_novos.get("nome", "")).strip()
     if not nome:
@@ -406,8 +462,29 @@ def adicionar_jogador(
     registro.update(dict(dados_novos))
     registro["nome"] = nome
     registro = _normalizar_registro(nome, registro)
-    jogadores[nome] = registro
-    salvar_jogadores(jogadores)
+
+    versao_esperada = (
+        jogadores.versao_fonte
+        if isinstance(jogadores, BaseJogadores)
+        else None
+    )
+    nova_base = BaseJogadores(
+        jogadores,
+        versao_fonte=versao_esperada or VERSAO_AUSENTE,
+    )
+    nova_base[nome] = registro
+    resultado = salvar_jogadores(
+        nova_base,
+        repositorio,
+        versao_esperada=versao_esperada,
+        origem="cadastro_interface",
+    )
+
+    # Atualiza a sessão somente depois que a persistência termina com sucesso.
+    jogadores.clear()
+    jogadores.update(nova_base)
+    if isinstance(jogadores, BaseJogadores):
+        jogadores.versao_fonte = resultado.versao
     return nome
 
 

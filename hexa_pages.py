@@ -42,13 +42,16 @@ from hexa_components import (
     render_resumo_elenco,
 )
 from hexa_data import adicionar_jogador, formatar_valor_milhoes
+from hexa_repository import ConflitoConcorrenciaError, RepositorioOcupadoError
 from hexa_messages import (
     ANALISE_SEM_AVALIACOES,
+    CONFLITO_PERSISTENCIA,
     AVISO_PERSISTENCIA,
     FEEDBACK_MENSAGEM_OBRIGATORIA,
     FEEDBACK_PREPARADO,
     MERCADO_SEM_DADOS,
     PERFIL_VAZIO,
+    REPOSITORIO_OCUPADO,
     ROSTER_SEM_RESULTADOS,
     SUCESSO_CADASTRO,
     convocacao_completa,
@@ -312,6 +315,10 @@ def render_tela_roster(jogadores: dict[str, dict[str, Any]]) -> None:
                 )
                 st.success(SUCESSO_CADASTRO.format(nome=nome_curto))
                 st.rerun()
+            except ConflitoConcorrenciaError:
+                st.error(CONFLITO_PERSISTENCIA)
+            except RepositorioOcupadoError:
+                st.warning(REPOSITORIO_OCUPADO)
             except ValueError as erro:
                 st.error(str(erro))
 
