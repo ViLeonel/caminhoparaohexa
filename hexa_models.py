@@ -6,7 +6,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Mapping, NotRequired, TypedDict
+from typing import Any, Mapping, TypedDict
 
 from hexa_config import IDADE_MAXIMA_CADASTRO, IDADE_MINIMA_CADASTRO
 from hexa_taticas import POSICOES_OFICIAIS, normalizar_posicao
@@ -36,7 +36,7 @@ class DadosExternos(TypedDict, total=False):
     tm_extraido_em: str
 
 
-class Jogador(TypedDict):
+class JogadorObrigatorio(TypedDict):
     nome: str
     posicao: str
     posicoes_multiplas: list[str]
@@ -49,7 +49,10 @@ class Jogador(TypedDict):
     pontos_fortes: str
     pontos_fracos: str
     historico: str
-    nome_completo: NotRequired[str]
+
+
+class Jogador(JogadorObrigatorio, total=False):
+    nome_completo: str
 
 
 class SeveridadeIntegridade(str, Enum):
