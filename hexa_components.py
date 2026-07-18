@@ -134,6 +134,65 @@ def render_legenda_adaptabilidade() -> None:
     )
 
 
+
+def render_lista_tatica(
+    linhas: Mapping[str, Sequence[Mapping[str, Any]]],
+) -> None:
+    """Renderiza a formação em lista compacta e acessível."""
+    secoes: list[str] = []
+    for linha, itens in linhas.items():
+        cards: list[str] = []
+        for item in itens:
+            preenchido = bool(item.get("preenchido"))
+            indice = int(item.get("indice_adaptabilidade", -1))
+            classe_adaptabilidade, rotulo_adaptabilidade = _classe_adaptabilidade(indice)
+            nome = item.get("nome") if preenchido else "Selecionar atleta"
+            estado = rotulo_adaptabilidade if preenchido else "Vaga aberta"
+            classe_estado = classe_adaptabilidade if preenchido else "adapt-empty"
+
+            nota_vini = item.get("nota_vini")
+            nota_roberto = item.get("nota_roberto")
+            notas = ""
+            if preenchido:
+                try:
+                    notas = (
+                        '<span class="tactical-list-ratings">'
+                        f'Vini {float(nota_vini or 0):.1f} · Roberto {float(nota_roberto or 0):.1f}'
+                        '</span>'
+                    )
+                except (TypeError, ValueError):
+                    notas = ""
+
+            cards.append(
+                f'<li class="tactical-list-item {classe_estado}">'
+                '<div class="tactical-list-main">'
+                f'<span class="tactical-list-tag">{_esc(item.get("tag"))}</span>'
+                '<div class="tactical-list-copy">'
+                f'<span class="tactical-list-slot">{_esc(item.get("slot"))}</span>'
+                f'<strong class="tactical-list-name">{_esc(nome)}</strong>'
+                '</div>'
+                '</div>'
+                '<div class="tactical-list-meta">'
+                f'{notas}'
+                f'<span class="tactical-list-status">{_esc(estado)}</span>'
+                '</div>'
+                '</li>'
+            )
+
+        secoes.append(
+            '<section class="tactical-list-section">'
+            f'<h3 class="tactical-list-heading">{_esc(linha)}</h3>'
+            f'<ul class="tactical-list-grid">{"".join(cards)}</ul>'
+            '</section>'
+        )
+
+    st.markdown(
+        '<div class="tactical-list" aria-label="Formação tática em lista">'
+        + "".join(secoes)
+        + '</div>',
+        unsafe_allow_html=True,
+    )
+
 def render_banco_reservas(
     reservas: Sequence[str],
     jogadores: Mapping[str, Mapping[str, Any]],

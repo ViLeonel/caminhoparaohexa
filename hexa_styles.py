@@ -436,7 +436,8 @@ CSS = """
     }
 
     @media (max-width: 900px) {
-        .pitch-container { height: 620px; }
+        .pitch-container { height: min(620px, 72vh); }
+        .tactical-list-grid { grid-template-columns: 1fr; }
         .player-node { width: 112px; }
         .player-name-tag { font-size: .68rem; }
         .player-rating-tag, .player-empty-tag { font-size: .57rem; }
@@ -445,6 +446,22 @@ CSS = """
 
     @media (max-width: 600px) {
         .block-container { padding-left: .75rem; padding-right: .75rem; }
+        .pitch-container {
+            height: 540px;
+            border-width: 3px;
+            border-radius: 14px;
+        }
+        .tactical-list-section { padding: 10px; }
+        .tactical-list-item {
+            flex-direction: column;
+            align-items: stretch;
+            min-height: 76px;
+        }
+        .tactical-list-meta {
+            align-items: flex-start;
+            padding-left: 52px;
+            text-align: left;
+        }
         .pitch-container { height: 560px; border-width: 3px; border-radius: 14px; }
         .pitch-circle { width: 105px; height: 105px; }
         .pitch-penalty-top, .pitch-penalty-bottom { width: 180px; height: 75px; }
@@ -494,6 +511,110 @@ CSS = """
     .stat-positive { border-left-color: var(--green); }
     .stat-negative { border-left-color: var(--red); }
     .stat-info { border-left-color: var(--blue); }
+
+    .tactical-list {
+        display: grid;
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .tactical-list-section {
+        background: var(--navy-950);
+        border: 1px solid var(--navy-800);
+        border-radius: 14px;
+        padding: 14px;
+    }
+
+    .tactical-list-heading {
+        color: var(--gold);
+        font-size: 1rem;
+        margin: 0 0 10px;
+    }
+
+    .tactical-list-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .tactical-list-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 68px;
+        padding: 10px 12px;
+        border: 2px solid var(--slate-500);
+        border-radius: 10px;
+        background: var(--navy-900);
+    }
+
+    .tactical-list-main,
+    .tactical-list-meta,
+    .tactical-list-copy {
+        display: flex;
+    }
+
+    .tactical-list-main {
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .tactical-list-copy,
+    .tactical-list-meta {
+        flex-direction: column;
+    }
+
+    .tactical-list-copy {
+        min-width: 0;
+    }
+
+    .tactical-list-meta {
+        align-items: flex-end;
+        justify-content: center;
+        gap: 4px;
+        text-align: right;
+    }
+
+    .tactical-list-tag {
+        display: inline-grid;
+        place-items: center;
+        min-width: 42px;
+        min-height: 42px;
+        border-radius: 8px;
+        background: var(--navy-800);
+        color: var(--gold);
+        font-size: .74rem;
+        font-weight: 800;
+    }
+
+    .tactical-list-slot,
+    .tactical-list-ratings {
+        color: var(--slate-400);
+        font-size: .75rem;
+    }
+
+    .tactical-list-name {
+        color: var(--white);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .tactical-list-status {
+        color: var(--slate-300);
+        font-size: .72rem;
+        font-weight: 700;
+    }
+
+    .tactical-list-item.adapt-primary { border-left-color: var(--green); }
+    .tactical-list-item.adapt-secondary { border-left-color: var(--gold); }
+    .tactical-list-item.adapt-tertiary { border-left-color: var(--orange); }
+    .tactical-list-item.adapt-incompatible { border-left-color: var(--red); }
+    .tactical-list-item.adapt-empty { border-left-color: var(--slate-500); }
 
     .feedback-link {
         display: block;

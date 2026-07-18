@@ -7,6 +7,7 @@ from typing import Any
 
 from hexa_config import ANO_BASE_DADOS, ANO_COPA, LIMITE_DESTAQUES_ANALISE
 from hexa_messages import NAO_INFORMADO_FONTE
+from hexa_taticas import SlotTatico, indice_adaptabilidade
 from hexa_data import (
     formatar_valor_milhoes,
     percentual_do_pico,
@@ -198,3 +199,67 @@ def ordenar_divergencias(
         avaliacoes,
         key=lambda item: (-float(item["Diferença"]), -float(item["Média"])),
     )[:limite]
+
+
+LINHAS_TATICAS: tuple[str, ...] = (
+    "Goleiro",
+    "Defesa",
+    "Meio-campo",
+    "Ataque",
+)
+
+_POSICOES_POR_LINHA: dict[str, frozenset[str]] = {
+    "Goleiro": frozenset({"Goleiro"}),
+    "Defesa": frozenset({"Lateral-direito", "Lateral-esquerdo", "Zagueiro"}),
+    "Meio-campo": frozenset({
+        "Volante",
+        "Mezzala esquerdo",
+        "Mezzala direito",
+        "Meia-esquerda",
+        "Meia-direita",
+        "Meia-armador",
+    }),
+    "Ataque": frozenset({
+        "Ponta-esquerda",
+        "Ponta-direita",
+        "Segundo atacante",
+        "Centroavante",
+    }),
+}
+
+
+def linha_tatica_do_slot(configuracao: SlotTatico) -> str:
+    """Classifica um slot em uma das quatro linhas de apresentação."""
+    for posicao in configuracao.posicoes:
+        for linha in LINHAS_TATICAS:
+            if posicao in _POSICOES_POR_LINHA[linha]:
+                return linha
+    return "Meio-campo"
+
+
+def construir_visualizacao_tatica_lista(
+    layout: Mapping[str, SlotTatico],
+    escalados: Mapping[str, str],
+    jogadores: Mapping[str, Mapping[str, Any]],
+) -> dict[str, list[dict[str, Any]]]:
+    """Cria uma estrutura acessível em lista usando a mesma escalação do campo."""
+    linhas: dict[str, list[dict[str, Any]]] = {linha: [] for linha in LINHAS_TATICAS}
+
+    for slot, configuracao in layout.items():
+        nome = escalados.get(slot)
+        dados = jogadores.get(nome, {}) if nome else {}
+        indice = indice_adaptabilidade(dados, configuracao.posicoes) if dados else -1
+
+        linhas[linha_tatica_do_slot(configuracao)].append(
+            {
+                "slot": slot,
+                "tag": configuracao.tag,
+                "nome": nome or "",
+                "preenchido": bool(nome and dados),
+                "indice_adaptabilidade": indice,
+                "nota_vini": dados.get("nota_vini") if dados else None,
+                "nota_roberto": dados.get("nota_roberto") if dados else None,
+            }
+        )
+
+    return linhas

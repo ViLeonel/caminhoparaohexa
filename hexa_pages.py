@@ -38,6 +38,7 @@ from hexa_components import (
     render_dados_transfermarkt,
     render_dossie,
     render_legenda_adaptabilidade,
+    render_lista_tatica,
     render_resumo_elenco,
 )
 from hexa_data import adicionar_jogador, formatar_valor_milhoes
@@ -58,6 +59,7 @@ from hexa_selectors import (
     construir_avaliacoes,
     construir_registros_mercado,
     construir_registros_roster,
+    construir_visualizacao_tatica_lista,
     ordenar_consensos,
     ordenar_divergencias,
 )
@@ -146,7 +148,24 @@ def render_tela_campo(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
             st.info(resumo)
 
     with col_campo:
-        render_campo(layout_ativo, escalados, jogadores)
+        modo_visualizacao = st.radio(
+            "Visualização tática:",
+            ("Campo", "Lista"),
+            horizontal=True,
+            key="tactical_view_mode",
+            help="A visualização em lista é mais compacta e acessível em telas pequenas.",
+        )
+
+        if modo_visualizacao == "Lista":
+            linhas_taticas = construir_visualizacao_tatica_lista(
+                layout_ativo,
+                escalados,
+                jogadores,
+            )
+            render_lista_tatica(linhas_taticas)
+        else:
+            render_campo(layout_ativo, escalados, jogadores)
+
         render_legenda_adaptabilidade()
         render_banco_reservas(reservas, jogadores)
 
