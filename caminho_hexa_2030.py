@@ -181,10 +181,10 @@ def main() -> None:
         )
     else:
         render_tela(
-            menu=menu,
-            jogadores=jogadores,
-            base_avaliacoes=base_avaliacoes,
-            periodo=periodo,
+            menu,
+            jogadores,
+            base_avaliacoes,
+            periodo,
         )
 
     render_feedback_sidebar()
