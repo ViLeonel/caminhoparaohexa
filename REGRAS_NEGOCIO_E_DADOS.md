@@ -38,3 +38,10 @@ Meia-armador; Ponta-esquerda; Ponta-direita; Segundo atacante; Centroavante.
 - Escritas devem ocorrer sob bloqueio curto, com arquivo temporário, validação e backup.
 - Hash, data UTC e origem da última alteração devem ser registrados separadamente.
 
+## Auditoria
+
+- Eventos operacionais ficam fora do JSON canônico dos jogadores.
+- Cada evento é imutável e identifica atleta, campo, valores, origem, data e versões.
+- Campos sem alteração não devem gerar novo evento.
+- Falha de persistência canônica não pode produzir evento de auditoria.
+- O histórico operacional não substitui o campo editorial `historico`.

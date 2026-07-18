@@ -462,3 +462,26 @@ Resultado consolidado: 75 testes aprovados.
 - O modelo foi dividido em `JogadorObrigatorio` e `Jogador(..., total=False)`.
 - Nenhuma dependência adicional foi incluída.
 - Mantida a mesma intenção de schema: campos principais obrigatórios e `nome_completo` opcional.
+
+## RC1 — Arquitetura Base
+
+- Definida a versão `1.0.0-rc1`.
+- APIs públicas declaradas explicitamente com `__all__`.
+- Adicionado teste de importação idêntico ao entrypoint do Streamlit.
+- Adicionada validação de símbolos importados e ciclos entre módulos.
+- Criado smoke test isolado em `scripts/rc1_smoke.py`.
+- Criada matriz de CI para Python 3.10, 3.11, 3.12, 3.13 e 3.14.
+- Adicionado `.gitignore` para backups, locks, temporários e metadados.
+- Removidos imports comprovadamente não utilizados.
+- JSONs canônicos preservados.
+
+## Etapa 12 — Histórico estruturado de alterações
+
+- Criado `hexa_audit.py` com eventos imutáveis e tipados.
+- Auditoria armazenada em `auditoria_jogadores.jsonl`, fora do JSON canônico.
+- Cada evento registra atleta, campo, valores anterior e novo, data UTC, origem e versões.
+- Campos sem alteração não geram evento.
+- Cadastro e self-healing passam a registrar diferenças após a gravação canônica.
+- Falhas na gravação canônica não geram histórico falso.
+- Repositório JSONL possui bloqueio, deduplicação por ID e substituição atômica.
+- Nenhum dado editorial existente foi modificado.

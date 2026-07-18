@@ -83,3 +83,14 @@ Toda alteração de código deve gerar arquivos completos, testados e prontos pa
 - Um arquivo `.meta.json` registra versão, data UTC e origem da alteração.
 - O JSON continua não sendo uma solução de persistência multiusuário completa.
 
+## Estado de release
+
+A arquitetura consolidada está identificada como `1.0.0-rc1`.
+Os contratos públicos são protegidos por testes, o grafo de imports não possui
+ciclos e o GitHub Actions valida Python 3.10 a 3.14.
+
+## Auditoria operacional
+
+Alterações persistidas podem gerar eventos em `auditoria_jogadores.jsonl`.
+O histórico é separado da fonte canônica dos atletas e não deve ser usado para
+substituir `historico`, que continua sendo conteúdo editorial de Vini e Beto.
