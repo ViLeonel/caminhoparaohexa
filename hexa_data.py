@@ -34,6 +34,24 @@ from hexa_repository import (
 from hexa_taticas import POSICOES_OFICIAIS, normalizar_lista_posicoes, normalizar_posicao
 
 
+__all__ = [
+    "BaseJogadores",
+    "DataIntegrityError",
+    "adicionar_jogador",
+    "carregar_jogadores",
+    "extrair_altura_metros",
+    "extrair_numero",
+    "extrair_valor_milhoes",
+    "formatar_valor_milhoes",
+    "percentual_do_pico",
+    "salvar_jogadores",
+    "validar_integridade_jogadores",
+    "validar_posicoes",
+    "valor_mercado_atual",
+    "valor_mercado_maximo",
+]
+
+
 
 class BaseJogadores(dict[str, dict[str, Any]]):
     """Dicionário de jogadores acompanhado da versão lida da fonte."""
@@ -349,6 +367,9 @@ def _mensagem_erros_integridade(
         f"{contexto} contém erros bloqueantes e não foi salvo. "
         f"Corrija a fonte canônica antes de continuar. {detalhes}"
     )
+
+
+
 
 
 def validar_integridade_jogadores(
