@@ -48,6 +48,9 @@ class EventoAuditoria:
     origem: str
     versao_anterior: str
     versao_nova: str
+    ator_email: str = ""
+    ator_nome: str = ""
+    ator_id: str = ""
 
     def para_dict(self) -> dict[str, Any]:
         dados = asdict(self)
@@ -85,6 +88,9 @@ def _novo_evento(
     versao_anterior: str,
     versao_nova: str,
     ocorrido_em: str,
+    ator_email: str = "",
+    ator_nome: str = "",
+    ator_id: str = "",
 ) -> EventoAuditoria:
     return EventoAuditoria(
         id_evento=str(uuid.uuid4()),
@@ -97,6 +103,9 @@ def _novo_evento(
         origem=str(origem or "aplicacao"),
         versao_anterior=str(versao_anterior),
         versao_nova=str(versao_nova),
+        ator_email=str(ator_email),
+        ator_nome=str(ator_nome),
+        ator_id=str(ator_id),
     )
 
 
@@ -108,6 +117,9 @@ def gerar_eventos_alteracao(
     versao_anterior: str,
     versao_nova: str,
     ocorrido_em: str | None = None,
+    ator_email: str = "",
+    ator_nome: str = "",
+    ator_id: str = "",
 ) -> list[EventoAuditoria]:
     """Calcula diferenças campo a campo sem gerar eventos redundantes."""
     timestamp = ocorrido_em or datetime.now(timezone.utc).isoformat()
@@ -131,6 +143,9 @@ def gerar_eventos_alteracao(
                         versao_anterior=versao_anterior,
                         versao_nova=versao_nova,
                         ocorrido_em=timestamp,
+                        ator_email=ator_email,
+                        ator_nome=ator_nome,
+                        ator_id=ator_id,
                     )
                 )
             continue
@@ -148,6 +163,9 @@ def gerar_eventos_alteracao(
                         versao_anterior=versao_anterior,
                         versao_nova=versao_nova,
                         ocorrido_em=timestamp,
+                        ator_email=ator_email,
+                        ator_nome=ator_nome,
+                        ator_id=ator_id,
                     )
                 )
             continue

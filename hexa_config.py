@@ -23,6 +23,7 @@ __all__ = [
     "IDADE_PADRAO",
     "LIMITE_DESTAQUES_ANALISE",
     "MENUS",
+    "MENU_ADMIN",
     "MENU_ANALISE",
     "MENU_CAMPO",
     "MENU_PERFIS",
@@ -44,7 +45,7 @@ BASE_DIR = Path(__file__).resolve().parent
 NOME_APLICACAO = "O Caminho para o Hexa 2030"
 TITULO_PROJETO = "🏆 O Caminho para o Hexa"
 ICONE_APLICACAO = "🏆"
-VERSAO_APLICACAO = "1.0.0-rc2"
+VERSAO_APLICACAO = "1.0.0-rc3-auth"
 TITULO_SIDEBAR = "CONSELHO TÁTICO"
 ROTULO_NAVEGACAO = "Navegação do Painel:"
 
@@ -52,6 +53,7 @@ MENU_CAMPO = "🏟️ Campo de Jogo"
 MENU_PERFIS = "👤 Perfis & Scout"
 MENU_ROSTER = "📋 Gestão do Roster"
 MENU_ANALISE = "📊 Análise de Opiniões"
+MENU_ADMIN = "🔐 Administração"
 MENUS: tuple[str, ...] = (
     MENU_CAMPO,
     MENU_PERFIS,

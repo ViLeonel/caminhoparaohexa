@@ -1,0 +1,81 @@
+"""Página administrativa protegida, ainda sem formulários de edição."""
+
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any
+
+import streamlit as st
+
+from hexa_auth import (
+    AuthConfigError,
+    IdentidadeUsuario,
+    identidade_atual,
+    usuario_eh_admin,
+)
+from hexa_components import render_cabecalho
+
+__all__ = ["render_area_administrativa"]
+
+
+def render_area_administrativa(
+    jogadores: Mapping[str, Mapping[str, Any]],
+    *,
+    identidade: IdentidadeUsuario | None = None,
+) -> None:
+    """Renderiza uma área privada sem permitir edição nesta entrega."""
+    identidade_ativa = identidade or identidade_atual()
+
+    render_cabecalho(
+        "🔐 Administração",
+        "Área privada em preparação. Nenhuma edição está habilitada nesta versão.",
+    )
+
+    if not identidade_ativa.autenticado:
+        st.warning("Faça login pela barra lateral para acessar esta área.")
+        return
+
+    try:
+        autorizado = usuario_eh_admin()
+    except AuthConfigError as erro:
+        st.error(str(erro))
+        return
+
+    if not autorizado:
+        st.error(
+            "A conta autenticada não está autorizada a acessar a administração."
+        )
+        return
+
+    st.success("Acesso administrativo autorizado.")
+    st.info(
+        "Esta primeira entrega valida autenticação, autorização e identidade "
+        "do editor. Formulários de edição serão adicionados somente após "
+        "a confirmação do fluxo no Streamlit Community Cloud."
+    )
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Atletas carregados", len(jogadores))
+    col2.metric("Perfil", "Administrador")
+    col3.metric("Versão", "RC3 Auth")
+
+    with st.expander("Identidade disponível para auditoria"):
+        st.write(
+            {
+                "nome": identidade_ativa.nome or "Não informado",
+                "email": identidade_ativa.email or "Não informado",
+                "subject": identidade_ativa.subject or "Não informado",
+                "origem_auditoria": identidade_ativa.origem_auditoria,
+            }
+        )
+
+    with st.expander("Próximos módulos administrativos"):
+        st.markdown(
+            """
+            - edição editorial controlada;
+            - atualização cadastral;
+            - consulta do histórico de auditoria;
+            - relatório de integridade;
+            - exportação para versionamento no GitHub.
+            """
+        )
