@@ -19,6 +19,13 @@ from hexa_auth import (
     render_controle_login,
     usuario_eh_admin,
 )
+from hexa_avaliacoes import (
+    AvaliacoesIntegrityError,
+    BaseAvaliacoes,
+    carregar_avaliacoes,
+    formatar_data_referencia,
+    formatar_periodo,
+)
 from hexa_config import (
     MENU_ADMIN,
     MENUS,
@@ -48,6 +55,21 @@ def carregar_base_segura() -> dict[str, dict[str, Any]]:
         )
         st.stop()
         return {}
+
+
+def carregar_avaliacoes_seguras(
+    jogadores: dict[str, dict[str, Any]],
+) -> BaseAvaliacoes:
+    try:
+        return carregar_avaliacoes(jogadores=jogadores)
+    except AvaliacoesIntegrityError as erro:
+        st.error(str(erro))
+        st.info(
+            "Corrija o JSON trimestral no GitHub e reinicie o aplicativo. "
+            "A fonte inválida não foi reparada nem sobrescrita."
+        )
+        st.stop()
+        raise
 
 
 def render_erros_configuracao(
@@ -102,6 +124,36 @@ def render_navegacao() -> tuple[str, IdentidadeUsuario]:
     return menu, identidade
 
 
+def render_seletor_periodo(base: BaseAvaliacoes) -> str:
+    periodos = list(base.periodos())
+    if not periodos:
+        raise AvaliacoesIntegrityError(
+            "A base trimestral não possui períodos disponíveis."
+        )
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### Período de avaliação")
+    periodo = st.sidebar.selectbox(
+        "Período ativo",
+        periodos,
+        index=len(periodos) - 1,
+        format_func=formatar_periodo,
+        disabled=len(periodos) == 1,
+        key="periodo_avaliacao_ativo",
+        help=(
+            "O mesmo período é aplicado ao campo, à ficha individual, "
+            "à lista e às análises."
+        ),
+    )
+    data_referencia = base.data_referencia_periodo(periodo)
+    st.sidebar.caption(
+        "Data de referência: "
+        f"{formatar_data_referencia(data_referencia)}"
+    )
+    st.sidebar.caption("Fonte editorial: avaliações trimestrais de Vini e Beto.")
+    return periodo
+
+
 def main() -> None:
     st.set_page_config(**PAGE_CONFIG)
     alto_contraste = render_preferencias_acessibilidade()
@@ -117,8 +169,10 @@ def main() -> None:
     )
 
     jogadores = carregar_base_segura()
+    base_avaliacoes = carregar_avaliacoes_seguras(jogadores)
     render_erros_configuracao(jogadores)
     menu, identidade = render_navegacao()
+    periodo = render_seletor_periodo(base_avaliacoes)
 
     if menu == MENU_ADMIN:
         render_area_administrativa(
@@ -126,7 +180,12 @@ def main() -> None:
             identidade=identidade,
         )
     else:
-        render_tela(menu, jogadores)
+        render_tela(
+            menu=menu,
+            jogadores=jogadores,
+            base_avaliacoes=base_avaliacoes,
+            periodo=periodo,
+        )
 
     render_feedback_sidebar()
 
