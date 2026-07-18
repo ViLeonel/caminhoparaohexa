@@ -21,19 +21,29 @@ from hexa_components import (
     render_legenda_adaptabilidade,
     render_resumo_elenco,
 )
-from hexa_data import (
-    adicionar_jogador,
-    formatar_valor_milhoes,
-    percentual_do_pico,
-    valor_mercado_atual,
-    valor_mercado_maximo,
+from hexa_data import adicionar_jogador, formatar_valor_milhoes
+from hexa_selectors import (
+    calcular_medias_titulares,
+    construir_avaliacoes,
+    construir_registros_mercado,
+    construir_registros_roster,
+    ordenar_consensos,
+    ordenar_divergencias,
+)
+from hexa_session import (
+    chave_reservas,
+    chave_titular,
+    limpar_convocacao,
+    normalizar_escolha_titular,
+    normalizar_reservas,
+    opcoes_reservas,
+    opcoes_titular,
 )
 from hexa_taticas import (
     LIMITE_RESERVAS,
     POSICOES_OFICIAIS,
     TATICAS,
     formatar_jogador_com_posicao,
-    obter_atletas_compativeis,
 )
 
 MENU_CAMPO = "🏟️ Campo de Jogo"
@@ -41,20 +51,6 @@ MENU_PERFIS = "👤 Perfis & Scout"
 MENU_ROSTER = "📋 Gestão do Roster"
 MENU_ANALISE = "📊 Análise de Opiniões"
 MENUS = (MENU_CAMPO, MENU_PERFIS, MENU_ROSTER, MENU_ANALISE)
-
-
-def _chave_titular(tatica: str, indice: int) -> str:
-    return f"titular::{tatica}::{indice}"
-
-
-def _chave_reservas(tatica: str) -> str:
-    return f"reservas::{tatica}"
-
-
-def _limpar_convocacao(tatica: str, total_slots: int) -> None:
-    for indice in range(total_slots):
-        st.session_state.pop(_chave_titular(tatica, indice), None)
-    st.session_state.pop(_chave_reservas(tatica), None)
 
 
 def render_tela_campo(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
@@ -75,7 +71,7 @@ def render_tela_campo(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
         layout_ativo = TATICAS[tatica_ativa]
 
         if st.button("Limpar titulares e reservas", width="stretch"):
-            _limpar_convocacao(tatica_ativa, len(layout_ativo))
+            limpar_convocacao(st.session_state, tatica_ativa, len(layout_ativo))
             st.rerun()
 
         st.caption("Cada campo começa vazio e aceita somente atletas compatíveis com as posições oficiais do projeto.")
@@ -83,13 +79,9 @@ def render_tela_campo(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
         selecionados: set[str] = set()
 
         for indice, (slot, configuracao) in enumerate(layout_ativo.items()):
-            chave = _chave_titular(tatica_ativa, indice)
-            validos = obter_atletas_compativeis(jogadores, configuracao.posicoes)
-            disponiveis = [nome for nome in validos if nome not in selecionados]
-
-            valor_atual = st.session_state.get(chave)
-            if valor_atual not in disponiveis:
-                st.session_state[chave] = None
+            chave = chave_titular(tatica_ativa, indice)
+            disponiveis = opcoes_titular(jogadores, configuracao.posicoes, selecionados)
+            normalizar_escolha_titular(st.session_state, chave, disponiveis)
 
             escolha = st.selectbox(
                 f"{slot}:",
@@ -104,24 +96,22 @@ def render_tela_campo(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
                 selecionados.add(escolha)
 
         st.markdown("### Reservas")
-        chave_reservas = _chave_reservas(tatica_ativa)
-        opcoes_reservas = [
-            nome for nome in sorted(jogadores.keys(), key=str.casefold)
-            if nome not in selecionados
-        ]
-        reservas_anteriores = [
-            nome for nome in st.session_state.get(chave_reservas, [])
-            if nome in opcoes_reservas
-        ][:LIMITE_RESERVAS]
-        st.session_state[chave_reservas] = reservas_anteriores
+        chave_reservas_ativa = chave_reservas(tatica_ativa)
+        opcoes_banco = opcoes_reservas(jogadores, selecionados)
+        normalizar_reservas(
+            st.session_state,
+            chave_reservas_ativa,
+            opcoes_banco,
+            LIMITE_RESERVAS,
+        )
 
         reservas = st.multiselect(
             f"Escolha até {LIMITE_RESERVAS} jogadores elegíveis para o banco:",
-            opcoes_reservas,
+            opcoes_banco,
             max_selections=LIMITE_RESERVAS,
             placeholder="Digite para buscar e selecionar reservas",
             format_func=lambda nome, base=jogadores: formatar_jogador_com_posicao(nome, base),
-            key=chave_reservas,
+            key=chave_reservas_ativa,
         )
         st.caption(f"{len(escalados)}/11 titulares e {len(reservas)}/{LIMITE_RESERVAS} reservas selecionados.")
 
@@ -139,24 +129,17 @@ def render_tela_campo(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
         render_resumo_elenco(titulares_dados, reservas_dados)
 
         if titulares_dados:
-            notas_vini = [
-                float(j.get("nota_vini") or 0)
-                for j in titulares_dados
-                if float(j.get("nota_vini") or 0) > 0
-            ]
-            notas_roberto = [
-                float(j.get("nota_roberto") or 0)
-                for j in titulares_dados
-                if float(j.get("nota_roberto") or 0) > 0
-            ]
-            media_vini = sum(notas_vini) / len(notas_vini) if notas_vini else 0.0
-            media_roberto = sum(notas_roberto) / len(notas_roberto) if notas_roberto else 0.0
-
+            medias = calcular_medias_titulares(titulares_dados)
             c1, c2, c3 = st.columns(3)
-            c1.metric("Média Vini", f"{media_vini:.2f}" if notas_vini else "N/A")
-            c2.metric("Média Roberto", f"{media_roberto:.2f}" if notas_roberto else "N/A")
-            coletiva = (media_vini + media_roberto) / 2 if notas_vini and notas_roberto else 0.0
-            c3.metric("Média coletiva", f"{coletiva:.2f}" if coletiva else "N/A")
+            c1.metric("Média Vini", f"{medias['vini']:.2f}" if medias["vini"] is not None else "N/A")
+            c2.metric(
+                "Média Roberto",
+                f"{medias['roberto']:.2f}" if medias["roberto"] is not None else "N/A",
+            )
+            c3.metric(
+                "Média coletiva",
+                f"{medias['coletiva']:.2f}" if medias["coletiva"] is not None else "N/A",
+            )
 
 
 def render_tela_perfis(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
@@ -214,33 +197,12 @@ def render_tela_roster(jogadores: dict[str, dict[str, Any]]) -> None:
         grupos = sorted({str(d.get("grupo", "Observação")) for d in jogadores.values()})
         grupo_filtro = filtro_3.selectbox("Grupo", ["Todos", *grupos])
 
-        registros: list[dict[str, Any]] = []
-        for nome, dados in jogadores.items():
-            texto_busca = f"{nome} {dados.get('clube', '')}".casefold()
-            if busca and busca.casefold() not in texto_busca:
-                continue
-            if posicao_filtro != "Todas" and posicao_filtro not in dados.get("posicoes_multiplas", []):
-                continue
-            if grupo_filtro != "Todos" and dados.get("grupo") != grupo_filtro:
-                continue
-
-            atual = valor_mercado_atual(dados)
-            maximo = valor_mercado_maximo(dados)
-            registros.append(
-                {
-                    "Nome": nome,
-                    "Posição": dados.get("posicao", "N/A"),
-                    "Grupo": dados.get("grupo", "N/A"),
-                    "Clube": dados.get("clube", "N/A"),
-                    "Idade 2026": dados.get("idade", 0),
-                    "Idade 2030": int(dados.get("idade", 0)) + 4,
-                    "Vini": float(dados.get("nota_vini") or 0.0),
-                    "Roberto": float(dados.get("nota_roberto") or 0.0),
-                    "Valor atual": formatar_valor_milhoes(atual),
-                    "Pico": formatar_valor_milhoes(maximo),
-                    "% do pico": round(percentual_do_pico(dados) or 0.0, 1),
-                }
-            )
+        registros = construir_registros_roster(
+            jogadores,
+            busca=busca,
+            posicao=None if posicao_filtro == "Todas" else posicao_filtro,
+            grupo=None if grupo_filtro == "Todos" else grupo_filtro,
+        )
 
         df_roster = pd.DataFrame(registros)
         st.caption(f"{len(df_roster)} atleta(s) exibido(s) de {len(jogadores)} cadastrados.")
@@ -303,37 +265,8 @@ def render_tela_analise(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
         "Consensos, divergências e leitura do valor de mercado do elenco monitorado.",
     )
 
-    avaliados: list[dict[str, Any]] = []
-    mercado: list[dict[str, Any]] = []
-
-    for nome, dados in jogadores.items():
-        nota_vini = float(dados.get("nota_vini") or 0.0)
-        nota_roberto = float(dados.get("nota_roberto") or 0.0)
-        if nota_vini > 0 and nota_roberto > 0:
-            avaliados.append(
-                {
-                    "Nome": nome,
-                    "Posição": dados.get("posicao", "N/A"),
-                    "Vini": nota_vini,
-                    "Roberto": nota_roberto,
-                    "Diferença": abs(nota_vini - nota_roberto),
-                    "Média": (nota_vini + nota_roberto) / 2,
-                }
-            )
-
-        atual = valor_mercado_atual(dados)
-        maximo = valor_mercado_maximo(dados)
-        if atual > 0:
-            mercado.append(
-                {
-                    "Nome": nome,
-                    "Posição": dados.get("posicao", "N/A"),
-                    "Atual (M€)": atual,
-                    "Pico (M€)": maximo,
-                    "% do pico": percentual_do_pico(dados) or 0.0,
-                    "Diferença para o pico (M€)": max(maximo - atual, 0.0),
-                }
-            )
+    avaliados = construir_avaliacoes(jogadores)
+    mercado = construir_registros_mercado(jogadores)
 
     df_avaliados = pd.DataFrame(avaliados)
     df_mercado = pd.DataFrame(mercado)
@@ -351,7 +284,7 @@ def render_tela_analise(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
         col_consenso, col_divergencia = st.columns(2, gap="large")
         with col_consenso:
             st.markdown("### Maiores consensos")
-            consenso = df_avaliados.sort_values(["Diferença", "Média"], ascending=[True, False]).head(8)
+            consenso = pd.DataFrame(ordenar_consensos(avaliados))
             st.dataframe(
                 consenso[["Nome", "Posição", "Vini", "Roberto", "Média"]],
                 width="stretch",
@@ -360,7 +293,7 @@ def render_tela_analise(jogadores: Mapping[str, Mapping[str, Any]]) -> None:
 
         with col_divergencia:
             st.markdown("### Maiores divergências")
-            divergencias = df_avaliados.sort_values(["Diferença", "Média"], ascending=[False, False]).head(8)
+            divergencias = pd.DataFrame(ordenar_divergencias(avaliados))
             st.dataframe(
                 divergencias[["Nome", "Posição", "Vini", "Roberto", "Diferença"]],
                 width="stretch",
