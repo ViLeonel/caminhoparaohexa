@@ -69,6 +69,60 @@ CSS = """
         line-height: 1.6;
     }
 
+    .project-hero {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(1rem, 3vw, 2rem);
+        max-width: 1120px;
+        margin: 0 auto 2rem;
+        padding: .5rem 1rem 1.25rem;
+    }
+
+    .project-trophy {
+        flex: 0 0 auto;
+        width: clamp(68px, 8vw, 104px);
+        color: var(--gold);
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, .4));
+    }
+
+    .world-cup-trophy {
+        display: block;
+        width: 100%;
+        height: auto;
+        fill: currentColor;
+    }
+
+    .world-cup-trophy .trophy-detail {
+        fill: none;
+        stroke: var(--navy-900);
+        stroke-width: 3;
+        stroke-linecap: round;
+        opacity: .72;
+    }
+
+    .project-hero-copy {
+        min-width: 0;
+        max-width: 900px;
+    }
+
+    .project-hero-title {
+        margin: 0 0 .6rem;
+        color: var(--gold);
+        font-size: clamp(2.15rem, 5vw, 3.5rem);
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: -.035em;
+    }
+
+    .project-hero-subtitle {
+        max-width: 900px;
+        margin: 0;
+        color: var(--slate-300);
+        font-size: clamp(.98rem, 2vw, 1.16rem);
+        line-height: 1.65;
+    }
+
     .pitch-container {
         background-color: #14532D;
         background-image: linear-gradient(to bottom, #14532D 0%, #166534 100%);
@@ -460,6 +514,18 @@ CSS = """
 
     @media (max-width: 600px) {
         .block-container { padding-left: .75rem; padding-right: .75rem; }
+        .project-hero {
+            flex-direction: column;
+            gap: .65rem;
+            padding: 0 .25rem 1rem;
+            text-align: center;
+        }
+        .project-trophy { width: 64px; }
+        .project-hero-title { font-size: clamp(2rem, 11vw, 2.75rem); }
+        .project-hero-subtitle {
+            font-size: .96rem;
+            line-height: 1.55;
+        }
         .pitch-container {
             height: 540px;
             border-width: 3px;
@@ -865,6 +931,10 @@ CSS = """
         .player-card-pitch, .bench-card, .tactical-list-item {
             border: 2px solid CanvasText !important;
         }
+        .world-cup-trophy {
+            color: CanvasText;
+            forced-color-adjust: auto;
+        }
     }
 
 </style>
@@ -894,8 +964,12 @@ HIGH_CONTRAST_CSS = """
         background: #000000 !important;
         border-width: 3px !important;
     }
-    .project-subtitle, .profile-secondary, .market-label,
-    .bench-club, .tactical-list-slot { color: #FFFFFF !important; }
+    .project-subtitle, .project-hero-subtitle, .profile-secondary,
+    .market-label, .bench-club, .tactical-list-slot {
+        color: #FFFFFF !important;
+    }
+    .project-hero-title, .project-trophy { color: #FFF200 !important; }
+    .world-cup-trophy .trophy-detail { stroke: #000000 !important; }
     a { text-decoration: underline !important; text-decoration-thickness: 2px !important; }
 </style>
 """

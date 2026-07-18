@@ -28,7 +28,11 @@ __all__ = [
     "MENU_CAMPO",
     "MENU_PERFIS",
     "MENU_ROSTER",
+    "NOME_ANALISTA_BETO",
+    "NOME_ANALISTA_VINI",
     "NOME_APLICACAO",
+    "NOME_CURTO_ANALISTA_BETO",
+    "NOME_CURTO_ANALISTA_VINI",
     "PAGE_CONFIG",
     "ROTULO_NAVEGACAO",
     "SAUDACAO_FEEDBACK",
@@ -43,16 +47,21 @@ BASE_DIR = Path(__file__).resolve().parent
 
 # Identidade e navegação
 NOME_APLICACAO = "O Caminho para o Hexa 2030"
-TITULO_PROJETO = "🏆 O Caminho para o Hexa"
+TITULO_PROJETO = "O Caminho para o Hexa"
 ICONE_APLICACAO = "🏆"
-VERSAO_APLICACAO = "1.0.0-rc3-auth"
+VERSAO_APLICACAO = "1.0.0-rc4-ux-convocacao"
 TITULO_SIDEBAR = "CONSELHO TÁTICO"
 ROTULO_NAVEGACAO = "Navegação do Painel:"
 
+NOME_ANALISTA_VINI = "Vini Leonel"
+NOME_CURTO_ANALISTA_VINI = "Vini"
+NOME_ANALISTA_BETO = "Beto Muñoz"
+NOME_CURTO_ANALISTA_BETO = "Beto"
+
 MENU_CAMPO = "🏟️ Campo de Jogo"
-MENU_PERFIS = "👤 Perfis & Scout"
-MENU_ROSTER = "📋 Gestão do Roster"
-MENU_ANALISE = "📊 Análise de Opiniões"
+MENU_PERFIS = "👤 Jogadores, Scout e Avaliações"
+MENU_ROSTER = "📋 Lista de Jogadores"
+MENU_ANALISE = "📊 Análises & Mercado"
 MENU_ADMIN = "🔐 Administração"
 MENUS: tuple[str, ...] = (
     MENU_CAMPO,
@@ -88,7 +97,9 @@ TIPOS_SUGESTAO: tuple[str, ...] = (
     "Sugerir melhoria",
 )
 ASSUNTO_FEEDBACK_PREFIXO = "Caminho para o Hexa"
-SAUDACAO_FEEDBACK = "Olá, Vini e Roberto!"
+SAUDACAO_FEEDBACK = (
+    f"Olá, {NOME_CURTO_ANALISTA_VINI} e {NOME_CURTO_ANALISTA_BETO}!"
+)
 
 # Persistência
 NOME_ARQUIVO_JOGADORES = "jogadores_hexa_2030.json"

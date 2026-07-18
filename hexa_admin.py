@@ -14,6 +14,7 @@ from hexa_auth import (
     usuario_eh_admin,
 )
 from hexa_components import render_cabecalho
+from hexa_config import VERSAO_APLICACAO
 
 __all__ = ["render_area_administrativa"]
 
@@ -57,7 +58,7 @@ def render_area_administrativa(
     col1, col2, col3 = st.columns(3)
     col1.metric("Atletas carregados", len(jogadores))
     col2.metric("Perfil", "Administrador")
-    col3.metric("Versão", "RC3 Auth")
+    col3.metric("Versão", VERSAO_APLICACAO)
 
     with st.expander("Identidade disponível para auditoria"):
         st.write(

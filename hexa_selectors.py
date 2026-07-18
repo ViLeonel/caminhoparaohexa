@@ -3,9 +3,16 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+import re
 from typing import Any
 
-from hexa_config import ANO_BASE_DADOS, ANO_COPA, LIMITE_DESTAQUES_ANALISE
+from hexa_config import (
+    ANO_BASE_DADOS,
+    ANO_COPA,
+    LIMITE_DESTAQUES_ANALISE,
+    NOME_CURTO_ANALISTA_BETO,
+    NOME_CURTO_ANALISTA_VINI,
+)
 from hexa_messages import NAO_INFORMADO_FONTE
 from hexa_taticas import SlotTatico, indice_adaptabilidade
 from hexa_data import (
@@ -23,6 +30,7 @@ __all__ = [
     "construir_registros_roster",
     "construir_visualizacao_tatica_lista",
     "filtrar_jogadores",
+    "formatar_texto_editorial",
     "linha_tatica_do_slot",
     "ordenar_consensos",
     "ordenar_divergencias",
@@ -36,6 +44,26 @@ def _texto_apresentacao(valor: Any) -> str:
     if valor in (None, "", [], "N/A"):
         return NAO_INFORMADO_FONTE
     return str(valor)
+
+
+_SUBSTITUICOES_ANALISTAS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"\bVinicius Leonel\b", flags=re.IGNORECASE), "Vini Leonel"),
+    (re.compile(r"\bVini Leoneo\b", flags=re.IGNORECASE), "Vini Leonel"),
+    (re.compile(r"\bRoberto Muñoz\b", flags=re.IGNORECASE), "Beto Muñoz"),
+    (re.compile(r"\bRoberto\b", flags=re.IGNORECASE), "Beto"),
+)
+
+
+def formatar_texto_editorial(valor: Any) -> str:
+    """Atualiza nomes de apresentação sem alterar o conteúdo canônico.
+
+    A regra é aplicada somente no texto exibido. O jogador Vinicius Junior e
+    identificadores técnicos como ``nota_roberto`` permanecem intactos.
+    """
+    texto = _texto_apresentacao(valor)
+    for padrao, substituicao in _SUBSTITUICOES_ANALISTAS:
+        texto = padrao.sub(substituicao, texto)
+    return texto
 
 
 def _numero_positivo(valor: Any) -> float | None:
@@ -108,8 +136,8 @@ def construir_registros_roster(
                 "Clube": _texto_apresentacao(dados.get("clube")),
                 f"Idade {ano_base}": idade,
                 f"Idade {ano_copa}": idade + diferenca_anos if idade > 0 else 0,
-                "Vini": float(dados.get("nota_vini") or 0.0),
-                "Roberto": float(dados.get("nota_roberto") or 0.0),
+                NOME_CURTO_ANALISTA_VINI: float(dados.get("nota_vini") or 0.0),
+                NOME_CURTO_ANALISTA_BETO: float(dados.get("nota_roberto") or 0.0),
                 "Valor atual": formatar_valor_milhoes(atual),
                 "Pico": formatar_valor_milhoes(maximo),
                 "% do pico": round(percentual_do_pico(dados) or 0.0, 1),
@@ -132,8 +160,8 @@ def construir_avaliacoes(
             {
                 "Nome": nome,
                 "Posição": _texto_apresentacao(dados.get("posicao")),
-                "Vini": nota_vini,
-                "Roberto": nota_roberto,
+                NOME_CURTO_ANALISTA_VINI: nota_vini,
+                NOME_CURTO_ANALISTA_BETO: nota_roberto,
                 "Diferença": abs(nota_vini - nota_roberto),
                 "Média": (nota_vini + nota_roberto) / 2,
             }
