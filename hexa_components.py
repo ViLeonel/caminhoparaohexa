@@ -9,7 +9,12 @@ from typing import Any, Literal
 
 import streamlit as st
 
-from hexa_avaliacoes import calcular_metricas_avaliacao, formatar_numero
+from hexa_avaliacoes import (
+    calcular_metricas_avaliacao,
+    formatar_numero,
+    formatar_status_avaliacao,
+)
+from hexa_config import ANO_BASE_DADOS, ANO_COPA
 from hexa_data import (
     extrair_altura_metros,
     formatar_valor_milhoes,
@@ -221,7 +226,7 @@ def render_campo(
         )
         atual = formatar_numero(metricas["capacidade_atual_media"])
         potencial = formatar_numero(metricas["potencial_2030_medio"])
-        situacao = str(metricas["status"])
+        situacao = formatar_status_avaliacao(metricas["status"])
 
         cards.append(
             f'<div class="player-node" style="{posicao_css}">'
@@ -359,7 +364,22 @@ def render_resumo_elenco(
     )
 
 
-def render_cartao_perfil(nome: str, dados: Mapping[str, Any]) -> None:
+def _idade_projetada_2030(dados: Mapping[str, Any]) -> str:
+    try:
+        idade_base = int(dados.get("idade") or 0)
+    except (TypeError, ValueError):
+        return "—"
+    if idade_base <= 0:
+        return "—"
+    return str(idade_base + (ANO_COPA - ANO_BASE_DADOS))
+
+
+def render_cartao_perfil(
+    nome: str,
+    dados: Mapping[str, Any],
+    registro_avaliacao: Mapping[str, Any] | None = None,
+) -> None:
+    """Renderiza um card editorial inspirado em videogames, sem dados legados."""
     posicoes = dados.get("posicoes_multiplas") or [dados.get("posicao")]
     siglas: list[str] = []
     for posicao in posicoes:
@@ -367,16 +387,61 @@ def render_cartao_perfil(nome: str, dados: Mapping[str, Any]) -> None:
         if sigla not in siglas:
             siglas.append(sigla)
 
+    metricas = (
+        calcular_metricas_avaliacao(registro_avaliacao)
+        if registro_avaliacao is not None
+        else {
+            "capacidade_atual_media": None,
+            "potencial_2030_medio": None,
+            "status": "Não avaliada",
+        }
+    )
+    capacidade = (
+        "—"
+        if metricas["capacidade_atual_media"] is None
+        else formatar_numero(metricas["capacidade_atual_media"])
+    )
+    potencial = (
+        "—"
+        if metricas["potencial_2030_medio"] is None
+        else formatar_numero(metricas["potencial_2030_medio"])
+    )
+    idade_2030 = _idade_projetada_2030(dados)
+    status = formatar_status_avaliacao(metricas["status"])
+    clube = dados.get("clube") or "Não informado"
+    posicao_principal = dados.get("posicao") or "Posição não informada"
+
     st.markdown(
-        '<article class="profile-card">'
-        f'<div class="profile-highlight">{_esc(" · ".join(siglas))}</div>'
+        '<article class="profile-card" '
+        f'aria-label="Card do jogador {_esc(nome)}">'
+        '<div class="profile-card-topline">'
+        f'<span class="profile-position-badge">{_esc(" · ".join(siglas))}</span>'
+        f'<span class="profile-evaluation-status">{_esc(status)}</span>'
+        "</div>"
+        '<div class="profile-card-identity">'
+        '<span class="profile-card-kicker">Seleção Brasileira · Ciclo 2030</span>'
         f'<h2>{_esc(nome)}</h2>'
-        f'<p class="profile-secondary">{_esc(dados.get("posicao"))}</p>'
-        '<div class="profile-details">'
-        f'<div><strong>Clube atual:</strong> {_esc(dados.get("clube"))}</div>'
-        f'<div><strong>Idade em 2026:</strong> {_esc(dados.get("idade"))}</div>'
-        f'<div><strong>ID:</strong> {_esc(dados.get("id_atleta"))}</div>'
-        "</div></article>",
+        '<p class="profile-club">'
+        '<span>Clube atual</span>'
+        f'<strong>{_esc(clube)}</strong>'
+        "</p>"
+        "</div>"
+        '<dl class="profile-game-stats">'
+        '<div class="profile-game-stat">'
+        '<dt>Capacidade atual</dt>'
+        f'<dd>{_esc(capacidade)}</dd>'
+        "</div>"
+        '<div class="profile-game-stat">'
+        '<dt>Potencial em 2030</dt>'
+        f'<dd>{_esc(potencial)}</dd>'
+        "</div>"
+        '<div class="profile-game-stat">'
+        '<dt>Idade em 2030</dt>'
+        f'<dd>{_esc(idade_2030)}</dd>'
+        "</div>"
+        "</dl>"
+        f'<p class="profile-position-full">{_esc(posicao_principal)}</p>'
+        "</article>",
         unsafe_allow_html=True,
     )
 
@@ -497,7 +562,9 @@ def render_lista_tatica(
             )
             atual = formatar_numero(item.get("capacidade_atual"))
             potencial = formatar_numero(item.get("potencial_2030"))
-            situacao = str(item.get("situacao_avaliacao") or "Não avaliada")
+            situacao = formatar_status_avaliacao(
+                item.get("situacao_avaliacao") or "Não avaliada"
+            )
             cards.append(
                 f'<li class="tactical-list-item {classe}">'
                 '<div class="tactical-list-main">'
@@ -540,7 +607,7 @@ def render_avaliacao_leitura(
             "capacidade_atual": metricas["capacidade_atual_media"],
             "potencial_2030": metricas["potencial_2030_medio"],
             "saldo_projetado": metricas["saldo_projetado"],
-            "situacao": metricas["status"],
+            "situacao": formatar_status_avaliacao(metricas["status"]),
         }
     )
 

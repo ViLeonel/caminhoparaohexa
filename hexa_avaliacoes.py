@@ -11,7 +11,7 @@ import json
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -30,6 +30,7 @@ __all__ = [
     "formatar_data_referencia",
     "formatar_numero",
     "formatar_periodo",
+    "formatar_status_avaliacao",
     "historico_atleta",
     "media_disponivel",
     "periodos_disponiveis",
@@ -448,6 +449,24 @@ def formatar_numero(valor: Any, *, sinal: bool = False) -> str:
         return "Sem base"
     formato = f"{numero:+.2f}" if sinal else f"{numero:.2f}"
     return formato.replace(".", ",")
+
+
+_STATUS_APRESENTACAO: dict[str, str] = {
+    "Completa": "Avaliação Completa",
+    "Parcial": "Avaliação Parcial",
+    "Não avaliada": "Sem Avaliação",
+    "Avaliação Completa": "Avaliação Completa",
+    "Avaliação Parcial": "Avaliação Parcial",
+    "Sem Avaliação": "Sem Avaliação",
+}
+
+
+def formatar_status_avaliacao(valor: Any) -> str:
+    """Converte o estado interno da avaliação para um rótulo público claro."""
+    status = str(valor or "").strip()
+    if not status:
+        return "Sem Avaliação"
+    return _STATUS_APRESENTACAO.get(status, status)
 
 
 def _validar_nota(valor: Any, contexto: str, erros: list[str]) -> None:

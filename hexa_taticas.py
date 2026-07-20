@@ -173,7 +173,8 @@ def _formacao_433_classico() -> dict[str, SlotTatico]:
     )
     ataque = (
         _slot("Ponta-esquerda (PE)", ("Ponta-esquerda",), 20, 72, "PE"),
-        _slot("Centroavante (CA)", ("Centroavante",), 50, 82, "CA"),
+        # Faixa segura para o cartão completo em desktop e mobile.
+        _slot("Centroavante (CA)", ("Centroavante",), 50, 76, "CA"),
         _slot("Ponta-direita (PD)", ("Ponta-direita",), 80, 72, "PD"),
     )
     return _combinar_linhas(_linha_goleiro(), _linha_defensiva_quatro(), meio, ataque)

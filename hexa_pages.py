@@ -15,11 +15,11 @@ from hexa_avaliacoes import (
     calcular_metricas_avaliacao,
     calcular_resumo_convocados,
     calcular_resumo_periodo,
-    comparar_analistas,
     construir_rankings_periodo,
     formatar_data_referencia,
     formatar_numero,
     formatar_periodo,
+    formatar_status_avaliacao,
     historico_atleta,
 )
 from hexa_components import (
@@ -33,7 +33,6 @@ from hexa_components import (
     render_dados_transfermarkt,
     render_kpis,
     render_legenda_adaptabilidade,
-    render_lista_tatica,
     render_resumo_elenco,
 )
 from hexa_config import (
@@ -69,9 +68,6 @@ from hexa_messages import (
 from hexa_selectors import (
     construir_registros_mercado,
     construir_registros_roster,
-    construir_visualizacao_tatica_lista,
-    ordenar_consensos,
-    ordenar_divergencias,
 )
 from hexa_session import (
     chave_reserva_livre,
@@ -89,7 +85,6 @@ from hexa_session import (
     reconciliar_convocacao,
 )
 from hexa_taticas import (
-    LIMITE_RESERVAS,
     POSICOES_OFICIAIS,
     TATICAS,
     SlotTatico,
@@ -419,7 +414,10 @@ def render_tela_campo(
     col_config, col_campo = st.columns([1, 2], gap="large")
 
     with col_config:
-        st.markdown("## Montar convocação")
+        st.markdown(
+            '<h2 class="convocation-builder-title">Monte a sua convocação</h2>',
+            unsafe_allow_html=True,
+        )
         tatica_ativa = st.selectbox(
             "Esquema tático:",
             list(TATICAS.keys()),
@@ -495,33 +493,13 @@ def render_tela_campo(
                 escalados[slot] = escolha
 
     with col_campo:
-        modo_visualizacao = st.radio(
-            "Visualização tática:",
-            ("Campo", "Lista"),
-            horizontal=True,
-            key="tactical_view_mode",
-            help=(
-                "A visualização em lista é mais compacta e acessível "
-                "em telas pequenas."
-            ),
+        st.session_state.pop("tactical_view_mode", None)
+        render_campo(
+            layout_ativo,
+            escalados,
+            jogadores,
+            avaliacoes_periodo,
         )
-
-        if modo_visualizacao == "Lista":
-            linhas_taticas = construir_visualizacao_tatica_lista(
-                layout_ativo,
-                escalados,
-                jogadores,
-                avaliacoes_periodo,
-            )
-            render_lista_tatica(linhas_taticas)
-        else:
-            render_campo(
-                layout_ativo,
-                escalados,
-                jogadores,
-                avaliacoes_periodo,
-            )
-
         render_legenda_adaptabilidade()
 
     titulares = set(escalados.values())
@@ -583,7 +561,7 @@ def _render_resumo_avaliacao(
     registro: Mapping[str, Any],
 ) -> None:
     """Exibe situação, saldo e data sem truncamento em colunas estreitas."""
-    situacao = str(metricas["status"])
+    situacao = formatar_status_avaliacao(metricas["status"])
     saldo = formatar_numero(metricas["saldo_projetado"], sinal=True)
     data_referencia = formatar_data_referencia(
         str(registro["data_referencia"])
@@ -591,20 +569,22 @@ def _render_resumo_avaliacao(
     st.markdown(
         '<section class="evaluation-meta-grid" '
         'aria-label="Resumo da avaliação trimestral">'
-        '<article class="evaluation-meta-card">'
+        '<article class="evaluation-meta-card evaluation-meta-card--status">'
         '<div class="evaluation-meta-label">Situação</div>'
-        f'<div class="evaluation-meta-value">{_esc(situacao)}</div>'
+        f'<div class="evaluation-meta-value evaluation-meta-value--status">'
+        f'{_esc(situacao)}</div>'
         '</article>'
         '<article class="evaluation-meta-card" '
         'title="Média de potencial menos capacidade atual, calculada apenas '
         'para cada analista que preencheu o par completo.">'
         '<div class="evaluation-meta-label">Saldo projetado</div>'
-        f'<div class="evaluation-meta-value evaluation-meta-emphasis">'
-        f'{_esc(saldo)}</div>'
+        f'<div class="evaluation-meta-value evaluation-meta-value--numeric '
+        f'evaluation-meta-emphasis">{_esc(saldo)}</div>'
         '</article>'
         '<article class="evaluation-meta-card">'
         '<div class="evaluation-meta-label">Data de referência</div>'
-        f'<div class="evaluation-meta-value">{_esc(data_referencia)}</div>'
+        f'<div class="evaluation-meta-value evaluation-meta-value--date">'
+        f'{_esc(data_referencia)}</div>'
         '</article>'
         '</section>'
         '<div class="sr-only">'
@@ -782,7 +762,7 @@ def render_tela_perfis(
     col_perfil, col_dados = st.columns([1, 2], gap="large")
 
     with col_perfil:
-        render_cartao_perfil(selected_name, atleta)
+        render_cartao_perfil(selected_name, atleta, registro)
         _render_avaliacao_trimestral(registro, periodo=periodo)
 
     with col_dados:
@@ -890,61 +870,6 @@ def _tabela_ranking(
             )
         },
     )
-
-
-def _render_comparacao_analistas(
-    base: BaseAvaliacoes,
-    periodo: str,
-) -> None:
-    capacidade = comparar_analistas(base, periodo, "capacidade")
-    potencial = comparar_analistas(base, periodo, "potencial")
-    aba_capacidade, aba_potencial = st.tabs(
-        ["Capacidade atual", "Potencial 2030"]
-    )
-
-    for aba, titulo, dados in (
-        (aba_capacidade, "capacidade atual", capacidade),
-        (aba_potencial, "potencial 2030", potencial),
-    ):
-        with aba:
-            if not dados:
-                st.info(
-                    f"Sem pares completos para comparar {titulo}."
-                )
-                continue
-            col_consenso, col_divergencia = st.columns(2, gap="large")
-            with col_consenso:
-                st.markdown("### Maiores consensos")
-                consenso = pd.DataFrame(ordenar_consensos(dados))
-                st.dataframe(
-                    consenso[
-                        [
-                            "Nome",
-                            "Posição",
-                            NOME_CURTO_ANALISTA_VINI,
-                            NOME_CURTO_ANALISTA_BETO,
-                            "Média",
-                        ]
-                    ],
-                    width="stretch",
-                    hide_index=True,
-                )
-            with col_divergencia:
-                st.markdown("### Maiores divergências")
-                divergencias = pd.DataFrame(ordenar_divergencias(dados))
-                st.dataframe(
-                    divergencias[
-                        [
-                            "Nome",
-                            "Posição",
-                            NOME_CURTO_ANALISTA_VINI,
-                            NOME_CURTO_ANALISTA_BETO,
-                            "Diferença",
-                        ]
-                    ],
-                    width="stretch",
-                    hide_index=True,
-                )
 
 
 def render_tela_analise(
@@ -1066,9 +991,6 @@ def render_tela_analise(
             "Saldo projetado",
         )
 
-    render_cabecalho_secao("Consensos e divergências")
-    _render_comparacao_analistas(base_avaliacoes, periodo)
-
     with st.expander(
         f'Avaliações parciais ({len(rankings["parciais"])})',
         expanded=False,
@@ -1080,7 +1002,9 @@ def render_tela_analise(
                         {
                             "Nome": item["nome"],
                             "Posição": item["posicao_snapshot"],
-                            "Situação": item["status"],
+                            "Situação": formatar_status_avaliacao(
+                                item["status"]
+                            ),
                         }
                         for item in rankings["parciais"]
                     ]

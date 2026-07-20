@@ -127,6 +127,16 @@ CSS = """
     .section-title-2 { font-size: var(--type-h2); }
     .section-title-3 { font-size: var(--type-h3); }
 
+    .convocation-builder-title {
+        margin: 0 0 1rem;
+        color: var(--white);
+        font-size: clamp(1.75rem, 3vw, 2.5rem);
+        font-weight: var(--weight-bold);
+        line-height: 1.14;
+        letter-spacing: -.025em;
+        text-wrap: balance;
+    }
+
     .section-subtitle {
         max-width: 760px;
         margin: .45rem 0 0;
@@ -416,23 +426,164 @@ CSS = """
     }
 
     .profile-card {
-        padding: 24px;
+        position: relative;
+        isolation: isolate;
+        min-height: 360px;
+        padding: 1.15rem;
+        overflow: hidden;
         border: 3px solid var(--gold);
-        text-align: center;
+        text-align: left;
+        background:
+            radial-gradient(circle at 90% 12%, rgba(234, 179, 8, .24), transparent 34%),
+            linear-gradient(145deg, #111827 0%, var(--navy-950) 58%, #172554 100%);
+    }
+
+    .profile-card::before,
+    .profile-card::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    .profile-card::before {
+        inset: auto -18% -36% 22%;
+        height: 72%;
+        transform: rotate(-11deg);
+        border: 1px solid rgba(234, 179, 8, .18);
+        background: rgba(30, 41, 59, .46);
+    }
+
+    .profile-card::after {
+        top: 0;
+        right: 0;
+        width: 44%;
+        height: 5px;
+        background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
+    .profile-card-topline {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: .75rem;
+    }
+
+    .profile-position-badge,
+    .profile-evaluation-status {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        border-radius: 999px;
+        font-size: .7rem;
+        font-weight: var(--weight-bold);
+        line-height: 1.2;
+        letter-spacing: .045em;
+        text-transform: uppercase;
+    }
+
+    .profile-position-badge {
+        padding: .4rem .7rem;
+        border: 1px solid rgba(234, 179, 8, .72);
+        background: rgba(234, 179, 8, .12);
+        color: var(--gold);
+    }
+
+    .profile-evaluation-status {
+        max-width: 58%;
+        padding: .4rem .65rem;
+        justify-content: flex-end;
+        color: var(--slate-300);
+        text-align: right;
+    }
+
+    .profile-card-identity {
+        margin-top: 2.4rem;
+    }
+
+    .profile-card-kicker {
+        color: var(--slate-400);
+        font-size: .68rem;
+        font-weight: var(--weight-semibold);
+        letter-spacing: .08em;
+        text-transform: uppercase;
     }
 
     .profile-card h2 {
+        margin: .35rem 0 .85rem;
         color: var(--white);
-        margin: 0 0 5px;
-        font-size: clamp(1.6rem, 4vw, 2.2rem);
+        font-size: clamp(1.85rem, 4vw, 2.55rem);
+        font-weight: var(--weight-bold);
+        line-height: 1.02;
+        letter-spacing: -.035em;
+        overflow-wrap: anywhere;
     }
 
-    .profile-details {
-        margin-top: 18px;
+    .profile-club {
+        display: grid;
+        gap: .18rem;
+        margin: 0;
+    }
+
+    .profile-club span {
+        color: var(--slate-400);
+        font-size: .68rem;
+        font-weight: var(--weight-semibold);
+        letter-spacing: .045em;
+        text-transform: uppercase;
+    }
+
+    .profile-club strong {
         color: var(--slate-300);
-        text-align: left;
-        line-height: 1.85;
-        font-size: .9rem;
+        font-size: .95rem;
+        font-weight: var(--weight-semibold);
+        line-height: 1.35;
+    }
+
+    .profile-game-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: .55rem;
+        margin: 2rem 0 0;
+    }
+
+    .profile-game-stat {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        padding: .8rem .45rem;
+        border: 1px solid rgba(148, 163, 184, .28);
+        border-radius: 10px;
+        background: rgba(2, 6, 23, .66);
+        text-align: center;
+    }
+
+    .profile-game-stat dd {
+        order: 1;
+        margin: 0;
+        color: var(--gold);
+        font-size: clamp(1.25rem, 2.7vw, 1.65rem);
+        font-weight: var(--weight-bold);
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .profile-game-stat dt {
+        order: 2;
+        margin-top: .4rem;
+        color: var(--slate-400);
+        font-size: .62rem;
+        font-weight: var(--weight-semibold);
+        line-height: 1.25;
+        text-transform: uppercase;
+    }
+
+    .profile-position-full {
+        margin: .8rem 0 0;
+        color: var(--slate-300);
+        font-size: .75rem;
+        line-height: 1.35;
+        text-align: right;
     }
 
     .rating-box {
@@ -700,7 +851,7 @@ CSS = """
     }
 
     @media (max-width: 900px) {
-        .pitch-container { height: min(620px, 72vh); }
+        .pitch-container { height: clamp(520px, 72vh, 620px); }
         .tactical-list-grid { grid-template-columns: 1fr; }
         .player-node { width: 112px; }
         .player-name-tag { font-size: .68rem; }
@@ -767,6 +918,15 @@ CSS = """
         .summary-grid { grid-template-columns: 1fr 1fr; }
         .bench-grid { grid-template-columns: 1fr 1fr; }
         .rating-grid { grid-template-columns: 1fr; }
+        .profile-card {
+            min-height: 330px;
+            padding: 1rem;
+        }
+        .profile-card-identity { margin-top: 1.8rem; }
+        .profile-evaluation-status { max-width: 62%; }
+        .profile-game-stats { gap: .4rem; margin-top: 1.5rem; }
+        .profile-game-stat { padding: .7rem .3rem; }
+        .profile-game-stat dt { font-size: .56rem; }
     }
 
     /* Estados semânticos: adaptabilidade e informação */
@@ -960,6 +1120,7 @@ CSS = """
     .pitch-pos-l50-b60 { left: 50%; bottom: 60%; }
     .pitch-pos-l50-b62 { left: 50%; bottom: 62%; }
     .pitch-pos-l50-b65 { left: 50%; bottom: 65%; }
+    .pitch-pos-l50-b76 { left: 50%; bottom: 76%; }
     .pitch-pos-l50-b8 { left: 50%; bottom: 8%; }
     .pitch-pos-l50-b82 { left: 50%; bottom: 82%; }
     .pitch-pos-l60-b45 { left: 60%; bottom: 45%; }
@@ -1232,7 +1393,7 @@ RC5_CSS = """
     }
     .evaluation-meta-grid {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: .75rem;
         margin: .9rem 0 1rem;
     }
@@ -1242,6 +1403,9 @@ RC5_CSS = """
         border: 1px solid var(--navy-800);
         border-radius: 10px;
         background: var(--navy-950);
+    }
+    .evaluation-meta-card--status {
+        grid-column: 1 / -1;
     }
     .evaluation-meta-label {
         color: var(--slate-400);
@@ -1257,8 +1421,16 @@ RC5_CSS = """
         font-size: clamp(1rem, 1.7vw, 1.2rem);
         font-weight: var(--weight-semibold);
         line-height: 1.25;
-        white-space: normal;
-        overflow-wrap: anywhere;
+        overflow-wrap: normal;
+        word-break: normal;
+    }
+    .evaluation-meta-value--status {
+        font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+        text-wrap: balance;
+    }
+    .evaluation-meta-value--numeric,
+    .evaluation-meta-value--date {
+        white-space: nowrap;
     }
     .evaluation-meta-emphasis {
         color: var(--gold);
@@ -1279,6 +1451,9 @@ RC5_CSS = """
         .contract-details,
         .evaluation-meta-grid {
             grid-template-columns: 1fr;
+        }
+        .evaluation-meta-card--status {
+            grid-column: auto;
         }
     }
     @media (forced-colors: active) {
