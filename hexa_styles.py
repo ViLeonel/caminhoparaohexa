@@ -639,31 +639,48 @@ CSS = """
     }
 
     .market-card {
-        padding: 18px;
+        padding: clamp(1.2rem, 2vw, 1.6rem);
         border-left: 5px solid var(--gold);
-        margin-bottom: 22px;
+        margin-bottom: 1.5rem;
     }
 
     .market-grid {
         display: grid;
-        grid-template-columns: repeat(3, minmax(120px, 1fr));
-        gap: 14px;
-        margin-bottom: 14px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+        margin: 0;
+    }
+
+    .market-metric {
+        min-width: 0;
+        padding: 1rem;
+        border: 1px solid rgba(148, 163, 184, .22);
+        border-radius: 12px;
+        background: rgba(15, 23, 42, .62);
+    }
+
+    .market-metric--primary {
+        border-color: rgba(234, 179, 8, .52);
+        background: rgba(234, 179, 8, .08);
     }
 
     .market-label {
+        margin: 0;
         color: var(--slate-400);
         font-size: var(--type-label);
         text-transform: uppercase;
         font-weight: var(--weight-semibold);
+        line-height: 1.4;
         letter-spacing: .04em;
     }
 
     .market-value {
+        margin: .55rem 0 0;
         color: var(--white);
-        font-size: 1.125rem;
+        font-size: clamp(1.08rem, 2vw, 1.3rem);
         font-weight: var(--weight-semibold);
-        margin-top: 4px;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
     }
 
     .market-value.gold { color: var(--gold); }
@@ -685,12 +702,46 @@ CSS = """
     }
 
     .market-dates {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin: 1.25rem 0 0;
+        padding-top: 1.1rem;
+        border-top: 1px solid rgba(148, 163, 184, .18);
+    }
+
+    .market-date-item {
+        min-width: 0;
+    }
+
+    .market-date-item dt {
+        margin: 0;
         color: var(--slate-400);
         font-size: .72rem;
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-        flex-wrap: wrap;
+        font-weight: var(--weight-semibold);
+        line-height: 1.4;
+        letter-spacing: .025em;
+        text-transform: uppercase;
+    }
+
+    .market-date-item dd {
+        margin: .35rem 0 0;
+        color: var(--slate-300);
+        font-size: .875rem;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+    .market-card-info {
+        margin: 1.1rem 0 0;
+        color: var(--slate-400);
+        font-size: .78rem;
+        font-style: italic;
+        line-height: 1.55;
+    }
+
+    .market-card-info em {
+        font-style: inherit;
     }
 
     .stat-box {
@@ -793,6 +844,84 @@ CSS = """
         line-height: 1.35;
     }
 
+
+    .player-data-panel {
+        margin: .2rem 0 .35rem;
+    }
+
+    .player-data-groups {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .player-data-group {
+        min-width: 0;
+        padding: 1rem 1.05rem;
+        border: 1px solid rgba(148, 163, 184, .22);
+        border-radius: 12px;
+        background:
+            linear-gradient(180deg, rgba(30, 41, 59, .58), rgba(15, 23, 42, .42));
+    }
+
+    .player-data-group--wide {
+        grid-column: 1 / -1;
+    }
+
+    .player-data-group-title {
+        margin: 0 0 .35rem;
+        padding-bottom: .65rem;
+        border-bottom: 2px solid rgba(234, 179, 8, .58);
+        color: var(--white);
+        font-size: .92rem;
+        font-weight: var(--weight-semibold);
+        line-height: 1.35;
+    }
+
+    .player-data-list {
+        display: grid;
+        gap: 0;
+        margin: 0;
+    }
+
+    .player-data-group--wide .player-data-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 1.25rem;
+    }
+
+    .player-data-item {
+        min-width: 0;
+        padding: .78rem 0;
+        border-bottom: 1px solid rgba(148, 163, 184, .16);
+    }
+
+    .player-data-item:last-child {
+        border-bottom: 0;
+    }
+
+    .player-data-group--wide .player-data-item:nth-last-child(-n + 2) {
+        border-bottom: 0;
+    }
+
+    .player-data-term {
+        margin: 0;
+        color: var(--slate-400);
+        font-size: .7rem;
+        font-weight: var(--weight-semibold);
+        line-height: 1.35;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .player-data-description {
+        margin: .32rem 0 0;
+        color: var(--white);
+        font-size: .94rem;
+        font-weight: var(--weight-regular);
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
     .contract-details {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -866,7 +995,9 @@ CSS = """
         .player-node { width: 112px; }
         .player-name-tag { font-size: .68rem; }
         .player-rating-tag, .player-empty-tag { font-size: .57rem; }
-        .market-grid { grid-template-columns: 1fr; }
+        .market-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .player-data-groups { grid-template-columns: 1fr; }
+        .player-data-group--wide { grid-column: auto; }
     }
 
     @media (max-width: 600px) {
@@ -892,6 +1023,17 @@ CSS = """
         .project-hero-subtitle {
             font-size: 1rem;
             line-height: 1.55;
+        }
+        .market-grid,
+        .market-dates,
+        .player-data-group--wide .player-data-list {
+            grid-template-columns: 1fr;
+        }
+        .market-card {
+            padding: 1rem;
+        }
+        .market-metric {
+            padding: .9rem;
         }
         .section-header { margin-top: 1.6rem; }
         .kpi-grid,

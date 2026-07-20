@@ -446,6 +446,7 @@ def render_cartao_perfil(
 
 
 def render_comparativo_mercado(dados: Mapping[str, Any]) -> None:
+    """Exibe valor de mercado com hierarquia visual e metadados separados."""
     atual = valor_mercado_atual(dados)
     maximo = valor_mercado_maximo(dados)
     percentual = percentual_do_pico(dados)
@@ -455,31 +456,51 @@ def render_comparativo_mercado(dados: Mapping[str, Any]) -> None:
         st.info("Não há dados de mercado suficientes para este atleta.")
         return
 
+    percentual_texto = (
+        f"{percentual:.1f}%" if percentual is not None else "Sem base"
+    )
     st.markdown(
-        '<section class="market-card">'
-        '<div class="market-grid">'
-        '<div><div class="market-label">Valor atual</div>'
-        f'<div class="market-value">{_esc(formatar_valor_milhoes(atual))}</div></div>'
-        '<div><div class="market-label">Pico de valor de mercado</div>'
-        f'<div class="market-value">{_esc(formatar_valor_milhoes(maximo))}</div></div>'
-        '<div><div class="market-label">Percentual do pico de mercado</div>'
-        f'<div class="market-value">{f"{percentual:.1f}%" if percentual is not None else "Sem base"}</div></div>'
-        '<div><div class="market-label">Diferença para o pico de mercado</div>'
-        f'<div class="market-value">{_esc(formatar_valor_milhoes(diferenca))}</div></div>'
+        '<section class="market-card" '
+        'aria-label="Resumo do valor de mercado">'
+        '<dl class="market-grid">'
+        '<div class="market-metric market-metric--primary">'
+        '<dt class="market-label">Valor atual</dt>'
+        f'<dd class="market-value">{_esc(formatar_valor_milhoes(atual))}</dd>'
         "</div>"
-        '<div class="market-dates">'
-        f'<strong>Data do pico de mercado:</strong> {_esc(dados.get("tm_data_valor_maximo"))} · '
-        f'<strong>Última atualização:</strong> {_esc(dados.get("tm_ultima_atualizacao"))}'
+        '<div class="market-metric">'
+        '<dt class="market-label">Pico de valor de mercado</dt>'
+        f'<dd class="market-value">{_esc(formatar_valor_milhoes(maximo))}</dd>'
         "</div>"
-        '<p class="market-card-info">Valor de mercado é uma referência externa '
-        "e não equivale à avaliação esportiva do projeto.</p>"
+        '<div class="market-metric">'
+        '<dt class="market-label">Percentual do pico de mercado</dt>'
+        f'<dd class="market-value">{_esc(percentual_texto)}</dd>'
+        "</div>"
+        '<div class="market-metric">'
+        '<dt class="market-label">Diferença para o pico de mercado</dt>'
+        f'<dd class="market-value">{_esc(formatar_valor_milhoes(diferenca))}</dd>'
+        "</div>"
+        "</dl>"
+        '<dl class="market-dates">'
+        '<div class="market-date-item">'
+        '<dt>Data do pico de mercado</dt>'
+        f'<dd>{_esc(dados.get("tm_data_valor_maximo"))}</dd>'
+        "</div>"
+        '<div class="market-date-item">'
+        '<dt>Última atualização</dt>'
+        f'<dd>{_esc(dados.get("tm_ultima_atualizacao"))}</dd>'
+        "</div>"
+        "</dl>"
+        '<p class="market-card-info"><em>'
+        "Valor de mercado é uma referência externa e não equivale à "
+        "avaliação esportiva do projeto."
+        "</em></p>"
         "</section>",
         unsafe_allow_html=True,
     )
 
 
 def render_dados_transfermarkt(dados: Mapping[str, Any]) -> None:
-    """Exibe dados externos como lista de definições, sem ruído ou campos vazios."""
+    """Exibe os dados do jogador agrupados por contexto e omite campos vazios."""
     posicoes_externas = dados.get("tm_posicoes_secundarias_site")
     if isinstance(posicoes_externas, (list, tuple, set)):
         posicoes_externas = ", ".join(
@@ -488,41 +509,75 @@ def render_dados_transfermarkt(dados: Mapping[str, Any]) -> None:
             if str(posicao).strip()
         )
 
-    campos = (
-        ("Nome completo", dados.get("nome_completo") or dados.get("nome")),
-        ("Nascimento", dados.get("tm_nascimento")),
-        ("Naturalidade", dados.get("tm_naturalidade")),
-        ("Altura", dados.get("tm_altura")),
-        ("Pé preferencial", dados.get("tm_pe")),
-        ("Empresário", dados.get("tm_empresario")),
-        ("No clube desde", dados.get("tm_clube_desde")),
-        ("Contrato até", dados.get("tm_contrato")),
-        ("Opção de contrato", dados.get("tm_opcao_contrato")),
-        ("Última renovação", dados.get("tm_ultima_renovacao")),
-        ("Equipador", dados.get("tm_equipador")),
-        ("Posição na fonte externa", dados.get("tm_posicao_site")),
-        ("Posições externas", posicoes_externas),
+    grupos = (
+        (
+            "Identificação",
+            (
+                ("Nome completo", dados.get("nome_completo") or dados.get("nome")),
+                ("Nascimento", dados.get("tm_nascimento")),
+                ("Naturalidade", dados.get("tm_naturalidade")),
+                ("Altura", dados.get("tm_altura")),
+                ("Pé preferencial", dados.get("tm_pe")),
+            ),
+            "",
+        ),
+        (
+            "Vínculo profissional",
+            (
+                ("Empresário", dados.get("tm_empresario")),
+                ("No clube desde", dados.get("tm_clube_desde")),
+                ("Contrato até", dados.get("tm_contrato")),
+                ("Opção de contrato", dados.get("tm_opcao_contrato")),
+                ("Última renovação", dados.get("tm_ultima_renovacao")),
+                ("Equipador", dados.get("tm_equipador")),
+            ),
+            "",
+        ),
+        (
+            "Referência cadastral externa",
+            (
+                ("Posição na fonte externa", dados.get("tm_posicao_site")),
+                ("Posições externas", posicoes_externas),
+            ),
+            " player-data-group--wide",
+        ),
     )
-    itens = [
-        (rotulo, valor)
-        for rotulo, valor in campos
-        if valor not in (None, "", [], (), set())
-    ]
-    if not itens:
-        st.info("Não há dados externos ou contratuais disponíveis para este atleta.")
+
+    grupos_html: list[str] = []
+    for titulo, campos, classe_extra in grupos:
+        itens = [
+            (rotulo, valor)
+            for rotulo, valor in campos
+            if valor not in (None, "", [], (), set())
+        ]
+        if not itens:
+            continue
+
+        definicoes = "".join(
+            '<div class="player-data-item">'
+            f'<dt class="player-data-term">{_esc(rotulo)}</dt>'
+            f'<dd class="player-data-description">{_esc(valor)}</dd>'
+            "</div>"
+            for rotulo, valor in itens
+        )
+        grupos_html.append(
+            f'<section class="player-data-group{classe_extra}">'
+            f'<h3 class="player-data-group-title">{_esc(titulo)}</h3>'
+            '<dl class="player-data-list">'
+            f"{definicoes}</dl>"
+            "</section>"
+        )
+
+    if not grupos_html:
+        st.info("Não há dados do jogador disponíveis.")
         return
 
-    definicoes = "".join(
-        '<div class="contract-item">'
-        f'<dt class="contract-term">{_esc(rotulo)}</dt>'
-        f'<dd class="contract-description">{_esc(valor)}</dd>'
-        "</div>"
-        for rotulo, valor in itens
-    )
     st.markdown(
-        '<dl class="contract-details" '
-        'aria-label="Dados externos e contratuais">'
-        f"{definicoes}</dl>",
+        '<section class="player-data-panel" '
+        'aria-label="Dados do jogador">'
+        '<div class="player-data-groups">'
+        f'{"".join(grupos_html)}'
+        "</div></section>",
         unsafe_allow_html=True,
     )
 

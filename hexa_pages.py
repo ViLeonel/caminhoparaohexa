@@ -766,7 +766,7 @@ def render_tela_perfis(
         _render_avaliacao_trimestral(registro, periodo=periodo)
 
     with col_dados:
-        with st.expander("Dados externos e contratuais", expanded=True):
+        with st.expander("Dados do jogador", expanded=True, type="compact"):
             render_dados_transfermarkt(atleta)
 
         render_cabecalho_secao("Valor de mercado")
