@@ -1090,7 +1090,7 @@ def render_tela_analise(
         (
             KPI(
                 "Atletas com valor",
-                len(df_mercado),
+                len(mercado),
                 "Cobertura disponível na fonte externa",
                 "informativo",
             ),
