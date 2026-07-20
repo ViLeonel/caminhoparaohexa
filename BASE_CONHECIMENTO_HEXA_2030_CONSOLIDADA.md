@@ -1124,3 +1124,44 @@ A entrega executa validação estrutural dos JSONs, preservação dos campos pro
 
 O smoke completo do Streamlit depende dos módulos do repositório que não foram disponibilizados nesta conversa.
 
+---
+
+## 30. Atualização cadastral final por imagens — 20/07/2026
+
+### 30.1 Escopo
+
+Foram processadas 10 fichas adicionais fornecidas pelo usuário.
+
+- 9 atletas foram adicionados com IDs `ATH-0080` a `ATH-0088`;
+- Lucca (`ATH-0077`) já estava cadastrado e foi deduplicado;
+- nenhum campo editorial ou tático de atleta existente foi sobrescrito;
+- os novos atletas receberam estado editorial neutro, sem notas ou opiniões inventadas;
+- dados externos foram isolados em campos `tm_`;
+- posições externas foram convertidas para o vocabulário oficial somente na criação dos novos registros.
+
+### 30.2 Atletas adicionados
+
+Pedro Cobra, Pedro Gabriel, Arthur Dias, João Pedro Chermont, Rayan Lucas, Riquelme Felipe, Abner Vinícius, Lucas Piton, Ângelo.
+
+### 30.3 Estado resultante
+
+- 88 atletas no cadastro;
+- 88 registros oficiais em `2026-T2`;
+- 1,760 linhas trimestrais entre 2026 e 2030;
+- aplicativo atualizado por meio dos JSONs canônicos, sem mudança em Python;
+- planilha ampliada preservando fórmulas, validações, filtros e painel.
+
+### 30.4 Arquivos alterados
+
+- `jogadores_hexa_2030.json`;
+- `avaliacoes_trimestrais_hexa_2030.json`;
+- `avaliacoes_trimestrais_atletas_hexa_2030.xlsx`;
+- `BASE_CONHECIMENTO_HEXA_2030_CONSOLIDADA.md`.
+
+### 30.5 Validação
+
+Foram verificados JSON, IDs, posições oficiais, preservação dos campos protegidos,
+correspondência entre cadastro e avaliações, fórmulas da planilha, regras táticas
+e compilação dos arquivos Python disponibilizados. O smoke completo do
+Streamlit continua condicionado à disponibilidade de todos os módulos do
+repositório e da dependência `streamlit` no ambiente de execução.

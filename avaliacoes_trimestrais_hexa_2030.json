@@ -3,9 +3,9 @@
   "projeto": "O Caminho para o Hexa 2030",
   "fonte": {
     "arquivo": "avaliacoes_trimestrais_atletas_hexa_2030.xlsx",
-    "sha256": "e5565da0f3cb5fa1b091f4c2b597caebbb16ac9b13fb0a4bb4b296b9fbaa7442",
+    "sha256": "9c3ed029c25934b88801e07135775256641c70c76bc7b63366d4174eaca9b052",
     "aba": "Avaliações Trimestrais",
-    "importado_em_utc": "2026-07-20T21:43:30Z",
+    "importado_em_utc": "2026-07-20T22:08:17Z",
     "politica": "Somente dados brutos; indicadores são recalculados pelo aplicativo."
   },
   "historico_importacoes": [
@@ -21,6 +21,13 @@
       "sha256": "e5565da0f3cb5fa1b091f4c2b597caebbb16ac9b13fb0a4bb4b296b9fbaa7442",
       "aba": "Avaliações Trimestrais",
       "importado_em_utc": "2026-07-20T21:43:30Z",
+      "politica": "Somente dados brutos; indicadores são recalculados pelo aplicativo."
+    },
+    {
+      "arquivo": "avaliacoes_trimestrais_atletas_hexa_2030.xlsx",
+      "sha256": "9c3ed029c25934b88801e07135775256641c70c76bc7b63366d4174eaca9b052",
+      "aba": "Avaliações Trimestrais",
+      "importado_em_utc": "2026-07-20T22:08:17Z",
       "politica": "Somente dados brutos; indicadores são recalculados pelo aplicativo."
     }
   ],
@@ -1594,6 +1601,186 @@
       "data_referencia": "2026-06-30",
       "posicao_snapshot": "Ponta-esquerda",
       "clube_snapshot": "Zenit São Petersburgo",
+      "vini": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      },
+      "beto": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      }
+    },
+    {
+      "id_atleta": "ATH-0080",
+      "nome": "Pedro Cobra",
+      "periodo": "2026-T2",
+      "ano": 2026,
+      "trimestre": "T2",
+      "data_referencia": "2026-06-30",
+      "posicao_snapshot": "Goleiro",
+      "clube_snapshot": "Atlético Mineiro",
+      "vini": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      },
+      "beto": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      }
+    },
+    {
+      "id_atleta": "ATH-0081",
+      "nome": "Pedro Gabriel",
+      "periodo": "2026-T2",
+      "ano": 2026,
+      "trimestre": "T2",
+      "data_referencia": "2026-06-30",
+      "posicao_snapshot": "Lateral-esquerdo",
+      "clube_snapshot": "Grêmio FBPA",
+      "vini": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      },
+      "beto": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      }
+    },
+    {
+      "id_atleta": "ATH-0082",
+      "nome": "Arthur Dias",
+      "periodo": "2026-T2",
+      "ano": 2026,
+      "trimestre": "T2",
+      "data_referencia": "2026-06-30",
+      "posicao_snapshot": "Zagueiro",
+      "clube_snapshot": "Club Athletico Paranaense",
+      "vini": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      },
+      "beto": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      }
+    },
+    {
+      "id_atleta": "ATH-0083",
+      "nome": "João Pedro Chermont",
+      "periodo": "2026-T2",
+      "ano": 2026,
+      "trimestre": "T2",
+      "data_referencia": "2026-06-30",
+      "posicao_snapshot": "Lateral-direito",
+      "clube_snapshot": "Coritiba Foot Ball Club",
+      "vini": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      },
+      "beto": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      }
+    },
+    {
+      "id_atleta": "ATH-0084",
+      "nome": "Rayan Lucas",
+      "periodo": "2026-T2",
+      "ano": 2026,
+      "trimestre": "T2",
+      "data_referencia": "2026-06-30",
+      "posicao_snapshot": "Volante",
+      "clube_snapshot": "CR Flamengo Sub-20",
+      "vini": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      },
+      "beto": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      }
+    },
+    {
+      "id_atleta": "ATH-0085",
+      "nome": "Riquelme Felipe",
+      "periodo": "2026-T2",
+      "ano": 2026,
+      "trimestre": "T2",
+      "data_referencia": "2026-06-30",
+      "posicao_snapshot": "Ponta-direita",
+      "clube_snapshot": "Fluminense FC",
+      "vini": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      },
+      "beto": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      }
+    },
+    {
+      "id_atleta": "ATH-0086",
+      "nome": "Abner Vinícius",
+      "periodo": "2026-T2",
+      "ano": 2026,
+      "trimestre": "T2",
+      "data_referencia": "2026-06-30",
+      "posicao_snapshot": "Lateral-esquerdo",
+      "clube_snapshot": "Olympique Lyon",
+      "vini": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      },
+      "beto": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      }
+    },
+    {
+      "id_atleta": "ATH-0087",
+      "nome": "Lucas Piton",
+      "periodo": "2026-T2",
+      "ano": 2026,
+      "trimestre": "T2",
+      "data_referencia": "2026-06-30",
+      "posicao_snapshot": "Lateral-esquerdo",
+      "clube_snapshot": "CR Vasco da Gama",
+      "vini": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      },
+      "beto": {
+        "capacidade_atual": null,
+        "potencial_2030": null,
+        "observacao": ""
+      }
+    },
+    {
+      "id_atleta": "ATH-0088",
+      "nome": "Ângelo",
+      "periodo": "2026-T2",
+      "ano": 2026,
+      "trimestre": "T2",
+      "data_referencia": "2026-06-30",
+      "posicao_snapshot": "Ponta-direita",
+      "clube_snapshot": "Al-Nassr FC",
       "vini": {
         "capacidade_atual": null,
         "potencial_2030": null,
