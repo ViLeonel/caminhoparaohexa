@@ -45,6 +45,7 @@ __all__ = [
     "render_dossie",
     "render_kpis",
     "render_legenda_adaptabilidade",
+    "render_quadro_avaliacao_executivo",
     "render_lista_tatica",
     "render_resumo_elenco",
 ]
@@ -445,6 +446,91 @@ def render_cartao_perfil(
     )
 
 
+def _nota_avaliacao(
+    registro: Mapping[str, Any],
+    analista: str,
+    campo: str,
+) -> float | None:
+    bloco = registro.get(analista)
+    if not isinstance(bloco, Mapping):
+        return None
+    valor = bloco.get(campo)
+    if valor in (None, "") or isinstance(valor, bool):
+        return None
+    try:
+        return float(valor)
+    except (TypeError, ValueError):
+        return None
+
+
+def _formatar_nota_executiva(valor: Any, casas: int) -> str:
+    if valor in (None, "") or isinstance(valor, bool):
+        return "—"
+    try:
+        numero = float(valor)
+    except (TypeError, ValueError):
+        return "—"
+    return f"{numero:.{casas}f}".replace(".", ",")
+
+
+def render_quadro_avaliacao_executivo(
+    registro: Mapping[str, Any],
+    *,
+    rotulo_vini: str = "Vini",
+    rotulo_beto: str = "Beto",
+) -> None:
+    """Exibe as notas trimestrais em um quadro semântico e responsivo."""
+    metricas = calcular_metricas_avaliacao(registro)
+    linhas = (
+        (
+            "Capacidade atual",
+            "Desempenho no período",
+            _nota_avaliacao(registro, "vini", "capacidade_atual"),
+            _nota_avaliacao(registro, "beto", "capacidade_atual"),
+            metricas.get("capacidade_atual_media"),
+        ),
+        (
+            "Potencial 2030",
+            "Projeção para o ciclo",
+            _nota_avaliacao(registro, "vini", "potencial_2030"),
+            _nota_avaliacao(registro, "beto", "potencial_2030"),
+            metricas.get("potencial_2030_medio"),
+        ),
+    )
+
+    corpo = "".join(
+        '<tr>'
+        '<th scope="row">'
+        f'<span class="evaluation-score-label">{_esc(indicador)}</span>'
+        f'<span class="evaluation-score-caption">{_esc(descricao)}</span>'
+        '</th>'
+        f'<td><span class="evaluation-score-value">{_esc(_formatar_nota_executiva(vini, 1))}</span></td>'
+        f'<td><span class="evaluation-score-value">{_esc(_formatar_nota_executiva(beto, 1))}</span></td>'
+        '<td class="evaluation-score-average">'
+        f'<span class="evaluation-score-value">{_esc(_formatar_nota_executiva(media, 2))}</span>'
+        '</td>'
+        '</tr>'
+        for indicador, descricao, vini, beto, media in linhas
+    )
+
+    st.markdown(
+        '<section class="evaluation-scorecard" '
+        'aria-label="Quadro executivo das avaliações trimestrais">'
+        '<table class="evaluation-score-table">'
+        '<caption class="sr-only">Notas de Vini e Beto e média do período</caption>'
+        '<thead><tr>'
+        '<th scope="col">Indicador</th>'
+        f'<th scope="col">{_esc(rotulo_vini)}</th>'
+        f'<th scope="col">{_esc(rotulo_beto)}</th>'
+        '<th scope="col" class="evaluation-score-average">Média</th>'
+        '</tr></thead>'
+        f'<tbody>{corpo}</tbody>'
+        '</table>'
+        '</section>',
+        unsafe_allow_html=True,
+    )
+
+
 def render_comparativo_mercado(dados: Mapping[str, Any]) -> None:
     """Exibe valor de mercado com hierarquia visual e metadados separados."""
     atual = valor_mercado_atual(dados)
@@ -501,14 +587,6 @@ def render_comparativo_mercado(dados: Mapping[str, Any]) -> None:
 
 def render_dados_transfermarkt(dados: Mapping[str, Any]) -> None:
     """Exibe os dados do jogador agrupados por contexto e omite campos vazios."""
-    posicoes_externas = dados.get("tm_posicoes_secundarias_site")
-    if isinstance(posicoes_externas, (list, tuple, set)):
-        posicoes_externas = ", ".join(
-            str(posicao).strip()
-            for posicao in posicoes_externas
-            if str(posicao).strip()
-        )
-
     grupos = (
         (
             "Identificação",
@@ -524,6 +602,7 @@ def render_dados_transfermarkt(dados: Mapping[str, Any]) -> None:
         (
             "Vínculo profissional",
             (
+                ("Clube atual", dados.get("clube")),
                 ("Empresário", dados.get("tm_empresario")),
                 ("No clube desde", dados.get("tm_clube_desde")),
                 ("Contrato até", dados.get("tm_contrato")),
@@ -532,14 +611,6 @@ def render_dados_transfermarkt(dados: Mapping[str, Any]) -> None:
                 ("Equipador", dados.get("tm_equipador")),
             ),
             "",
-        ),
-        (
-            "Referência cadastral externa",
-            (
-                ("Posição na fonte externa", dados.get("tm_posicao_site")),
-                ("Posições externas", posicoes_externas),
-            ),
-            " player-data-group--wide",
         ),
     )
 

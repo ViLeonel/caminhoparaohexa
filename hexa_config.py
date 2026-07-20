@@ -51,7 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent
 NOME_APLICACAO = "O Caminho para o Hexa 2030"
 TITULO_PROJETO = "O Caminho para o Hexa"
 ICONE_APLICACAO = "🏆"
-VERSAO_APLICACAO = "1.1.7-rc5.5-dados-jogador-mercado"
+VERSAO_APLICACAO = "1.1.8-rc5.6-refino-executivo"
 TITULO_SIDEBAR = "CONSELHO TÁTICO"
 ROTULO_NAVEGACAO = "Navegação do Painel:"
 
@@ -60,10 +60,10 @@ NOME_CURTO_ANALISTA_VINI = "Vini"
 NOME_ANALISTA_BETO = "Beto Muñoz"
 NOME_CURTO_ANALISTA_BETO = "Beto"
 
-MENU_CAMPO = "🏟️ Campo de Jogo"
-MENU_PERFIS = "👤 Jogadores, Scout e Avaliações"
-MENU_ROSTER = "📋 Lista de Jogadores"
-MENU_ANALISE = "📊 Análises & Mercado"
+MENU_CAMPO = "🏟️ Escalação"
+MENU_PERFIS = "🔎 Scout"
+MENU_ROSTER = "📋 Jogadores"
+MENU_ANALISE = "📊 Indicadores"
 MENU_ADMIN = "🔐 Administração"
 MENUS: tuple[str, ...] = (
     MENU_CAMPO,

@@ -733,11 +733,13 @@ CSS = """
     }
 
     .market-card-info {
-        margin: 1.1rem 0 0;
+        margin: 1.5rem 0 0;
+        padding-top: .9rem;
+        border-top: 1px dashed rgba(148, 163, 184, .18);
         color: var(--slate-400);
-        font-size: .78rem;
+        font-size: .75rem;
         font-style: italic;
-        line-height: 1.55;
+        line-height: 1.6;
     }
 
     .market-card-info em {
@@ -1539,10 +1541,115 @@ RC5_CSS = """
         line-height: 1.55;
     }
     .market-card-info {
-        margin: .8rem 0 0;
+        margin: 1.5rem 0 0;
+        padding-top: .9rem;
+        border-top: 1px dashed rgba(148, 163, 184, .18);
         color: var(--slate-400);
-        line-height: 1.5;
+        font-size: .75rem;
+        font-style: italic;
+        line-height: 1.6;
     }
+    .evaluation-scorecard {
+        margin: 1rem 0 1.15rem;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, .24);
+        border-radius: 14px;
+        background:
+            linear-gradient(180deg, rgba(30, 41, 59, .58), rgba(2, 6, 23, .78));
+        box-shadow: 0 10px 24px rgba(0, 0, 0, .18);
+    }
+
+    .evaluation-score-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .evaluation-score-table thead {
+        background: rgba(15, 23, 42, .84);
+    }
+
+    .evaluation-score-table th,
+    .evaluation-score-table td {
+        padding: .9rem .75rem;
+        border-right: 1px solid rgba(148, 163, 184, .16);
+        border-bottom: 1px solid rgba(148, 163, 184, .16);
+        vertical-align: middle;
+    }
+
+    .evaluation-score-table th:last-child,
+    .evaluation-score-table td:last-child {
+        border-right: 0;
+    }
+
+    .evaluation-score-table tbody tr:last-child th,
+    .evaluation-score-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .evaluation-score-table thead th {
+        color: var(--slate-400);
+        font-size: .68rem;
+        font-weight: var(--weight-semibold);
+        line-height: 1.3;
+        letter-spacing: .045em;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    .evaluation-score-table thead th:first-child {
+        width: 43%;
+        text-align: left;
+    }
+
+    .evaluation-score-table tbody th {
+        color: var(--white);
+        text-align: left;
+    }
+
+    .evaluation-score-table tbody td {
+        color: var(--slate-300);
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .evaluation-score-label {
+        display: block;
+        font-size: .88rem;
+        font-weight: var(--weight-semibold);
+        line-height: 1.3;
+    }
+
+    .evaluation-score-caption {
+        display: block;
+        margin-top: .2rem;
+        color: var(--slate-400);
+        font-size: .66rem;
+        font-weight: var(--weight-regular);
+        line-height: 1.35;
+    }
+
+    .evaluation-score-value {
+        display: inline-block;
+        font-size: .94rem;
+        font-weight: var(--weight-semibold);
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .evaluation-score-average {
+        background: rgba(234, 179, 8, .08);
+    }
+
+    .evaluation-score-table tbody .evaluation-score-average {
+        color: var(--gold);
+    }
+
+    .evaluation-score-table tbody .evaluation-score-average .evaluation-score-value {
+        font-size: 1.05rem;
+        font-weight: var(--weight-bold);
+    }
+
     .evaluation-meta-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1603,6 +1710,25 @@ RC5_CSS = """
         .contract-details,
         .evaluation-meta-grid {
             grid-template-columns: 1fr;
+        }
+        .evaluation-score-table th,
+        .evaluation-score-table td {
+            padding: .72rem .42rem;
+        }
+        .evaluation-score-table thead th {
+            font-size: .6rem;
+        }
+        .evaluation-score-label {
+            font-size: .78rem;
+        }
+        .evaluation-score-caption {
+            font-size: .6rem;
+        }
+        .evaluation-score-value {
+            font-size: .84rem;
+        }
+        .evaluation-score-table tbody .evaluation-score-average .evaluation-score-value {
+            font-size: .94rem;
         }
         .evaluation-meta-card--status {
             grid-column: auto;

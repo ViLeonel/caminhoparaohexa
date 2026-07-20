@@ -33,6 +33,7 @@ from hexa_components import (
     render_dados_transfermarkt,
     render_kpis,
     render_legenda_adaptabilidade,
+    render_quadro_avaliacao_executivo,
     render_resumo_elenco,
 )
 from hexa_config import (
@@ -623,43 +624,10 @@ def _render_avaliacao_trimestral(
             "O atleta está na base, mas ainda não recebeu notas neste período."
         )
 
-    linhas = pd.DataFrame(
-        [
-            {
-                "Indicador": "Capacidade atual",
-                NOME_CURTO_ANALISTA_VINI: _valor_analista(
-                    registro, "vini", "capacidade_atual"
-                ),
-                NOME_CURTO_ANALISTA_BETO: _valor_analista(
-                    registro, "beto", "capacidade_atual"
-                ),
-                "Média": metricas["capacidade_atual_media"],
-            },
-            {
-                "Indicador": "Potencial 2030",
-                NOME_CURTO_ANALISTA_VINI: _valor_analista(
-                    registro, "vini", "potencial_2030"
-                ),
-                NOME_CURTO_ANALISTA_BETO: _valor_analista(
-                    registro, "beto", "potencial_2030"
-                ),
-                "Média": metricas["potencial_2030_medio"],
-            },
-        ]
-    )
-    st.dataframe(
-        linhas,
-        width="stretch",
-        hide_index=True,
-        column_config={
-            NOME_CURTO_ANALISTA_VINI: st.column_config.NumberColumn(
-                format="%.1f"
-            ),
-            NOME_CURTO_ANALISTA_BETO: st.column_config.NumberColumn(
-                format="%.1f"
-            ),
-            "Média": st.column_config.NumberColumn(format="%.2f"),
-        },
+    render_quadro_avaliacao_executivo(
+        registro,
+        rotulo_vini=NOME_CURTO_ANALISTA_VINI,
+        rotulo_beto=NOME_CURTO_ANALISTA_BETO,
     )
 
     _render_resumo_avaliacao(metricas, registro)
@@ -725,7 +693,7 @@ def render_tela_perfis(
     periodo: str,
 ) -> None:
     render_cabecalho(
-        "Jogadores, Scout e Avaliações",
+        "Scout",
         (
             "Pesquise um atleta para consultar avaliação trimestral, "
             "contrato e valor de mercado."
@@ -783,7 +751,7 @@ def render_tela_roster(
     base_avaliacoes: BaseAvaliacoes,
     periodo: str,
 ) -> None:
-    render_cabecalho("Lista de Jogadores")
+    render_cabecalho("Jogadores")
     _render_contexto_periodo(
         base_avaliacoes,
         periodo,
@@ -878,7 +846,7 @@ def render_tela_analise(
     periodo: str,
 ) -> None:
     render_cabecalho(
-        "Análises & Mercado",
+        "Indicadores",
         "Visão consolidada das avaliações esportivas e dos dados de mercado do ciclo 2030.",
     )
     _render_contexto_periodo(
