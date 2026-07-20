@@ -44,6 +44,7 @@ __all__ = [
     "render_comparativo_mercado",
     "render_dados_transfermarkt",
     "render_dossie",
+    "render_grade_dados",
     "render_kpis",
     "render_legenda_adaptabilidade",
     "render_quadro_avaliacao_executivo",
@@ -79,13 +80,16 @@ FormatoTabelaExecutiva = Literal[
     "inteiro",
     "percentual_1",
     "moeda_milhoes",
+    "data",
 ]
 AlinhamentoTabelaExecutiva = Literal["esquerda", "centro", "direita"]
+FiltroTabelaExecutiva = Literal["texto", "numero", "data"]
+FixacaoTabelaExecutiva = Literal["left", "right"]
 
 
 @dataclass(frozen=True, slots=True)
 class ColunaTabelaExecutiva:
-    """Contrato visual de uma coluna da tabela executiva."""
+    """Contrato visual e funcional de uma coluna da grade executiva."""
 
     chave: str
     rotulo: str
@@ -93,7 +97,23 @@ class ColunaTabelaExecutiva:
     alinhamento: AlinhamentoTabelaExecutiva = "esquerda"
     destaque: bool = False
     progresso: bool = False
-    largura: str | None = None
+    largura: str | int | None = None
+    filtro: FiltroTabelaExecutiva | None = None
+    ordenavel: bool = True
+    fixada: FixacaoTabelaExecutiva | None = None
+    min_largura: int | None = None
+
+
+_FORMATOS_NUMERICOS: frozenset[str] = frozenset(
+    {
+        "decimal_1",
+        "decimal_2",
+        "sinal_2",
+        "inteiro",
+        "percentual_1",
+        "moeda_milhoes",
+    }
+)
 
 
 def _numero_tabela(valor: Any) -> float | None:
@@ -105,6 +125,50 @@ def _numero_tabela(valor: Any) -> float | None:
         return None
 
 
+def _formatar_data_tabela(valor: Any) -> str:
+    """Normaliza datas conhecidas sem transformar texto inválido em informação."""
+    if valor in (None, ""):
+        return "—"
+    texto = str(valor).strip()
+    if not texto:
+        return "—"
+
+    partes = texto[:10].replace(".", "/").split("/")
+    if len(partes) == 3 and all(parte.isdigit() for parte in partes):
+        dia, mes, ano = partes
+        if len(ano) == 4:
+            return f"{dia.zfill(2)}/{mes.zfill(2)}/{ano}"
+
+    partes_iso = texto[:10].split("-")
+    if len(partes_iso) == 3 and all(parte.isdigit() for parte in partes_iso):
+        ano, mes, dia = partes_iso
+        if len(ano) == 4:
+            return f"{dia.zfill(2)}/{mes.zfill(2)}/{ano}"
+    return texto
+
+
+def _data_iso_grade(valor: Any) -> str | None:
+    """Converte datas DD/MM/AAAA ou ISO em ISO para ordenação e filtro."""
+    if valor in (None, ""):
+        return None
+    texto = str(valor).strip()
+    if not texto:
+        return None
+
+    partes = texto[:10].replace(".", "/").split("/")
+    if len(partes) == 3 and all(parte.isdigit() for parte in partes):
+        dia, mes, ano = partes
+        if len(ano) == 4:
+            return f"{ano}-{mes.zfill(2)}-{dia.zfill(2)}"
+
+    partes_iso = texto[:10].split("-")
+    if len(partes_iso) == 3 and all(parte.isdigit() for parte in partes_iso):
+        ano, mes, dia = partes_iso
+        if len(ano) == 4:
+            return f"{ano}-{mes.zfill(2)}-{dia.zfill(2)}"
+    return None
+
+
 def _formatar_valor_tabela(
     valor: Any,
     formato: FormatoTabelaExecutiva,
@@ -113,6 +177,8 @@ def _formatar_valor_tabela(
         return "—"
     if formato == "texto":
         return str(valor)
+    if formato == "data":
+        return _formatar_data_tabela(valor)
 
     numero = _numero_tabela(valor)
     if numero is None:
@@ -172,14 +238,14 @@ def _conteudo_celula_tabela(
     return valor_html, texto, progresso
 
 
-def render_tabela_executiva(
+def _render_tabela_executiva_html(
     registros: Sequence[Mapping[str, Any]],
     colunas: Sequence[ColunaTabelaExecutiva],
     *,
     rotulo_aria: str,
     legenda: str | None = None,
 ) -> None:
-    """Renderiza uma tabela semântica, responsiva e visualmente consistente."""
+    """Fallback semântico para quadros pequenos ou dependência indisponível."""
     if not registros or not colunas:
         return
 
@@ -255,6 +321,532 @@ def render_tabela_executiva(
         f'<tbody>{"".join(linhas_html)}</tbody>'
         "</table></div></section>",
         unsafe_allow_html=True,
+    )
+
+
+def _valor_grade(valor: Any, coluna: ColunaTabelaExecutiva) -> Any:
+    """Mantém tipos de ordenação separados da apresentação visual."""
+    if (
+        isinstance(valor, Sequence)
+        and not isinstance(valor, (str, bytes, bytearray))
+        and len(valor) == 2
+    ):
+        principal, subtexto = valor[0], str(valor[1] or "").strip()
+        texto_principal = _formatar_valor_tabela(principal, coluna.formato)
+        return (
+            f"{texto_principal} — {subtexto}"
+            if subtexto
+            else texto_principal
+        )
+
+    if coluna.formato in _FORMATOS_NUMERICOS:
+        return _numero_tabela(valor)
+    if coluna.formato == "data":
+        return _data_iso_grade(valor)
+    if valor in (None, "", []):
+        return None
+    return str(valor)
+
+
+def _registros_dataframe(
+    registros: Sequence[Mapping[str, Any]],
+    colunas: Sequence[ColunaTabelaExecutiva],
+):
+    """Cria DataFrame tipado somente com as colunas declaradas."""
+    import pandas as pd
+
+    linhas = [
+        {
+            coluna.chave: _valor_grade(registro.get(coluna.chave), coluna)
+            for coluna in colunas
+        }
+        for registro in registros
+    ]
+    dataframe = pd.DataFrame(
+        linhas,
+        columns=[coluna.chave for coluna in colunas],
+    )
+    for coluna in colunas:
+        if coluna.formato in _FORMATOS_NUMERICOS:
+            dataframe[coluna.chave] = pd.to_numeric(
+                dataframe[coluna.chave],
+                errors="coerce",
+            )
+    return dataframe
+
+
+def _largura_grade(
+    coluna: ColunaTabelaExecutiva,
+) -> tuple[int | None, int, int]:
+    """Traduz largura declarativa em largura fixa, mínima e proporção flex."""
+    minimo_padrao = (
+        170
+        if coluna.formato == "texto"
+        else 132
+        if coluna.formato in {"moeda_milhoes", "percentual_1", "data"}
+        else 112
+    )
+    minimo = coluna.min_largura or minimo_padrao
+    flex = 1
+
+    if isinstance(coluna.largura, int):
+        return coluna.largura, min(minimo, coluna.largura), flex
+
+    if isinstance(coluna.largura, str):
+        texto = coluna.largura.strip()
+        if texto.endswith("px"):
+            try:
+                largura = int(float(texto[:-2]))
+                return largura, min(minimo, largura), flex
+            except ValueError:
+                pass
+        if texto.endswith("%"):
+            try:
+                percentual = float(texto[:-1])
+                flex = max(1, min(6, round(percentual / 10)))
+            except ValueError:
+                pass
+    return None, minimo, flex
+
+
+def _filtro_grade(coluna: ColunaTabelaExecutiva) -> str:
+    filtro = coluna.filtro
+    if filtro is None:
+        if coluna.formato in _FORMATOS_NUMERICOS:
+            filtro = "numero"
+        elif coluna.formato == "data":
+            filtro = "data"
+        else:
+            filtro = "texto"
+
+    return {
+        "numero": "agNumberColumnFilter",
+        "data": "agDateColumnFilter",
+        "texto": "agTextColumnFilter",
+    }[filtro]
+
+
+def _formatador_javascript(formato: FormatoTabelaExecutiva, JsCode):
+    vazio = (
+        "if (params.value === null || params.value === undefined || "
+        "params.value === '') return '—';"
+    )
+    if formato == "texto":
+        return None
+    if formato == "data":
+        return JsCode(
+            f"""
+            function(params) {{
+                {vazio}
+                const texto = String(params.value).slice(0, 10);
+                const partes = texto.split('-');
+                if (partes.length !== 3) return texto;
+                return `${{partes[2]}}/${{partes[1]}}/${{partes[0]}}`;
+            }}
+            """
+        )
+
+    casas = 1 if formato in {"decimal_1", "percentual_1"} else 2
+    if formato == "inteiro":
+        casas = 0
+    prefixo = "'€ ' +" if formato == "moeda_milhoes" else ""
+    sufixo = " + ' mi'" if formato == "moeda_milhoes" else ""
+    if formato == "percentual_1":
+        sufixo = " + '%'"
+    sinal = (
+        "const sinal = numero > 0 ? '+' : '';"
+        if formato == "sinal_2"
+        else "const sinal = '';"
+    )
+    return JsCode(
+        f"""
+        function(params) {{
+            {vazio}
+            const numero = Number(params.value);
+            if (!Number.isFinite(numero)) return '—';
+            {sinal}
+            const formatado = new Intl.NumberFormat('pt-BR', {{
+                minimumFractionDigits: {casas},
+                maximumFractionDigits: {casas}
+            }}).format(numero);
+            return {prefixo}sinal + formatado{sufixo};
+        }}
+        """
+    )
+
+
+def _comparador_data_javascript(JsCode):
+    return JsCode(
+        """
+        function(filterLocalDateAtMidnight, cellValue) {
+            if (!cellValue) return -1;
+            const partes = String(cellValue).slice(0, 10).split('-');
+            if (partes.length !== 3) return -1;
+            const dataCelula = new Date(
+                Number(partes[0]),
+                Number(partes[1]) - 1,
+                Number(partes[2])
+            );
+            if (dataCelula < filterLocalDateAtMidnight) return -1;
+            if (dataCelula > filterLocalDateAtMidnight) return 1;
+            return 0;
+        }
+        """
+    )
+
+
+def _estilo_progresso_javascript(JsCode):
+    return JsCode(
+        """
+        function(params) {
+            const numero = Number(params.value);
+            if (!Number.isFinite(numero)) return null;
+            const percentual = Math.max(0, Math.min(100, numero));
+            return {
+                backgroundImage:
+                    'linear-gradient(90deg, #F97316, #EAB308, #22C55E)',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'left bottom',
+                backgroundSize: `${percentual}% 4px`
+            };
+        }
+        """
+    )
+
+
+def _css_grade(*, alto_contraste: bool) -> dict[str, dict[str, str]]:
+    borda = "#F8FAFC" if alto_contraste else "rgba(148, 163, 184, .28)"
+    foco = "#FFFFFF" if alto_contraste else "#60A5FA"
+    return {
+        ".ag-root-wrapper": {
+            "border": f"1px solid {borda}",
+            "border-radius": "14px",
+            "overflow": "hidden",
+            "background-color": "#0F172A",
+        },
+        ".ag-header": {
+            "background-color": "#0F172A",
+            "border-bottom": f"1px solid {borda}",
+        },
+        ".ag-header-cell": {
+            "color": "#93C5FD",
+            "font-size": "12px",
+            "font-weight": "700",
+            "letter-spacing": ".045em",
+            "text-transform": "uppercase",
+            "border-right": f"1px solid {borda}",
+        },
+        ".ag-header-cell-label": {
+            "gap": "4px",
+        },
+        ".ag-cell": {
+            "display": "flex",
+            "align-items": "center",
+            "color": "#F8FAFC",
+            "font-size": "14px",
+            "font-weight": "600",
+            "border-right": f"1px solid {borda}",
+            "font-variant-numeric": "tabular-nums",
+        },
+        ".ag-row": {
+            "border-bottom": f"1px solid {borda}",
+        },
+        ".ag-row-even": {
+            "background-color": "#0B1324",
+        },
+        ".ag-row-odd": {
+            "background-color": "#111C31",
+        },
+        ".ag-row-hover": {
+            "background-color": "#1E293B !important",
+        },
+        ".ag-cell-focus": {
+            "outline": f"2px solid {foco} !important",
+            "outline-offset": "-2px",
+        },
+        ".ag-pinned-left-cols-container": {
+            "box-shadow": "2px 0 0 rgba(148, 163, 184, .28)",
+        },
+        ".hexa-grid-header-accent": {
+            "background-color": "rgba(58, 53, 35, .98) !important",
+            "color": "#FDE68A !important",
+        },
+        ".hexa-grid-accent": {
+            "background-color": "rgba(234, 179, 8, .10)",
+            "color": "#FACC15",
+            "font-weight": "700",
+        },
+        ".hexa-grid-positive": {
+            "color": "#22C55E !important",
+            "font-weight": "700",
+        },
+        ".hexa-grid-negative": {
+            "color": "#FCA5A5 !important",
+            "font-weight": "700",
+        },
+        ".hexa-grid-align-center": {
+            "justify-content": "center",
+            "text-align": "center",
+        },
+        ".hexa-grid-align-right": {
+            "justify-content": "flex-end",
+            "text-align": "right",
+        },
+        ".ag-overlay-no-rows-center": {
+            "color": "#CBD5E1",
+        },
+        ".ag-input-field-input": {
+            "min-height": "32px",
+            "color": "#F8FAFC",
+            "background-color": "#0F172A",
+        },
+        ".ag-menu": {
+            "color": "#F8FAFC",
+            "background-color": "#111827",
+            "border": f"1px solid {borda}",
+        },
+        ".ag-tool-panel-wrapper": {
+            "color": "#F8FAFC",
+            "background-color": "#111827",
+        },
+    }
+
+
+def _altura_grade(
+    total_linhas: int,
+    *,
+    linha: int,
+    cabecalho: int,
+    mostrar_barra: bool,
+    altura_maxima: int,
+) -> int:
+    barra = 48 if mostrar_barra else 0
+    calculada = cabecalho + barra + max(total_linhas, 1) * linha + 4
+    return max(132, min(calculada, altura_maxima))
+
+
+def render_grade_dados(
+    registros: Sequence[Mapping[str, Any]],
+    colunas: Sequence[ColunaTabelaExecutiva],
+    *,
+    rotulo_aria: str,
+    chave: str,
+    mostrar_barra: bool = True,
+    altura_maxima: int = 560,
+) -> bool:
+    """Renderiza AG Grid Community em modo somente leitura.
+
+    Retorna ``True`` quando a grade interativa foi carregada. Em ambientes
+    sem a dependência opcional, retorna ``False`` para permitir fallback HTML.
+    """
+    if not registros or not colunas:
+        return True
+
+    try:
+        from st_aggrid import AgGrid, DataReturnMode, JsCode
+    except ModuleNotFoundError:
+        return False
+
+    densidade = str(
+        st.session_state.get("densidade_tabelas", "Compacta")
+    ).casefold()
+    confortavel = densidade == "confortável"
+    altura_linha = 50 if confortavel else 42
+    altura_cabecalho = 50 if confortavel else 44
+
+    dataframe = _registros_dataframe(registros, colunas)
+    definicoes_colunas: list[dict[str, Any]] = []
+
+    for coluna in colunas:
+        largura, min_largura, flex = _largura_grade(coluna)
+        classes = [f"hexa-grid-align-{coluna.alinhamento}"]
+        if coluna.destaque:
+            classes.append("hexa-grid-accent")
+
+        definicao: dict[str, Any] = {
+            "field": coluna.chave,
+            "headerName": coluna.rotulo,
+            "headerTooltip": (
+                "Clique para ordenar. Use o menu da coluna para filtrar."
+            ),
+            "sortable": coluna.ordenavel,
+            "filter": _filtro_grade(coluna),
+            "resizable": True,
+            "editable": False,
+            "minWidth": min_largura,
+            "cellClass": classes,
+            "wrapHeaderText": True,
+            "autoHeaderHeight": False,
+        }
+        if largura is not None:
+            definicao["width"] = largura
+        else:
+            definicao["flex"] = flex
+        if coluna.fixada:
+            definicao["pinned"] = coluna.fixada
+            definicao["lockPinned"] = False
+        if coluna.destaque:
+            definicao["headerClass"] = "hexa-grid-header-accent"
+
+        formatador = _formatador_javascript(coluna.formato, JsCode)
+        if formatador is not None:
+            definicao["valueFormatter"] = formatador
+
+        filtro_params: dict[str, Any] = {
+            "buttons": ["reset", "apply"],
+            "closeOnApply": True,
+            "debounceMs": 250,
+            "maxNumConditions": 2,
+        }
+        if coluna.formato == "texto":
+            filtro_params["trimInput"] = True
+        if coluna.formato == "data":
+            definicao["cellDataType"] = "dateString"
+            filtro_params["comparator"] = _comparador_data_javascript(JsCode)
+        definicao["filterParams"] = filtro_params
+
+        if coluna.formato == "sinal_2":
+            definicao["cellClassRules"] = {
+                "hexa-grid-positive": "Number(x) > 0",
+                "hexa-grid-negative": "Number(x) < 0",
+            }
+        if coluna.progresso:
+            definicao["cellStyle"] = _estilo_progresso_javascript(JsCode)
+
+        definicoes_colunas.append(definicao)
+
+    opcoes_grade = {
+        "columnDefs": definicoes_colunas,
+        "defaultColDef": {
+            "sortable": True,
+            "filter": True,
+            "resizable": True,
+            "editable": False,
+            "suppressMovable": False,
+            "menuTabs": ["filterMenuTab", "generalMenuTab", "columnsMenuTab"],
+        },
+        "rowHeight": altura_linha,
+        "headerHeight": altura_cabecalho,
+        "multiSortKey": "shift",
+        "animateRows": False,
+        "enableCellTextSelection": True,
+        "ensureDomOrder": True,
+        "suppressRowClickSelection": True,
+        "suppressCellFocus": False,
+        "suppressSetFilterByDefault": True,
+        "overlayNoRowsTemplate": (
+            '<span class="ag-overlay-no-rows-center">'
+            "Nenhum registro corresponde aos filtros.</span>"
+        ),
+        "localeText": {
+            "filterOoo": "Filtrar...",
+            "equals": "Igual a",
+            "notEqual": "Diferente de",
+            "contains": "Contém",
+            "notContains": "Não contém",
+            "startsWith": "Começa com",
+            "endsWith": "Termina com",
+            "lessThan": "Menor que",
+            "lessThanOrEqual": "Menor ou igual a",
+            "greaterThan": "Maior que",
+            "greaterThanOrEqual": "Maior ou igual a",
+            "inRange": "Entre",
+            "blank": "Em branco",
+            "notBlank": "Não está em branco",
+            "andCondition": "E",
+            "orCondition": "OU",
+            "applyFilter": "Aplicar",
+            "resetFilter": "Redefinir",
+            "clearFilter": "Limpar",
+            "cancelFilter": "Cancelar",
+            "noRowsToShow": "Nenhum registro para exibir",
+            "loadingOoo": "Carregando...",
+            "searchOoo": "Pesquisar...",
+            "pinColumn": "Fixar coluna",
+            "pinLeft": "Fixar à esquerda",
+            "pinRight": "Fixar à direita",
+            "noPin": "Não fixar",
+            "autosizeThisColumn": "Ajustar esta coluna",
+            "autosizeAllColumns": "Ajustar todas as colunas",
+            "resetColumns": "Redefinir colunas",
+            "columns": "Colunas",
+            "filters": "Filtros",
+        },
+    }
+
+    altura = _altura_grade(
+        len(dataframe),
+        linha=altura_linha,
+        cabecalho=altura_cabecalho,
+        mostrar_barra=mostrar_barra,
+        altura_maxima=altura_maxima,
+    )
+    alto_contraste = bool(
+        st.session_state.get("modo_alto_contraste", False)
+    )
+    st.markdown(
+        f'<span class="sr-only">{_esc(rotulo_aria)}</span>',
+        unsafe_allow_html=True,
+    )
+    AgGrid(
+        dataframe,
+        gridOptions=opcoes_grade,
+        height=altura,
+        data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
+        allow_unsafe_jscode=True,
+        enable_enterprise_modules=False,
+        theme="streamlit",
+        custom_css=_css_grade(alto_contraste=alto_contraste),
+        key=chave,
+        update_on=[],
+        show_toolbar=mostrar_barra,
+        show_search=mostrar_barra,
+        show_download_button=mostrar_barra,
+        server_sync_strategy="client_wins",
+        use_json_serialization="auto",
+    )
+    return True
+
+
+def render_tabela_executiva(
+    registros: Sequence[Mapping[str, Any]],
+    colunas: Sequence[ColunaTabelaExecutiva],
+    *,
+    rotulo_aria: str,
+    legenda: str | None = None,
+    chave: str | None = None,
+    interativa: bool = True,
+    mostrar_barra: bool = True,
+    altura_maxima: int = 560,
+) -> None:
+    """Renderiza grade interativa ou tabela HTML compacta como fallback."""
+    if not registros or not colunas:
+        return
+
+    if interativa and chave:
+        carregada = render_grade_dados(
+            registros,
+            colunas,
+            rotulo_aria=rotulo_aria,
+            chave=chave,
+            mostrar_barra=mostrar_barra,
+            altura_maxima=altura_maxima,
+        )
+        if carregada:
+            return
+        chave_aviso = "_aviso_dependencia_grade"
+        if not st.session_state.get(chave_aviso, False):
+            st.warning(
+                "A grade interativa não foi carregada. Exibindo a tabela "
+                "compacta de compatibilidade."
+            )
+            st.session_state[chave_aviso] = True
+
+    _render_tabela_executiva_html(
+        registros,
+        colunas,
+        rotulo_aria=rotulo_aria,
+        legenda=legenda,
     )
 
 
@@ -714,6 +1306,7 @@ def render_quadro_avaliacao_executivo(
         ),
         rotulo_aria="Quadro executivo das avaliações trimestrais",
         legenda="Notas de Vini e Beto e média do período",
+        interativa=False,
     )
 
 

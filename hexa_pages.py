@@ -150,6 +150,22 @@ def _avaliacoes_por_nome(
     return base.por_nome_no_periodo(periodo)
 
 
+def _adicionar_empresarios_mercado(
+    registros: Sequence[Mapping[str, Any]],
+    jogadores: Mapping[str, Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Acrescenta a representação disponível sem alterar a fonte canônica."""
+    enriquecidos: list[dict[str, Any]] = []
+    for registro in registros:
+        linha = dict(registro)
+        nome = str(linha.get("Nome") or "")
+        dados = jogadores.get(nome, {})
+        empresario = str(dados.get("tm_empresario") or "").strip()
+        linha["Empresário"] = empresario or "Não informado"
+        enriquecidos.append(linha)
+    return enriquecidos
+
+
 def _render_contexto_periodo(
     base: BaseAvaliacoes,
     periodo: str,
@@ -799,7 +815,12 @@ def render_tela_roster(
     render_tabela_executiva(
         registros,
         (
-            ColunaTabelaExecutiva("Nome", "Nome", largura="15%"),
+            ColunaTabelaExecutiva(
+                "Nome",
+                "Nome",
+                largura="15%",
+                fixada="left",
+            ),
             ColunaTabelaExecutiva("Posição", "Posição"),
             ColunaTabelaExecutiva("Clube atual", "Clube atual"),
             ColunaTabelaExecutiva(
@@ -858,6 +879,9 @@ def render_tela_roster(
         ),
         rotulo_aria="Tabela de jogadores monitorados",
         legenda="Jogadores, posições, avaliações e dados de mercado",
+        chave=f"grade_roster_{periodo}",
+        mostrar_barra=True,
+        altura_maxima=600,
     )
 
 
@@ -865,6 +889,8 @@ def _tabela_ranking(
     itens: Sequence[Mapping[str, Any]],
     campo: str,
     rotulo: str,
+    *,
+    chave: str,
 ) -> None:
     if not itens:
         st.info("Sem avaliações completas para este recorte.")
@@ -881,7 +907,12 @@ def _tabela_ranking(
     render_tabela_executiva(
         registros,
         (
-            ColunaTabelaExecutiva("Nome", "Nome", largura="46%"),
+            ColunaTabelaExecutiva(
+                "Nome",
+                "Nome",
+                largura="46%",
+                fixada="left",
+            ),
             ColunaTabelaExecutiva("Posição", "Posição"),
             ColunaTabelaExecutiva(
                 rotulo,
@@ -897,6 +928,9 @@ def _tabela_ranking(
         ),
         rotulo_aria=f"Ranking: {rotulo}",
         legenda=f"Ranking de atletas por {rotulo.casefold()}",
+        chave=chave,
+        mostrar_barra=False,
+        altura_maxima=430,
     )
 
 
@@ -988,6 +1022,7 @@ def render_tela_analise(
             rankings["maior_capacidade"],
             "capacidade_atual_media",
             "Capacidade atual",
+            chave=f"grade_capacidade_atual_{periodo}",
         )
     with col_potencial:
         st.markdown("### Maior potencial 2030")
@@ -995,6 +1030,7 @@ def render_tela_analise(
             rankings["maior_potencial"],
             "potencial_2030_medio",
             "Potencial 2030",
+            chave=f"grade_potencial_2030_{periodo}",
         )
 
     col_evolucao, col_regressao = st.columns(2, gap="large")
@@ -1004,6 +1040,7 @@ def render_tela_analise(
             rankings["maior_evolucao"],
             "saldo_projetado",
             "Saldo projetado",
+            chave=f"grade_evolucao_{periodo}",
         )
     with col_regressao:
         st.markdown("### Maior regressão projetada")
@@ -1017,6 +1054,7 @@ def render_tela_analise(
             regressao,
             "saldo_projetado",
             "Saldo projetado",
+            chave=f"grade_regressao_{periodo}",
         )
 
     with st.expander(
@@ -1036,7 +1074,12 @@ def render_tela_analise(
                     for item in rankings["parciais"]
                 ],
                 (
-                    ColunaTabelaExecutiva("Nome", "Nome", largura="46%"),
+                    ColunaTabelaExecutiva(
+                        "Nome",
+                        "Nome",
+                        largura="46%",
+                        fixada="left",
+                    ),
                     ColunaTabelaExecutiva("Posição", "Posição"),
                     ColunaTabelaExecutiva(
                         "Situação",
@@ -1047,6 +1090,9 @@ def render_tela_analise(
                 ),
                 rotulo_aria="Avaliações parciais do período",
                 legenda="Atletas com avaliação trimestral parcial",
+                chave=f"grade_avaliacoes_parciais_{periodo}",
+                mostrar_barra=False,
+                altura_maxima=360,
             )
         else:
             st.caption("Nenhuma avaliação parcial neste período.")
@@ -1076,7 +1122,10 @@ def render_tela_analise(
         "Os valores de mercado possuem datas próprias de atualização e "
         "não equivalem a avaliação de desempenho."
     )
-    mercado = construir_registros_mercado(jogadores)
+    mercado = _adicionar_empresarios_mercado(
+        construir_registros_mercado(jogadores),
+        jogadores,
+    )
     if not mercado:
         st.info(MERCADO_SEM_DADOS)
         return
@@ -1118,8 +1167,19 @@ def render_tela_analise(
     render_tabela_executiva(
         mercado_ordenado,
         (
-            ColunaTabelaExecutiva("Nome", "Nome", largura="18%"),
+            ColunaTabelaExecutiva(
+                "Nome",
+                "Nome",
+                largura="18%",
+                fixada="left",
+            ),
             ColunaTabelaExecutiva("Posição", "Posição"),
+            ColunaTabelaExecutiva(
+                "Empresário",
+                "Empresário",
+                largura="18%",
+                min_largura=180,
+            ),
             ColunaTabelaExecutiva(
                 "Atual (M€)",
                 "Valor atual",
@@ -1149,14 +1209,18 @@ def render_tela_analise(
             ColunaTabelaExecutiva(
                 "Atualização do mercado",
                 "Atualização",
+                formato="data",
                 alinhamento="centro",
             ),
         ),
         rotulo_aria="Tabela consolidada de valor de mercado",
         legenda=(
-            "Valores atuais, picos de carreira e datas de atualização "
-            "dos atletas monitorados"
+            "Valores atuais, picos de carreira, empresários e datas de "
+            "atualização dos atletas monitorados"
         ),
+        chave="grade_mercado",
+        mostrar_barra=True,
+        altura_maxima=620,
     )
 
 

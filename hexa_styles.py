@@ -35,6 +35,11 @@ CSS = """
         --color-warning: var(--orange);
         --color-danger: var(--red);
         --color-focus: #60A5FA;
+        --grid-row-height: 2.5rem;
+        --grid-row-height-comfortable: 3rem;
+        --grid-header-height: 2.625rem;
+        --grid-cell-padding-x: .65rem;
+        --grid-cell-padding-y: .5rem;
         --space-page-top: .75rem;
         --space-sidebar-top: .65rem;
         --space-hero-bottom: 1rem;
@@ -338,7 +343,7 @@ CSS = """
         align-items: center;
         gap: 7px;
         color: var(--white);
-        font-size: .82rem;
+        font-size: .8rem;
     }
 
     .legend-dot {
@@ -875,7 +880,7 @@ CSS = """
         padding-bottom: .65rem;
         border-bottom: 2px solid rgba(234, 179, 8, .58);
         color: var(--white);
-        font-size: .92rem;
+        font-size: .875rem;
         font-weight: var(--weight-semibold);
         line-height: 1.35;
     }
@@ -1599,7 +1604,7 @@ RC5_CSS = """
     .executive-table th,
     .executive-table td {
         min-width: 0;
-        padding: .9rem .75rem;
+        padding: var(--grid-cell-padding-y) var(--grid-cell-padding-x);
         border-right: 1px solid rgba(148, 163, 184, .16);
         border-bottom: 1px solid rgba(148, 163, 184, .16);
         vertical-align: middle;
@@ -1693,20 +1698,20 @@ RC5_CSS = """
     .executive-table-value {
         display: inline-block;
         color: inherit;
-        font-size: .9rem;
+        font-size: .875rem;
         font-weight: var(--weight-semibold);
         line-height: 1.3;
         white-space: nowrap;
     }
 
     .executive-table-column--accent .executive-table-value {
-        font-size: 1rem;
+        font-size: .925rem;
         font-weight: var(--weight-bold);
     }
 
     .executive-table-caption {
         display: block;
-        margin-top: .22rem;
+        margin-top: .14rem;
         color: var(--slate-400);
         font-size: .66rem;
         font-weight: var(--weight-regular);
@@ -1729,7 +1734,7 @@ RC5_CSS = """
         display: block;
         width: 100%;
         height: 4px;
-        margin-top: .45rem;
+        margin-top: .28rem;
         overflow: hidden;
         border-radius: 999px;
         background: rgba(100, 116, 139, .28);
@@ -1813,7 +1818,7 @@ RC5_CSS = """
         }
         .executive-table-card:not(.executive-table-card--wide) .executive-table th,
         .executive-table-card:not(.executive-table-card--wide) .executive-table td {
-            padding: .72rem .48rem;
+            padding: .48rem .42rem;
         }
         .executive-table thead th {
             font-size: .6rem;

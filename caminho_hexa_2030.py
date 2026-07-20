@@ -99,6 +99,15 @@ def render_preferencias_acessibilidade() -> None:
             key="modo_alto_contraste",
             help="Aumenta o contraste de textos, bordas, foco e superfícies.",
         )
+        st.selectbox(
+            "Densidade das tabelas",
+            ("Compacta", "Confortável"),
+            key="densidade_tabelas",
+            help=(
+                "Compacta exibe mais linhas. Confortável aumenta a altura "
+                "das linhas sem alterar os dados."
+            ),
+        )
 
 
 def render_navegacao() -> tuple[str, IdentidadeUsuario]:
