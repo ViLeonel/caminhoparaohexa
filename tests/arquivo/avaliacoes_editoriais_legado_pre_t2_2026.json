@@ -1,0 +1,509 @@
+{
+  "schema_version": "1.0",
+  "projeto": "O Caminho para o Hexa 2030",
+  "motivo": "Arquivamento preventivo antes da desativação pública das avaliações editoriais legadas na RC5.",
+  "criado_em_utc": "2026-07-18T21:57:06Z",
+  "fonte": {
+    "arquivo": "jogadores_hexa_2030.json",
+    "sha256": "cefc26680b407f645eb72d013e3c1e78ada06cdc764c2bdef79df06053a659c1",
+    "total_atletas": 61
+  },
+  "campos_arquivados": [
+    "nota_vini",
+    "nota_roberto",
+    "pontos_fortes",
+    "pontos_fracos",
+    "historico"
+  ],
+  "observacao": "Os campos permanecem no JSON cadastral durante a transição, mas a interface RC5 não os lê nem os exibe.",
+  "avaliacoes_legadas": {
+    "Alexsandro": {
+      "id_atleta": "ATH-0037",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Alisson": {
+      "id_atleta": "ATH-0001",
+      "nota_vini": 7.0,
+      "nota_roberto": 7.5,
+      "pontos_fortes": "Excelente posicionamento e carreira internacional sólida.",
+      "pontos_fracos": "Idade avançada para o planejamento de longo prazo de 2030.",
+      "historico": "Vini prefere sua liderança experiente, enquanto Roberto defende transição rápida."
+    },
+    "Allan": {
+      "id_atleta": "ATH-0002",
+      "nota_vini": 7.0,
+      "nota_roberto": 7.5,
+      "pontos_fortes": "Dinâmica veloz na ponta e controle colado.",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Andrey Santos": {
+      "id_atleta": "ATH-0003",
+      "nota_vini": 7.5,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "Volante moderno de grande infiltração na área e pegada defensiva.",
+      "pontos_fracos": "Precisa de estabilidade técnica como titular absoluto na Europa.",
+      "historico": "Escolhido para ser a grande engrenagem de sustentação do meio-campo brasileiro."
+    },
+    "André": {
+      "id_atleta": "ATH-0004",
+      "nota_vini": 7.5,
+      "nota_roberto": 7.5,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Antony": {
+      "id_atleta": "ATH-0005",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Arthur": {
+      "id_atleta": "ATH-0038",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Brazão": {
+      "id_atleta": "ATH-0006",
+      "nota_vini": 7.5,
+      "nota_roberto": 7.5,
+      "pontos_fortes": "Físico privilegiado e excelente potencial sob as traves.",
+      "pontos_fracos": "Necessita de mais testes sob extrema pressão tática.",
+      "historico": "Ambos concordam que ele reúne totais condições de disputar a titularidade."
+    },
+    "Bremer": {
+      "id_atleta": "ATH-0039",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Breno Bidon": {
+      "id_atleta": "ATH-0007",
+      "nota_vini": 7.0,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "Controle refinado da bola e estilo tático clássico brasileiro.",
+      "pontos_fracos": "Necessita adquirir maior massa física e experiência tática europeia.",
+      "historico": "Identificado como potencial herdeiro técnico para as próximas competições."
+    },
+    "Bruno Guimarães": {
+      "id_atleta": "ATH-0008",
+      "nota_vini": 8.0,
+      "nota_roberto": 8.5,
+      "pontos_fortes": "Visão de jogo privilegiada e passes precisos que quebram linhas defensivas.",
+      "pontos_fracos": "Desgaste em partidas que exijam excessiva cobertura de campo.",
+      "historico": "Considerado indispensável para ditar o ritmo de posse de bola do time."
+    },
+    "Carlos Miguel": {
+      "id_atleta": "ATH-0009",
+      "nota_vini": 7.0,
+      "nota_roberto": 7.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Danilo": {
+      "id_atleta": "ATH-0010",
+      "nota_vini": 6.5,
+      "nota_roberto": 7.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Denner": {
+      "id_atleta": "ATH-0011",
+      "nota_vini": 7.0,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "Capacidade técnica invejável e ótima leitura tática.",
+      "pontos_fracos": "Muito jovem, precisa ser lapidado no time principal profissional.",
+      "historico": "Roberto projeta teto competitivo muito elevado, similar a estrelas globais."
+    },
+    "Diego Callai": {
+      "id_atleta": "ATH-0012",
+      "nota_vini": 6.5,
+      "nota_roberto": 6.5,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Endrick": {
+      "id_atleta": "ATH-0013",
+      "nota_vini": 8.0,
+      "nota_roberto": 9.0,
+      "pontos_fortes": "Explosão muscular fantástica, poder de chute e faro artilheiro.",
+      "pontos_fracos": "Necessita de minutagem constante em competições de elite.",
+      "historico": "O centroavante titular absoluto projetado para liderar o ataque em 2030."
+    },
+    "Estevão": {
+      "id_atleta": "ATH-0014",
+      "nota_vini": 9.0,
+      "nota_roberto": 10.0,
+      "pontos_fortes": "Capacidade de drible genial, mentalidade vencedora e criatividade extrema.",
+      "pontos_fracos": "Cuidados necessários com a carga física nesta transição inicial.",
+      "historico": "Classificado com nota 10 por Roberto devido à sua genialidade sem precedentes."
+    },
+    "Gabriel Bontempo": {
+      "id_atleta": "ATH-0040",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Gabriel Magalhães": {
+      "id_atleta": "ATH-0015",
+      "nota_vini": 9.0,
+      "nota_roberto": 9.0,
+      "pontos_fortes": "Combate aéreo imbatível, liderança nata e estabilidade de elite.",
+      "pontos_fracos": "Nenhum ponto fraco relevante apontado no ciclo tático.",
+      "historico": "Dono absoluto da posição e grande líder da defesa brasileira."
+    },
+    "Gabriel Martinelli": {
+      "id_atleta": "ATH-0016",
+      "nota_vini": 7.5,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "Intensidade sem a bola, recomposição exemplar e poder de explosão.",
+      "pontos_fracos": "Menor refino técnico se comparado aos titulares da ponta.",
+      "historico": "Roberto destaca sua competitividade tática incomparável no elenco."
+    },
+    "Gabriel Mec": {
+      "id_atleta": "ATH-0017",
+      "nota_vini": 7.5,
+      "nota_roberto": 7.5,
+      "pontos_fortes": "Passe cirúrgico, criatividade acima da média e inteligência.",
+      "pontos_fracos": "Ainda em processo inicial de maturação física no esporte profissional.",
+      "historico": "Vini acompanha de perto o garoto, vislumbrando um armador ideal para o futuro."
+    },
+    "Gabriel Moscardo": {
+      "id_atleta": "ATH-0041",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Guilherme Garutti": {
+      "id_atleta": "ATH-0018",
+      "nota_vini": 6.0,
+      "nota_roberto": 6.5,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Hugo Souza": {
+      "id_atleta": "ATH-0019",
+      "nota_vini": 7.5,
+      "nota_roberto": 7.5,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Igor Jesus": {
+      "id_atleta": "ATH-0020",
+      "nota_vini": 7.5,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Igor Paixão": {
+      "id_atleta": "ATH-0042",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Jair": {
+      "id_atleta": "ATH-0043",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Jhuan": {
+      "id_atleta": "ATH-0021",
+      "nota_vini": 6.0,
+      "nota_roberto": 6.5,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "João Gomes": {
+      "id_atleta": "ATH-0022",
+      "nota_vini": 7.5,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "Combate defensivo agressivo de elite, alto índice de desarmes e fôlego interminável.",
+      "pontos_fracos": "Controle disciplinar e passes longos de quebra de bloco.",
+      "historico": "O verdadeiro cão de guarda do radar. Excelente para fechar a casinha."
+    },
+    "João Pedro": {
+      "id_atleta": "ATH-0044",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "João Victor": {
+      "id_atleta": "ATH-0045",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Kaiki Bruno": {
+      "id_atleta": "ATH-0023",
+      "nota_vini": 6.0,
+      "nota_roberto": 6.0,
+      "pontos_fortes": "Apoio tático consistente e boa margem para evolução física.",
+      "pontos_fracos": "Ainda inexperiente em confrontos internacionais de alto calibre.",
+      "historico": "Aprovado por Roberto para iniciar a rodagem de testes devido ao gargalo do setor."
+    },
+    "Kauã Elias": {
+      "id_atleta": "ATH-0024",
+      "nota_vini": 7.5,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Kauã Prates": {
+      "id_atleta": "ATH-0046",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Kevin": {
+      "id_atleta": "ATH-0047",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Leonardo Nannetti": {
+      "id_atleta": "ATH-0025",
+      "nota_vini": 6.5,
+      "nota_roberto": 7.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Lucas Beraldo": {
+      "id_atleta": "ATH-0026",
+      "nota_vini": 8.0,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "Saída de bola primorosa e excelente senso de antecipação.",
+      "pontos_fracos": "Pode sofrer contra atacantes de extrema imposição física direta.",
+      "historico": "Cotado como curinga, podendo atuar também como primeiro homem de meio-campo."
+    },
+    "Lucas Perri": {
+      "id_atleta": "ATH-0027",
+      "nota_vini": 6.5,
+      "nota_roberto": 6.0,
+      "pontos_fortes": "Físico imponente e experiência recente em solo europeu.",
+      "pontos_fracos": "Oscilações em momentos de alta carga decisiva.",
+      "historico": "Visto como opção viável de elenco, mas sem garantias de liderar a meta."
+    },
+    "Lucca Meirelles": {
+      "id_atleta": "ATH-0048",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Luciano Juba": {
+      "id_atleta": "ATH-0028",
+      "nota_vini": 6.5,
+      "nota_roberto": 7.0,
+      "pontos_fortes": "Excelente batida na bola e grande carisma com a torcida.",
+      "pontos_fracos": "Dúvidas se suportaria o ritmo físico de pontas de elite na Copa.",
+      "historico": "Roberto valoriza sua bola parada, enquanto Vini demonstra ressalvas táticas."
+    },
+    "Luis Felipe": {
+      "id_atleta": "ATH-0029",
+      "nota_vini": 6.5,
+      "nota_roberto": 7.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Luis Gustavo": {
+      "id_atleta": "ATH-0030",
+      "nota_vini": 7.0,
+      "nota_roberto": 7.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Luiz Henrique": {
+      "id_atleta": "ATH-0049",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Luiz Júnior": {
+      "id_atleta": "ATH-0050",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Matheus Cunha": {
+      "id_atleta": "ATH-0031",
+      "nota_vini": 7.0,
+      "nota_roberto": 7.5,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Matheus Martinelli": {
+      "id_atleta": "ATH-0051",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Murillo": {
+      "id_atleta": "ATH-0032",
+      "nota_vini": 8.0,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "Força física impressionante nos duelos terrestres e ótimo passe longo.",
+      "pontos_fracos": "Precisa ganhar mais minutos em jogos oficiais da seleção principal.",
+      "historico": "Garante segurança total para qualquer alteração na dupla de zaga."
+    },
+    "Otávio": {
+      "id_atleta": "ATH-0052",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Pedro Morisco": {
+      "id_atleta": "ATH-0053",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Raphinha": {
+      "id_atleta": "ATH-0054",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Rayan": {
+      "id_atleta": "ATH-0055",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Rodrygo": {
+      "id_atleta": "ATH-0033",
+      "nota_vini": 8.0,
+      "nota_roberto": 8.0,
+      "pontos_fortes": "Técnica apurada, facilidade no drible e ótimo poder de decisão.",
+      "pontos_fracos": "Não possui características naturais de cadência de jogo.",
+      "historico": "Atua como o elo criativo dinâmico para dar verticalidade às jogadas táticas."
+    },
+    "Roger Ibañez": {
+      "id_atleta": "ATH-0056",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Vanderson": {
+      "id_atleta": "ATH-0057",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Vinicius Junior": {
+      "id_atleta": "ATH-0034",
+      "nota_vini": 9.0,
+      "nota_roberto": 9.0,
+      "pontos_fortes": "Melhor drible do planeta, aceleração letal e faro de gols em decisões.",
+      "pontos_fracos": "Pode sofrer desgaste físico excessivo se isolado na ponta.",
+      "historico": "A principal referência ofensiva e grande estrela do planejamento nacional."
+    },
+    "Vitor Roque": {
+      "id_atleta": "ATH-0058",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Wesley França": {
+      "id_atleta": "ATH-0035",
+      "nota_vini": 7.5,
+      "nota_roberto": 7.5,
+      "pontos_fortes": "Velocidade impressionante e excelente transição ofensiva.",
+      "pontos_fracos": "Precisa calibrar o posicionamento defensivo nas coberturas.",
+      "historico": "Roberto aposta em sua evolução máxima. Unanimidade no corredor direito."
+    },
+    "William Gomes": {
+      "id_atleta": "ATH-0059",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Yan Couto": {
+      "id_atleta": "ATH-0036",
+      "nota_vini": 7.5,
+      "nota_roberto": 7.0,
+      "pontos_fortes": "Fácil associação no terço final e boa técnica de cruzamento.",
+      "pontos_fracos": "Pode deixar o setor defensivo exposto ao subir constantemente.",
+      "historico": "Grande opção de rotação para manter a intensidade do ataque lateral."
+    },
+    "Éder Militão": {
+      "id_atleta": "ATH-0060",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    },
+    "Éderson": {
+      "id_atleta": "ATH-0061",
+      "nota_vini": 0.0,
+      "nota_roberto": 0.0,
+      "pontos_fortes": "",
+      "pontos_fracos": "",
+      "historico": ""
+    }
+  }
+}
