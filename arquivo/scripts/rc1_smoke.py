@@ -23,6 +23,7 @@ MODULOS_PUROS = (
     "hexa_messages",
     "hexa_selectors",
     "hexa_session",
+    "hexa_context",
 )
 
 IMPORTS_CRITICOS_PUROS = {
@@ -43,8 +44,13 @@ IMPORTS_CRITICOS_PUROS = {
 }
 
 IMPORTS_CRITICOS_UI = {
-    "hexa_pages": ("render_feedback_sidebar", "render_tela"),
-    "hexa_styles": ("aplicar_estilos",),
+    "hexa_context": ("AppContext",),
+    "hexa_pages": ("PAGE_RENDERERS", "render_feedback_sidebar", "render_tela"),
+    "hexa_page_campo": ("render_tela_campo",),
+    "hexa_page_scout": ("render_tela_perfis",),
+    "hexa_page_roster": ("render_tela_roster",),
+    "hexa_page_indicadores": ("render_tela_analise",),
+    "hexa_styles": ("CSS", "HIGH_CONTRAST_CSS", "RC5_CSS", "aplicar_estilos"),
     "hexa_components": ("render_campo", "render_lista_tatica"),
     "hexa_persistencia_local": ("sincronizar_persistencia_local",),
 }
