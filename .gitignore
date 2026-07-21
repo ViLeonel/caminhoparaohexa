@@ -2,37 +2,12 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
-.ruff_cache/
-.bandit/
 .coverage
-coverage.xml
 htmlcov/
 .venv/
 venv/
-env/
 .env
-.env.*
-!.env.example
 .DS_Store
-Thumbs.db
-
-# IDE and local tooling
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Credentials, keys and certificates
-.streamlit/secrets.toml
-secrets.toml
-*.pem
-*.key
-*.p12
-*.pfx
-credentials*.json
-service-account*.json
-.aws/
-.gcp/
 
 # Runtime artifacts
 *.bak
@@ -40,4 +15,5 @@ service-account*.json
 *.lock
 *.meta.json
 *.corrompido-*.json
+.streamlit/secrets.toml
 auditoria_jogadores.jsonl
