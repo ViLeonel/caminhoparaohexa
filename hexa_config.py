@@ -51,7 +51,7 @@ BASE_DIR = Path(__file__).resolve().parent
 NOME_APLICACAO = "O Caminho para o Hexa 2030"
 TITULO_PROJETO = "O Caminho para o Hexa"
 ICONE_APLICACAO = "🏆"
-VERSAO_APLICACAO = "1.3.0-regression-phase2"
+VERSAO_APLICACAO = "1.4.0-architecture-phase3"
 TITULO_SIDEBAR = "CONSELHO TÁTICO"
 ROTULO_NAVEGACAO = "Navegação do Painel:"
 
