@@ -1327,3 +1327,53 @@ o defeito.
 O smoke visual do aplicativo completo e a validação em navegadores permanecem
 dependentes do repositório completo, incluindo os módulos locais não presentes
 no conjunto recebido.
+
+---
+
+## 24. Correções pós-Fase 0 — baseline reproduzível
+
+Data: 21/07/2026.
+
+### 24.1 Objetivo
+
+Corrigir os débitos encontrados no diagnóstico da Fase 0 antes do início da
+Fase 1 de segurança.
+
+### 24.2 Alterações
+
+- `hexa_persistencia_local.py` passou a tratar falhas de registro ou execução
+  do componente opcional `components.v2`, mantendo o restante do aplicativo
+  operacional quando `localStorage` não estiver disponível;
+- o smoke foi atualizado e movido para `scripts/rc1_smoke.py`;
+- foi removida a dependência obsoleta de `hexa_accessibility`;
+- o smoke passou a validar os três JSONs obrigatórios;
+- `config.toml` foi movido para `.streamlit/config.toml`;
+- `secrets.example.toml` foi movido para
+  `.streamlit/secrets.example.toml`;
+- o workflow foi movido para `.github/workflows/ci.yml`;
+- o CI passou a compilar, validar JSON, executar testes de regressão,
+  executar o smoke e validar o endpoint de saúde do Streamlit;
+- Python 3.14 foi removido da matriz obrigatória até haver compatibilidade
+  comprovada de todas as dependências;
+- foi criada a suíte `tests/test_phase0.py`.
+
+### 24.3 Arquivos alterados ou adicionados
+
+- `hexa_persistencia_local.py`;
+- `scripts/rc1_smoke.py`;
+- `tests/test_phase0.py`;
+- `.streamlit/config.toml`;
+- `.streamlit/secrets.example.toml`;
+- `.github/workflows/ci.yml`;
+- `BASE_CONHECIMENTO_HEXA_2030_CONSOLIDADA.md`.
+
+### 24.4 Risco residual
+
+A persistência no navegador é opcional. Quando o componente local falha,
+a convocação permanece funcional durante a sessão, mas não é restaurada após
+o fechamento do navegador.
+
+A validação visual manual em Chrome, Firefox, Edge, Brave e Safari permanece
+como etapa separada, pois o CI cobre inicialização e contratos, não renderização
+pixel a pixel em todos os navegadores.
+

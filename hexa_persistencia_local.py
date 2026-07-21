@@ -346,24 +346,33 @@ def sincronizar_persistencia_local(
         acao = "load"
         payload = None
 
-    resultado = _storage_component(
-        key="hexa_local_storage_convocacao",
-        data={
-            "action": acao,
-            "storage_key": LOCAL_STORAGE_KEY,
-            "payload": payload,
-        },
-        default={
-            "snapshot": {
-                "loaded": False,
-                "available": True,
-                "payload": None,
-            }
-        },
-        on_snapshot_change=lambda: None,
-        width="content",
-        height=0,
-    )
+    try:
+        resultado = _storage_component(
+            key="hexa_local_storage_convocacao",
+            data={
+                "action": acao,
+                "storage_key": LOCAL_STORAGE_KEY,
+                "payload": payload,
+            },
+            default={
+                "snapshot": {
+                    "loaded": False,
+                    "available": True,
+                    "payload": None,
+                }
+            },
+            on_snapshot_change=lambda: None,
+            width="content",
+            height=0,
+        )
+    except Exception:
+        # Alguns ambientes de teste, navegadores restritivos ou versões sem
+        # registro de components.v2 conseguem criar o componente, mas falham
+        # apenas na renderização. A persistência local é opcional e não deve
+        # impedir o restante do aplicativo de funcionar.
+        estado[CHAVE_RESTAURACAO_CONCLUIDA] = True
+        estado[CHAVE_DISPONIBILIDADE] = False
+        return PersistenciaLocalResultado(pronta=True, disponivel=False)
 
     if restauracao_concluida or limpar_solicitado:
         disponivel = bool(
