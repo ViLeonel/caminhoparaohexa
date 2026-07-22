@@ -1727,3 +1727,59 @@ A camada visual Streamlit não foi executada neste ambiente porque a dependênci
 fixada não estava disponível no índice de pacotes acessível. Ela permanece
 coberta pelo GitHub Actions e deve ser validada no Pull Request.
 
+
+
+---
+
+## Fase 9 — histórico sazonal e agenda na ficha individual
+
+Versão: `2.0.0-season-history-phase9`.
+
+A ficha Scout passou a consumir os documentos anuais preparados na Fase 8.
+
+### Próximos jogos
+
+A seção pública mostra somente:
+
+- data;
+- competição;
+- confronto.
+
+São exibidas no máximo três partidas futuras compatíveis com o clube atual do
+atleta ou com a Seleção Brasileira. Calendários de anos diferentes são
+combinados para preservar a continuidade na virada da temporada.
+
+Não são exibidos dias restantes, previsão de utilização, estrelas, jogo
+anterior, sequência de partidas ou carga de jogos.
+
+### Estatísticas por temporada
+
+A ficha permite selecionar uma temporada publicada e consultar os totais de:
+
+- clube;
+- Seleção;
+- clube + Seleção.
+
+As categorias visuais são:
+
+- Participação;
+- Ataque;
+- Passe;
+- Drible;
+- Defesa;
+- Disciplina.
+
+A interface utiliza apenas os indicadores definidos no contrato da Fase 8. A
+fonte e a data da última atualização aparecem junto aos dados. Arquivos
+ausentes ou atletas sem dados geram estados vazios claros, sem transformar
+ausência em zero.
+
+### Arquivos principais
+
+- `hexa_dados_esportivos.py`: leitura segura e associação dos documentos anuais;
+- `hexa_scout_temporada.py`: composição das seções sazonais da ficha;
+- `hexa_style_phase9.py`: ajustes responsivos das abas;
+- `tests/test_season_history_phase9.py`: regressões da Fase 9.
+
+Os JSONs canônicos de jogadores, avaliações e enriquecimentos não foram
+alterados nesta fase.
