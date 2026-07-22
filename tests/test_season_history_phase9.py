@@ -19,7 +19,7 @@ from hexa_config import VERSAO_APLICACAO
 
 class Phase9SeasonHistoryTests(unittest.TestCase):
     def test_versao_phase9(self) -> None:
-        self.assertEqual(VERSAO_APLICACAO, "2.2.0-indices-rankings-phase11")
+        self.assertEqual(VERSAO_APLICACAO, "3.0.0-admin-workflow-phase12")
 
     def test_listar_temporadas_em_ordem_decrescente(self) -> None:
         with tempfile.TemporaryDirectory() as pasta:

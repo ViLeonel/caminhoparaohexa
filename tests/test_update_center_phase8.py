@@ -231,7 +231,7 @@ class UpdateCenterPhase8Tests(unittest.TestCase):
             Permissao.EXECUTAR_ATUALIZACAO.value,
             "executar_atualizacao",
         )
-        self.assertEqual(VERSAO_APLICACAO, "2.2.0-indices-rankings-phase11")
+        self.assertEqual(VERSAO_APLICACAO, "3.0.0-admin-workflow-phase12")
 
 
 if __name__ == "__main__":

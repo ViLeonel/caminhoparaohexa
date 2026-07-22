@@ -170,7 +170,7 @@ class Phase11RankingsTests(unittest.TestCase):
     def test_versao_phase11(self) -> None:
         from hexa_config import VERSAO_APLICACAO
 
-        self.assertEqual(VERSAO_APLICACAO, "2.2.0-indices-rankings-phase11")
+        self.assertEqual(VERSAO_APLICACAO, "3.0.0-admin-workflow-phase12")
 
     def test_contrato_mantem_apenas_indicadores_transparentes(self) -> None:
         chaves = {item.chave for item in INDICADORES_RANKING}

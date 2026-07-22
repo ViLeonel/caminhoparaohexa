@@ -208,7 +208,7 @@ class Phase2InterfaceRegressionTests(unittest.TestCase):
         admin = next(
             indice
             for indice, texto in enumerate(textos)
-            if "Área administrativa em construção" in texto
+            if "Administração" in texto
         )
         self.assertGreater(admin, radar)
 

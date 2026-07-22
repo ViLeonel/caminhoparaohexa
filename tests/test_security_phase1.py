@@ -105,7 +105,7 @@ class AuthSecurityTests(unittest.TestCase):
             )
         )
 
-    def test_edicao_permanece_desabilitada(self):
+    def test_administrador_pode_editar_no_workflow_phase12(self):
         identidade = IdentidadeUsuario(
             autenticado=True,
             subject="oidc-admin-1",
@@ -117,7 +117,7 @@ class AuthSecurityTests(unittest.TestCase):
                 secrets=SECRETS,
             )
         )
-        self.assertFalse(
+        self.assertTrue(
             usuario_tem_permissao(
                 Permissao.EDITAR_DADOS,
                 identidade=identidade,

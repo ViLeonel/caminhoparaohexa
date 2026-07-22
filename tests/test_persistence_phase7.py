@@ -22,7 +22,7 @@ from hexa_repository_sqlite import (
 class Phase7PersistenceTests(unittest.TestCase):
     def test_version_phase7(self) -> None:
         from hexa_config import VERSAO_APLICACAO
-        self.assertEqual(VERSAO_APLICACAO, "2.2.0-indices-rankings-phase11")
+        self.assertEqual(VERSAO_APLICACAO, "3.0.0-admin-workflow-phase12")
 
     def test_json_is_safe_default(self) -> None:
         config = configuracao_persistencia(secrets={})
