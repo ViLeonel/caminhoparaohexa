@@ -1783,3 +1783,39 @@ ausência em zero.
 
 Os JSONs canônicos de jogadores, avaliações e enriquecimentos não foram
 alterados nesta fase.
+
+
+---
+
+## Fase 10 — Agenda Inteligente
+
+Versão: `2.1.0-smart-agenda-phase10`.
+
+A agenda pública da ficha Scout evoluiu sem adicionar dias até o jogo, provável
+utilização, estrelas, último jogo, sequência ou carga de partidas.
+
+Recursos implementados:
+
+- consolidação de calendários de anos diferentes;
+- associação exata por nome normalizado;
+- aliases explícitos em `calendarios/aliases_equipes.json`;
+- suporte futuro a `mandante_id`, `visitante_id`, `clube_id` e `selecao_id`;
+- exclusão de partidas canceladas, adiadas e encerradas;
+- deduplicação por `id_jogo` ou conjunto de dados;
+- filtros discretos por clube/Seleção e competição;
+- manutenção da saída pública em apenas data, competição e confronto;
+- cobertura de estaduais, regionais, Sul-Americana e demais categorias oficiais.
+
+O arquivo de aliases é deliberadamente vazio na distribuição. Ele deve ser
+alimentado apenas com equivalências confirmadas, evitando correspondência
+aproximada que possa associar um atleta ao clube errado.
+
+Arquivos principais:
+
+- `hexa_agenda.py`;
+- `hexa_dados_esportivos.py`;
+- `hexa_scout_temporada.py`;
+- `hexa_style_phase10.py`;
+- `tests/test_smart_agenda_phase10.py`.
+
+Dados editoriais e JSONs canônicos não foram alterados.
