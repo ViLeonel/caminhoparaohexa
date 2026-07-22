@@ -218,17 +218,17 @@ def _render_proximos_jogos(
 def _registros_por_ambito(
     totais: Mapping[str, Mapping[str, Any]],
     campos: Sequence[tuple[str, str, str]],
+    *,
+    ambito: str,
 ) -> list[dict[str, Any]]:
-    registros: list[dict[str, Any]] = []
-    for ambito in ("clube", "selecao", "combinado"):
-        total = totais.get(ambito)
-        if total is None:
-            continue
-        linha: dict[str, Any] = {"ambito": _ROTULOS_AMBITO[ambito]}
-        for chave, _, _ in campos:
-            linha[chave] = total.get(chave)
-        registros.append(linha)
-    return registros
+    total = totais.get(ambito)
+    if total is None:
+        return []
+
+    linha: dict[str, Any] = {"ambito": _ROTULOS_AMBITO[ambito]}
+    for chave, _, _ in campos:
+        linha[chave] = total.get(chave)
+    return [linha]
 
 
 def _render_categoria(
@@ -237,8 +237,9 @@ def _render_categoria(
     nome_categoria: str,
     campos: Sequence[tuple[str, str, str]],
     totais: Mapping[str, Mapping[str, Any]],
+    ambito: str,
 ) -> None:
-    registros = _registros_por_ambito(totais, campos)
+    registros = _registros_por_ambito(totais, campos, ambito=ambito)
     if not registros:
         st.info(
             f"Não há indicadores de {nome_categoria.casefold()} para "
@@ -298,13 +299,33 @@ def _render_estatisticas(
         )
         return
 
-    temporada = st.selectbox(
-        "Temporada",
-        anos,
-        index=0,
-        key="scout_temporada_estatistica",
-        help="As temporadas anteriores permanecem disponíveis no histórico.",
-    )
+    coluna_temporada, coluna_ambito = st.columns(2, gap="medium")
+    with coluna_temporada:
+        temporada = st.selectbox(
+            "Temporada",
+            anos,
+            index=0,
+            key="scout_temporada_estatistica",
+            help="As temporadas anteriores permanecem disponíveis no histórico.",
+        )
+
+    rotulos_ambito = {
+        "combinado": "Clube e Seleção",
+        "clube": "Somente clube",
+        "selecao": "Somente Seleção",
+    }
+    with coluna_ambito:
+        ambito = st.selectbox(
+            "Estatísticas",
+            tuple(rotulos_ambito),
+            format_func=rotulos_ambito.__getitem__,
+            key="scout_estatisticas_ambito",
+            help=(
+                "Alterna entre os números do clube, da Seleção Brasileira "
+                "e o total combinado da temporada."
+            ),
+        )
+
     id_atleta = str(jogador.get("id_atleta") or "").strip()
     if not id_atleta:
         st.info(
@@ -334,6 +355,13 @@ def _render_estatisticas(
         )
         return
 
+    if ambito not in totais:
+        st.info(
+            f"Não há estatísticas de {_ROTULOS_AMBITO[ambito].casefold()} "
+            f"cadastradas para este atleta em {temporada}."
+        )
+        return
+
     if documento:
         st.caption(
             "Fonte: "
@@ -350,6 +378,7 @@ def _render_estatisticas(
                 nome_categoria=nome,
                 campos=campos,
                 totais=totais,
+                ambito=ambito,
             )
 
 
