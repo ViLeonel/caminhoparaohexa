@@ -1819,3 +1819,56 @@ Arquivos principais:
 - `tests/test_smart_agenda_phase10.py`.
 
 Dados editoriais e JSONs canônicos não foram alterados.
+
+---
+
+## Fase 11 — Índices e rankings sazonais
+
+Versão: `2.2.0-indices-rankings-phase11`.
+
+### Objetivo
+
+Recalcular automaticamente índices transparentes e rankings objetivos sempre
+que uma temporada é atualizada, sem criar nota composta e sem substituir as
+avaliações editoriais de Vini e Beto.
+
+### Implementação
+
+- `hexa_indices_rankings.py`: metodologia, elegibilidade, empates e rankings;
+- `hexa_rankings_temporada.py`: painel público na página Indicadores;
+- atualização sazonal recalcula índices e rankings no mesmo fluxo;
+- Central de Atualização permite recálculo manual dos dados derivados;
+- rankings separados entre clube, Seleção e combinado;
+- filtros por temporada, âmbito, categoria e indicador;
+- índices de eficiência exigem mínimo de 450 minutos;
+- empates compartilham a mesma posição;
+- indicadores negativos são ordenados do menor para o maior;
+- nenhum score ou nota esportiva automática foi criado.
+
+### Indicadores derivados
+
+- minutos por jogo;
+- percentual como titular;
+- gols por 90;
+- assistências por 90;
+- participações em gol por 90;
+- percentual de chutes no alvo.
+
+### Integridade
+
+O recálculo substitui somente `indices` e `indices_rankings`. Registros brutos,
+histórico sazonal, JSON canônico dos jogadores e avaliações editoriais não são
+alterados.
+
+### Testes desta fase
+
+- compilação de todos os arquivos Python;
+- 51 testes puros das Fases 1, 7, 8, 9, 10 e 11 aprovados;
+- 10 testes específicos da Fase 11 aprovados;
+- smoke de imports aprovado;
+- verificação de segurança do repositório aprovada.
+
+A camada visual e o servidor Streamlit não foram executados neste ambiente
+porque o pacote Streamlit não estava instalado. O CI continua responsável por
+AppTest, navegadores e inicialização real.
+
