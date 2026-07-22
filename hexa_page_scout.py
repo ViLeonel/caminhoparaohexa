@@ -40,6 +40,7 @@ from hexa_components import (
 )
 from hexa_config import (
     ANO_BASE_DADOS,
+    CALENDARIOS_DIR,
     ANO_COPA,
     ASSUNTO_FEEDBACK_PREFIXO,
     EMAIL_FEEDBACK,
@@ -54,6 +55,7 @@ from hexa_config import (
     NOME_CURTO_ANALISTA_VINI,
     SAUDACAO_FEEDBACK,
     TIPOS_SUGESTAO,
+    TEMPORADAS_DIR,
     TITULO_PROJETO,
 )
 from hexa_data import (
@@ -78,6 +80,7 @@ from hexa_selectors import (
     construir_registros_mercado,
     construir_registros_roster,
 )
+from hexa_scout_temporada import render_dados_sazonais_atleta
 from hexa_session import (
     chave_reserva_livre,
     chave_reserva_posicional,
@@ -351,4 +354,10 @@ def render_tela_perfis(
         _render_historico_atleta(
             base_avaliacoes,
             str(atleta.get("id_atleta") or ""),
+        )
+
+        render_dados_sazonais_atleta(
+            jogador=atleta,
+            temporadas_dir=TEMPORADAS_DIR,
+            calendarios_dir=CALENDARIOS_DIR,
         )

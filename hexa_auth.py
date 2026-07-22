@@ -41,6 +41,7 @@ class Permissao(str, Enum):
     CONSULTAR_AUDITORIA = "consultar_auditoria"
     EXPORTAR_DADOS = "exportar_dados"
     EDITAR_DADOS = "editar_dados"
+    EXECUTAR_ATUALIZACAO = "executar_atualizacao"
 
 
 @dataclass(frozen=True, slots=True)
@@ -341,6 +342,7 @@ _PERMISSOES_ADMIN: frozenset[Permissao] = frozenset(
         Permissao.VISUALIZAR_ADMIN,
         Permissao.CONSULTAR_AUDITORIA,
         Permissao.EXPORTAR_DADOS,
+        Permissao.EXECUTAR_ATUALIZACAO,
         # EDITAR_DADOS permanece deliberadamente desabilitada nesta fase.
     }
 )

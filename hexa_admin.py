@@ -7,6 +7,7 @@ from typing import Any
 
 import streamlit as st
 
+from hexa_admin_atualizacao import render_central_atualizacao
 from hexa_auth import (
     AuthConfigError,
     IdentidadeUsuario,
@@ -130,3 +131,10 @@ def render_area_administrativa(
                 "O backend JSON permanece ativo. No Streamlit Community Cloud, "
                 "gravações no filesystem não são persistência durável."
             )
+
+    st.divider()
+    render_central_atualizacao(
+        jogadores,
+        identidade=identidade_ativa,
+    )
+
