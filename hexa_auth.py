@@ -42,6 +42,10 @@ class Permissao(str, Enum):
     EXPORTAR_DADOS = "exportar_dados"
     EDITAR_DADOS = "editar_dados"
     EXECUTAR_ATUALIZACAO = "executar_atualizacao"
+    CRIAR_RASCUNHO = "criar_rascunho"
+    REVISAR_RASCUNHO = "revisar_rascunho"
+    PUBLICAR_RASCUNHO = "publicar_rascunho"
+    EXECUTAR_ROLLBACK = "executar_rollback"
 
 
 @dataclass(frozen=True, slots=True)
@@ -52,6 +56,10 @@ class PoliticaAuth:
     tolerancia_relogio_segundos: int = 60
     administradores_emails: tuple[str, ...] = ()
     administradores_subjects: tuple[str, ...] = ()
+    editores: tuple[str, ...] = ()
+    revisores: tuple[str, ...] = ()
+    publicadores: tuple[str, ...] = ()
+    auditores: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -241,11 +249,34 @@ def politica_auth(
             "[seguranca].tolerancia_relogio_segundos deve estar entre 0 e 300."
         )
 
+    try:
+        secao_perfis = fonte.get("perfis", {})
+    except AttributeError:
+        secao_perfis = {}
+    if not isinstance(secao_perfis, Mapping):
+        raise AuthConfigError("[perfis] precisa ser uma tabela TOML.")
+
+    def perfil(nome: str) -> tuple[str, ...]:
+        valores = _sequencia_textos(
+            secao_perfis.get(nome, ()),
+            campo=f"[perfis].{nome}",
+        )
+        return tuple(
+            dict.fromkeys(
+                email_normalizado(item) if "@" in item else item
+                for item in valores
+            )
+        )
+
     return PoliticaAuth(
         exigir_email_verificado=exigir,
         tolerancia_relogio_segundos=tolerancia,
         administradores_emails=emails,
         administradores_subjects=subjects,
+        editores=perfil("editores"),
+        revisores=perfil("revisores"),
+        publicadores=perfil("publicadores"),
+        auditores=perfil("auditores"),
     )
 
 
@@ -337,15 +368,40 @@ def usuario_autenticado(
     ).autenticado
 
 
-_PERMISSOES_ADMIN: frozenset[Permissao] = frozenset(
-    {
-        Permissao.VISUALIZAR_ADMIN,
-        Permissao.CONSULTAR_AUDITORIA,
-        Permissao.EXPORTAR_DADOS,
-        Permissao.EXECUTAR_ATUALIZACAO,
-        # EDITAR_DADOS permanece deliberadamente desabilitada nesta fase.
-    }
-)
+_PERMISSOES_ADMIN: frozenset[Permissao] = frozenset(Permissao)
+
+_PERMISSOES_POR_PERFIL: dict[str, frozenset[Permissao]] = {
+    "editores": frozenset(
+        {
+            Permissao.VISUALIZAR_ADMIN,
+            Permissao.CRIAR_RASCUNHO,
+            Permissao.EDITAR_DADOS,
+        }
+    ),
+    "revisores": frozenset(
+        {
+            Permissao.VISUALIZAR_ADMIN,
+            Permissao.REVISAR_RASCUNHO,
+            Permissao.CONSULTAR_AUDITORIA,
+        }
+    ),
+    "publicadores": frozenset(
+        {
+            Permissao.VISUALIZAR_ADMIN,
+            Permissao.PUBLICAR_RASCUNHO,
+            Permissao.EXECUTAR_ROLLBACK,
+            Permissao.CONSULTAR_AUDITORIA,
+            Permissao.EXPORTAR_DADOS,
+        }
+    ),
+    "auditores": frozenset(
+        {
+            Permissao.VISUALIZAR_ADMIN,
+            Permissao.CONSULTAR_AUDITORIA,
+            Permissao.EXPORTAR_DADOS,
+        }
+    ),
+}
 
 
 def usuario_eh_admin(
@@ -393,13 +449,32 @@ def usuario_tem_permissao(
     identidade: IdentidadeUsuario | None = None,
     secrets: Mapping[str, Any] | None = None,
 ) -> bool:
-    if permissao not in _PERMISSOES_ADMIN:
-        return False
-    return usuario_eh_admin(
+    identidade_ativa = identidade or identidade_atual(
         provedor,
-        identidade=identidade,
         secrets=secrets,
+        validar_politica=False,
     )
+    if not identidade_ativa.autenticado:
+        return False
+    if usuario_eh_admin(
+        provedor,
+        identidade=identidade_ativa,
+        secrets=secrets,
+    ):
+        return permissao in _PERMISSOES_ADMIN
+
+    politica = politica_auth(secrets)
+    identificadores = {
+        identidade_ativa.subject,
+        identidade_ativa.email,
+        email_normalizado(identidade_ativa.email),
+    }
+    identificadores.discard("")
+    for nome_perfil, permissoes in _PERMISSOES_POR_PERFIL.items():
+        membros = set(getattr(politica, nome_perfil))
+        if identificadores & membros and permissao in permissoes:
+            return True
+    return False
 
 
 def registrar_erro_configuracao_auth(erro: AuthConfigError) -> None:
@@ -429,7 +504,7 @@ def render_controle_login(
                 validar_politica=False,
             )
 
-    st.sidebar.markdown("### Área administrativa em construção")
+    st.sidebar.markdown("### Administração")
 
     if identidade_ativa.motivo_invalidez:
         st.sidebar.warning(
