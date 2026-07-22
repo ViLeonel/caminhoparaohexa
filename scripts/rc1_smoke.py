@@ -31,6 +31,7 @@ MODULOS_PUROS = (
     "hexa_atualizacao",
     "hexa_dados_esportivos",
     "hexa_agenda",
+    "hexa_indices_rankings",
 )
 
 IMPORTS_CRITICOS_PUROS = {
@@ -62,6 +63,7 @@ IMPORTS_CRITICOS_UI = {
     "hexa_persistencia_local": ("sincronizar_persistencia_local",),
     "hexa_admin_atualizacao": ("render_central_atualizacao",),
     "hexa_scout_temporada": ("render_dados_sazonais_atleta",),
+    "hexa_rankings_temporada": ("render_indices_rankings_temporada",),
 }
 
 ARQUIVOS_JSON = (

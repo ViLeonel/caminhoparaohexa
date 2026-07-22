@@ -68,7 +68,7 @@ class Phase10SmartAgendaTests(unittest.TestCase):
         }
 
     def test_versao_phase10(self) -> None:
-        self.assertEqual(VERSAO_APLICACAO, "2.1.0-smart-agenda-phase10")
+        self.assertEqual(VERSAO_APLICACAO, "2.2.0-indices-rankings-phase11")
 
     def test_normalizacao_remove_acentos_e_pontuacao(self) -> None:
         self.assertEqual(
